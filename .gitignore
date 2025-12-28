@@ -1,5 +1,9 @@
-# --- QUAN TRỌNG NHẤT: Cấu hình chứa Key ---
-config.js
+# --- CẤU HÌNH (QUAN TRỌNG) ---
+# Đã thêm dấu # ở đầu để CHO PHÉP upload file này lên GitHub
+# Vercel cần file này để web hoạt động
+# config.js
+
+# Các file môi trường khác (nếu có) thì vẫn nên ẩn
 .env
 
 # --- File hệ thống (Rác của Windows/Mac) ---
@@ -22,7 +26,7 @@ firebase-debug.log.*
 # --- Firebase Cache ---
 .firebase/
 
-# --- Dependencies (Dự phòng nếu sau này bạn dùng Node.js) ---
+# --- Dependencies (Thư viện) ---
 node_modules/
 dist/
 build/
