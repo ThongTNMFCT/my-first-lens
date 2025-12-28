@@ -1,0 +1,28 @@
+# --- QUAN TRỌNG NHẤT: Cấu hình chứa Key ---
+config.js
+.env
+
+# --- File hệ thống (Rác của Windows/Mac) ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- IDE & Editor (Cấu hình riêng của VS Code...) ---
+.vscode/
+.idea/
+*.sublime-workspace
+
+# --- Logs & Debug (File báo lỗi) ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+firebase-debug.log
+firebase-debug.log.*
+
+# --- Firebase Cache ---
+.firebase/
+
+# --- Dependencies (Dự phòng nếu sau này bạn dùng Node.js) ---
+node_modules/
+dist/
+build/

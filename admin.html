@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | My First Lens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
+                    },
+                    colors: {
+                        gold: '#d4af37'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .swal2-popup { border-radius: 15px !important; font-family: 'Montserrat', sans-serif !important; }
+        .swal2-title { font-family: 'Cormorant Garamond', serif !important; font-style: italic; }
+        .swal2-input, .swal2-textarea { font-size: 0.9rem !important; margin: 0.5em auto !important; width: 100% !important; box-sizing: border-box; }
+        .fade-enter { opacity: 0; transform: translateY(10px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 0.3s, transform 0.3s; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased">
+
+    <div id="login-screen" class="fixed inset-0 z-50 bg-white flex items-center justify-center">
+        <div class="w-full max-w-sm p-8 text-center animate-[fadeIn_0.5s]">
+            <h1 class="font-serif text-4xl italic font-bold mb-2">My First Lens.</h1>
+            <p class="text-xs uppercase tracking-widest text-gray-400 mb-8">Admin Portal</p>
+            <div class="space-y-4 text-left">
+                <input type="text" id="adminUser" value="admin" class="w-full border border-gray-300 p-3 rounded-lg bg-gray-50" placeholder="Username">
+                <input type="password" id="adminPass" value="admin" class="w-full border border-gray-300 p-3 rounded-lg bg-gray-50" placeholder="Password">
+            </div>
+            <button onclick="checkLogin()" class="w-full bg-black text-white p-3 rounded-lg font-bold hover:bg-gold transition-colors mt-8 shadow-lg">Đăng nhập</button>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden min-h-screen flex flex-col md:flex-row">
+        
+        <aside class="w-full md:w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center md:block">
+                <span class="font-serif font-bold text-2xl italic">Dashboard</span>
+                <button onclick="logout()" class="md:hidden text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="index.html" target="_blank" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors text-gray-600">
+                    <i class="fas fa-external-link-alt"></i> Xem Website
+                </a>
+                <div class="h-px bg-gray-100 my-2"></div>
+                <button onclick="createNewAlbum()" class="w-full flex items-center gap-3 p-3 rounded-lg bg-black text-white hover:bg-gold transition-colors text-sm font-bold shadow-md">
+                    <i class="fas fa-plus"></i> Tạo Album Mới
+                </button>
+            </nav>
+            <div class="p-4 border-t border-gray-100 hidden md:block">
+                <button onclick="logout()" class="flex items-center gap-2 text-red-500 text-sm font-bold hover:text-red-600">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10 overflow-auto relative">
+            
+            <div id="view-albums" class="fade-enter-active">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="font-serif text-3xl font-bold">Quản lý Album</h2>
+                        <p class="text-xs text-gray-400 uppercase tracking-widest mt-1">Danh sách bộ sưu tập</p>
+                    </div>
+                </div>
+                <div id="admin-album-list" class="grid grid-cols-1 gap-4 max-w-4xl">
+                    </div>
+            </div>
+
+            <div id="view-photos" class="hidden fade-enter">
+                <div class="flex items-center gap-4 mb-8 border-b border-gray-100 pb-4">
+                    <button onclick="switchView('albums')" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h2 id="current-album-title" class="font-serif text-2xl font-bold">Album Title</h2>
+                        <p class="text-xs text-gray-400 uppercase tracking-widest mt-1">Quản lý hình ảnh chi tiết</p>
+                    </div>
+                </div>
+
+                <div id="admin-photo-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="uploadModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-[fadeIn_0.3s]">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg">Tải ảnh lên</h3>
+                <button onclick="closeUploadModal()" class="text-gray-400 hover:text-black text-xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center hover:bg-gray-50 transition cursor-pointer relative group">
+                    <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="updateFileCount()">
+                    <div id="upload-placeholder" class="group-hover:scale-105 transition-transform z-10 relative">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-300 mb-3 block"></i>
+                        <span class="text-sm font-bold text-gray-600">Chọn ảnh từ máy</span>
+                    </div>
+                    <div id="file-count-display" class="hidden z-10 relative">
+                        <p class="text-gold font-bold text-2xl"><span id="count-num">0</span></p>
+                        <p class="text-xs font-bold text-gray-500 uppercase">Ảnh đã chọn</p>
+                    </div>
+                </div>
+                <p class="text-[10px] text-center text-gray-400 italic">*Thông số EXIF sẽ được tự động đọc.</p>
+            </div>
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                <button onclick="closeUploadModal()" class="px-5 py-2 text-sm font-bold text-gray-500">Hủy</button>
+                <button onclick="startUpload()" class="px-6 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-gold shadow-lg flex items-center"><i class="fas fa-arrow-up mr-2"></i> Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+    
+    <script>
+        let currentAlbumId = null;
+        if (typeof CONFIG === 'undefined') alert("Thiếu config.js!");
+        if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
+        const db = firebase.firestore();
+
+        // 1. AUTHENTICATION
+        function checkLogin() {
+            if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin') {
+                localStorage.setItem('admin_auth', 'true'); showDashboard();
+            } else { Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Sai thông tin!' }); }
+        }
+        function showDashboard() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            loadAdminAlbums();
+        }
+        function logout() { localStorage.removeItem('admin_auth'); location.reload(); }
+        if(localStorage.getItem('admin_auth') === 'true') showDashboard();
+
+        // 2. VIEW SWITCHING
+        function switchView(viewName) {
+            const albumsView = document.getElementById('view-albums');
+            const photosView = document.getElementById('view-photos');
+            
+            if(viewName === 'photos') {
+                albumsView.classList.add('hidden');
+                photosView.classList.remove('hidden');
+                photosView.classList.add('fade-enter-active');
+            } else {
+                photosView.classList.add('hidden');
+                albumsView.classList.remove('hidden');
+                albumsView.classList.add('fade-enter-active');
+                loadAdminAlbums(); 
+            }
+        }
+
+        // ==========================================
+        // 3. QUẢN LÝ ALBUM
+        // ==========================================
+        async function loadAdminAlbums() {
+            const container = document.getElementById('admin-album-list');
+            try {
+                const snap = await db.collection('albums').orderBy('createdAt', 'desc').get();
+                if(snap.empty) { container.innerHTML = '<div class="text-center py-10 text-gray-400">Chưa có album nào.</div>'; return; }
+                
+                let html = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    let img = (d.coverUrl && d.coverUrl.startsWith('http')) ? d.coverUrl : 'https://placehold.co/150x150/f3f4f6/9ca3af?text=No+Cover';
+                    const descShort = d.description ? (d.description.substring(0, 50) + '...') : '...';
+                    
+                    // Chuẩn bị dữ liệu hiển thị phụ (Location & Date)
+                    const locationStr = d.location ? `<i class="fas fa-map-marker-alt text-[10px] mr-1"></i>${d.location}` : '';
+                    const dateStr = d.dateTaken ? `<i class="far fa-clock text-[10px] ml-2 mr-1"></i>${d.dateTaken}` : '';
+
+                    html += `
+                    <div class="bg-white p-4 border border-gray-100 rounded-xl flex flex-col md:flex-row justify-between items-center shadow-sm hover:shadow-md transition-shadow gap-4">
+                        <div class="flex items-center gap-4 w-full md:w-auto overflow-hidden cursor-pointer group" onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')">
+                            <img src="${img}" class="w-16 h-16 object-cover rounded-lg bg-gray-100 border border-gray-200 flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <div class="min-w-0">
+                                <p class="font-serif font-bold text-lg text-gray-800 truncate group-hover:text-gold transition-colors">${d.title}</p>
+                                
+                                <p class="text-xs text-blue-500 font-medium mb-1">${locationStr} ${dateStr}</p>
+                                
+                                <p class="text-sm text-gray-500 truncate">${descShort}</p>
+                                <p class="text-[10px] text-gray-400 uppercase mt-1 font-bold tracking-wider">${d.photoCount || 0} ảnh</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2 w-full md:w-auto justify-end flex-wrap">
+                            <button onclick="openUpload('${doc.id}')" title="Upload Ảnh" class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-black hover:text-white transition"><i class="fas fa-cloud-upload-alt"></i></button>
+                            <button onclick="editAlbum('${doc.id}')" title="Sửa Thông tin" class="px-3 py-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition"><i class="fas fa-pen"></i></button>
+                            <button onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')" title="Quản lý Ảnh" class="px-3 py-2 bg-gray-100 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition"><i class="fas fa-images"></i></button>
+                            <button onclick="deleteAlbum('${doc.id}')" title="Xóa Album" class="px-3 py-2 bg-gray-100 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } catch (e) { console.error(e); }
+        }
+
+        // --- TẠO ALBUM MỚI (4 Ô NHẬP) ---
+        async function createNewAlbum() {
+            try {
+                const { value: form } = await Swal.fire({
+                    title: 'Tạo Album Mới',
+                    html: `
+                        <div class="text-left space-y-2">
+                            <label class="text-xs font-bold uppercase text-gray-500">Tên Album</label>
+                            <input id="swal-title" class="swal2-input m-0" placeholder="VD: Đà Lạt Mộng Mơ">
+                            
+                            <label class="text-xs font-bold uppercase text-gray-500">Mô tả Album</label>
+                            <textarea id="swal-desc" class="swal2-textarea m-0" placeholder="Cảm nghĩ, nội dung..." rows="2"></textarea>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-xs font-bold uppercase text-gray-500">Địa điểm</label>
+                                    <input id="swal-location" class="swal2-input m-0" placeholder="VD: Lâm Đồng">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold uppercase text-gray-500">Thời gian chụp</label>
+                                    <input type="date" id="swal-date" class="swal2-input m-0">
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    focusConfirm: false, showCancelButton: true, confirmButtonText: 'Tạo', confirmButtonColor: '#000',
+                    width: '500px',
+                    preConfirm: () => {
+                        return {
+                            title: document.getElementById('swal-title').value,
+                            description: document.getElementById('swal-desc').value,
+                            location: document.getElementById('swal-location').value,
+                            dateTaken: document.getElementById('swal-date').value
+                        }
+                    }
+                });
+
+                if (form && form.title) {
+                    await db.collection('albums').add({
+                        title: form.title,
+                        description: form.description,
+                        location: form.location,
+                        dateTaken: form.dateTaken,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        coverUrl: '',
+                        photoCount: 0
+                    });
+                    loadAdminAlbums();
+                    Swal.fire({ icon: 'success', title: 'Thành công', timer: 1500, showConfirmButton: false });
+                }
+            } catch (e) {}
+        }
+
+        // --- SỬA ALBUM (4 Ô NHẬP) ---
+        async function editAlbum(id) {
+            try {
+                // Lấy dữ liệu mới nhất từ DB để điền vào form
+                const doc = await db.collection('albums').doc(id).get();
+                if (!doc.exists) return;
+                const d = doc.data();
+
+                const { value: form } = await Swal.fire({
+                    title: 'Sửa thông tin Album',
+                    html: `
+                        <div class="text-left space-y-2">
+                            <label class="text-xs font-bold uppercase text-gray-500">Tên Album</label>
+                            <input id="swal-edit-title" class="swal2-input m-0" value="${d.title || ''}">
+                            
+                            <label class="text-xs font-bold uppercase text-gray-500">Mô tả Album</label>
+                            <textarea id="swal-edit-desc" class="swal2-textarea m-0" rows="3">${d.description || ''}</textarea>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-xs font-bold uppercase text-gray-500">Địa điểm</label>
+                                    <input id="swal-edit-location" class="swal2-input m-0" value="${d.location || ''}">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold uppercase text-gray-500">Thời gian chụp</label>
+                                    <input type="date" id="swal-edit-date" class="swal2-input m-0" value="${d.dateTaken || ''}">
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    focusConfirm: false, showCancelButton: true, confirmButtonText: 'Lưu thay đổi', confirmButtonColor: '#d4af37',
+                    width: '500px',
+                    preConfirm: () => {
+                        return {
+                            title: document.getElementById('swal-edit-title').value,
+                            description: document.getElementById('swal-edit-desc').value,
+                            location: document.getElementById('swal-edit-location').value,
+                            dateTaken: document.getElementById('swal-edit-date').value
+                        }
+                    }
+                });
+                
+                if (form) {
+                    await db.collection('albums').doc(id).update({
+                        title: form.title,
+                        description: form.description,
+                        location: form.location,
+                        dateTaken: form.dateTaken
+                    });
+                    loadAdminAlbums();
+                    Swal.fire({ icon: 'success', title: 'Đã cập nhật', timer: 1500, showConfirmButton: false });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function deleteAlbum(id) {
+            const res = await Swal.fire({ title: 'Xóa Album?', text: "Hành động này không thể hoàn tác!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Xóa' });
+            if (res.isConfirmed) { await db.collection('albums').doc(id).delete(); loadAdminAlbums(); }
+        }
+
+        // ==========================================
+        // 4. QUẢN LÝ ẢNH CHI TIẾT
+        // ==========================================
+        async function openPhotoManager(albumId, albumTitle) {
+            currentAlbumId = albumId;
+            document.getElementById('current-album-title').innerText = albumTitle;
+            switchView('photos');
+            loadPhotosInManager(albumId);
+        }
+
+        async function loadPhotosInManager(albumId) {
+            const grid = document.getElementById('admin-photo-grid');
+            grid.innerHTML = '<p class="col-span-full text-center py-10 text-gray-400">Đang tải ảnh...</p>';
+            
+            try {
+                const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
+                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-center py-10 text-gray-400">Album trống.</p>'; return; }
+
+                let html = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
+                    const caption = d.caption || 'Chưa có mô tả';
+                    const exif = d.exif || {};
+                    const exifStr = JSON.stringify(exif).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
+                    html += `
+                    <div class="bg-white border border-gray-100 rounded-lg overflow-hidden group hover:shadow-lg transition-shadow relative">
+                        <div class="aspect-square bg-gray-100 relative">
+                            <img src="${thumb}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <button onclick='editPhoto("${doc.id}", "${caption.replace(/"/g, '&quot;')}", ${exifStr})' class="p-2 bg-white rounded-full text-blue-600 hover:scale-110 transition"><i class="fas fa-pen"></i></button>
+                                <button onclick="deletePhoto('${doc.id}')" class="p-2 bg-white rounded-full text-red-500 hover:scale-110 transition"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs font-bold text-gray-700 truncate" title="${caption}">${caption}</p>
+                            <p class="text-[10px] text-gray-400 mt-1 truncate">${exif.camera || 'Unknown'}</p>
+                        </div>
+                    </div>`;
+                });
+                grid.innerHTML = html;
+            } catch (e) { console.error(e); }
+        }
+
+        // --- SỬA ẢNH (Mô tả & EXIF) ---
+        async function editPhoto(photoId, currentCaption, currentExif) {
+            const exif = currentExif || {};
+            try {
+                const { value: form } = await Swal.fire({
+                    title: 'Chỉnh sửa Ảnh',
+                    html: `
+                        <div class="text-left space-y-3">
+                            <div>
+                                <label class="text-xs font-bold uppercase text-gray-500">Mô tả / Caption</label>
+                                <input id="swal-p-caption" class="swal2-input m-0 w-full" value="${currentCaption === 'Chưa có mô tả' ? '' : currentCaption}">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="text-xs font-bold uppercase text-gray-500">Máy ảnh</label><input id="swal-p-cam" class="swal2-input m-0 w-full" value="${exif.camera || ''}"></div>
+                                <div><label class="text-xs font-bold uppercase text-gray-500">Tiêu cự</label><input id="swal-p-focal" class="swal2-input m-0 w-full" value="${exif.focalLength || ''}" placeholder="35mm"></div>
+                                <div><label class="text-xs font-bold uppercase text-gray-500">Khẩu độ</label><input id="swal-p-ap" class="swal2-input m-0 w-full" value="${exif.aperture || ''}" placeholder="f/1.8"></div>
+                                <div><label class="text-xs font-bold uppercase text-gray-500">ISO</label><input id="swal-p-iso" class="swal2-input m-0 w-full" value="${exif.iso || ''}" placeholder="ISO 100"></div>
+                                <div><label class="text-xs font-bold uppercase text-gray-500">Tốc độ</label><input id="swal-p-shut" class="swal2-input m-0 w-full" value="${exif.shutter || ''}" placeholder="1/100s"></div>
+                            </div>
+                        </div>`,
+                    focusConfirm: false, showCancelButton: true, confirmButtonText: 'Lưu', confirmButtonColor: '#000', width: '600px',
+                    preConfirm: () => {
+                        return {
+                            caption: document.getElementById('swal-p-caption').value,
+                            exif: {
+                                camera: document.getElementById('swal-p-cam').value,
+                                focalLength: document.getElementById('swal-p-focal').value,
+                                aperture: document.getElementById('swal-p-ap').value,
+                                iso: document.getElementById('swal-p-iso').value,
+                                shutter: document.getElementById('swal-p-shut').value
+                            }
+                        }
+                    }
+                });
+                if (form) {
+                    await db.collection('photos').doc(photoId).update({ caption: form.caption, exif: form.exif });
+                    loadPhotosInManager(currentAlbumId);
+                    Swal.fire({ icon: 'success', title: 'Đã lưu', timer: 1000, showConfirmButton: false });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function deletePhoto(photoId) {
+            const res = await Swal.fire({ title: 'Xóa ảnh này?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Xóa' });
+            if (res.isConfirmed) {
+                await db.collection('photos').doc(photoId).delete();
+                await db.collection('albums').doc(currentAlbumId).update({ photoCount: firebase.firestore.FieldValue.increment(-1) });
+                loadPhotosInManager(currentAlbumId);
+            }
+        }
+
+        // ==========================================
+        // 5. UPLOAD LOGIC
+        // ==========================================
+        function openUpload(id) {
+            currentAlbumId = id;
+            document.getElementById('fileInput').value = ''; 
+            document.getElementById('file-count-display').classList.add('hidden');
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+        function closeUploadModal() { document.getElementById('uploadModal').classList.add('hidden'); }
+        function updateFileCount() {
+            const files = document.getElementById('fileInput').files;
+            if (files.length > 0) {
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                document.getElementById('file-count-display').classList.remove('hidden');
+                document.getElementById('count-num').innerText = files.length;
+            }
+        }
+        function getExifFromLocalFile(file) {
+            return new Promise((resolve) => {
+                EXIF.getData(file, function() {
+                    let make = EXIF.getTag(this, "Make") || ""; let model = EXIF.getTag(this, "Model") || "";
+                    let cameraName = (make + " " + model).trim().replace(/canon canon/i, "Canon") || "Unknown Camera";
+                    let fnumber = EXIF.getTag(this, "FNumber"); let aperture = fnumber ? `f/${fnumber}` : "";
+                    let iso = EXIF.getTag(this, "ISOSpeedRatings"); let isoStr = iso ? `ISO ${iso}` : "";
+                    let exposure = EXIF.getTag(this, "ExposureTime");
+                    let shutter = (exposure && exposure.numerator) ? `${exposure.numerator}/${exposure.denominator}s` : (exposure ? `${exposure}s` : "");
+                    resolve({ camera: cameraName, aperture: aperture, iso: isoStr, shutter: shutter });
+                });
+            });
+        }
+        async function startUpload() {
+            const files = document.getElementById('fileInput').files;
+            if(!files.length) { Swal.fire('Cảnh báo', 'Chưa chọn ảnh!', 'warning'); return; }
+            Swal.fire({ title: 'Đang upload...', html: 'Vui lòng chờ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            let count = 0;
+            for(let file of files) {
+                const exifData = await getExifFromLocalFile(file);
+                const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
+                try {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.cloudinary.cloudName}/image/upload`, { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if(data.secure_url) {
+                        await db.collection('photos').add({
+                            albumId: currentAlbumId,
+                            url: data.secure_url,
+                            likes: 0,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            exif: exifData,
+                            caption: '' 
+                        });
+                        await db.collection('albums').doc(currentAlbumId).update({ coverUrl: data.secure_url, photoCount: firebase.firestore.FieldValue.increment(1) });
+                        count++;
+                    }
+                } catch(e) { console.error(e); }
+            }
+            Swal.close(); closeUploadModal(); loadAdminAlbums();
+            if(document.getElementById('view-photos').classList.contains('hidden') === false) loadPhotosInManager(currentAlbumId);
+            Swal.fire('Hoàn tất', `Đã thêm ${count} ảnh.`, 'success');
+        }
+    </script>
+</body>
+</html>
