@@ -209,6 +209,13 @@
             <div class="text-center md:text-left">
                 <p class="font-serif text-3xl font-bold italic mb-2">Thong Tran<span class="text-accent">.</span></p>
                 <p class="text-[9px] uppercase tracking-[0.2em] opacity-40">&copy; 2026 Thong Tran. All rights reserved.</p>
+                <!-- Day Counter -->
+                <div class="mt-4 flex items-center gap-2 justify-center md:justify-start opacity-60">
+                    <div class="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+                    <p class="text-[9px] uppercase tracking-widest font-bold">
+                        <span data-i18n="journey_text">Hành trình</span>: <span id="days-count" class="text-zinc-900 dark:text-zinc-100">0</span> <span data-i18n="days_label">Ngày</span>
+                    </p>
+                </div>
             </div>
             
             <div class="flex gap-8 text-xs font-bold uppercase tracking-widest">
@@ -238,7 +245,9 @@
                 quote_text: "Nhiếp ảnh với mình không chỉ là kỹ thuật, mà là cách để lưu giữ sự thuần khiết của ánh sáng và cảm xúc tại một thời điểm duy nhất. Mỗi bức hình là một chương trong cuốn nhật ký thị giác.",
                 link_view_collections: "Xem Bộ Sưu Tập",
                 link_view_all: "Xem kho lưu trữ",
-                photos_text: "Ảnh"
+                photos_text: "Ảnh",
+                journey_text: "Hành trình",
+                days_label: "Ngày"
             },
             en: {
                 nav_collection: "Collection",
@@ -251,7 +260,9 @@
                 quote_text: "To me, photography is more than just technique; it's a way to capture the purity of light and emotion at a singular moment. Every image is a chapter in my visual diary.",
                 link_view_collections: "View Collections",
                 link_view_all: "Browse Full Archive",
-                photos_text: "Photos"
+                photos_text: "Photos",
+                journey_text: "Journaling",
+                days_label: "Days"
             }
         };
 
@@ -284,7 +295,21 @@
             if(db) loadFeaturedAlbums();
         }
 
-        // --- 2. FIREBASE & DYNAMIC CONTENT ---
+        // --- 2. JOURNEY COUNTER ---
+        function updateDaysCounter() {
+            const startDate = new Date('2026-01-01');
+            const now = new Date();
+            const diffTime = now - startDate;
+            let days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            // Nếu chưa đến ngày 1/1/2026, hiển thị 0 để tránh số âm
+            if (days < 0) days = 0;
+            
+            const el = document.getElementById('days-count');
+            if(el) el.innerText = days;
+        }
+
+        // --- 3. FIREBASE & DYNAMIC CONTENT ---
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
 
@@ -323,10 +348,11 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- 3. INIT & EVENT LISTENERS ---
+        // --- 4. INIT & EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
             const currentLang = localStorage.getItem('lang') || 'vi';
             setLanguage(currentLang);
+            updateDaysCounter();
             
             // Dark Mode Init
             const html = document.documentElement;
