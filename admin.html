@@ -25,17 +25,17 @@
                     },
                     colors: {
                         accent: '#c5a059',
-                        darkPanel: '#111111'
+                        darkPanel: '#050505'
                     }
                 }
             }
         }
     </script>
     <style>
+        body { scroll-behavior: smooth; }
         .swal2-popup { border-radius: 0px !important; font-family: 'Inter', sans-serif !important; border: 1px solid #eee; }
         .swal2-title { font-family: 'Playfair Display', serif !important; font-style: italic; font-weight: 400 !important; }
         .swal2-confirm { background-color: #000 !important; border-radius: 0px !important; text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px !important; padding: 12px 24px !important; }
-        .swal2-input, .swal2-textarea { border-radius: 0px !important; font-size: 13px !important; border: 1px solid #eee !important; box-shadow: none !important; }
         
         .custom-loader {
             width: 20px; height: 20px; border: 2px solid #fff; border-bottom-color: transparent;
@@ -45,7 +45,7 @@
         
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #eee; }
+        ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
 
         .color-radio:checked + label { border-color: #c5a059; background-color: rgba(197, 160, 89, 0.1); color: #c5a059; }
         .type-radio:checked + label { background-color: #000; color: #fff; border-color: #000; }
@@ -55,212 +55,240 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #c5a059; margin-top: -6px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
         
         .preview-columns { columns: 2; column-gap: 1.5rem; }
-        @media (min-width: 640px) { .preview-columns { columns: 3; } }
-        .preview-item { break-inside: avoid; margin-bottom: 1.5rem; position: relative; }
+        @media (min-width: 1024px) { .preview-columns { columns: 3; } }
+        .preview-item { break-inside: avoid; margin-bottom: 1.5rem; position: relative; transition: all 0.3s ease; }
 
-        /* Draggable reference style */
-        .drag-reference { cursor: move; outline: 2px dashed #c5a059; outline-offset: -2px; }
+        .drag-reference { cursor: move; outline: 3px solid #c5a059; outline-offset: -3px; }
+        .drag-reference::after { 
+            content: 'DRAG TO POSITION'; 
+            position: absolute; top: 10px; left: 10px; 
+            background: #c5a059; color: white; padding: 4px 8px; 
+            font-size: 8px; font-weight: 800; letter-spacing: 1px;
+            pointer-events: none; z-index: 20;
+        }
+
+        .glass-sidebar { backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
     </style>
 </head>
-<body class="bg-[#fafafa] font-sans text-zinc-900 antialiased">
+<body class="bg-[#fafafa] font-sans text-zinc-900 antialiased overflow-x-hidden">
 
     <!-- Login Screen -->
-    <div id="login-screen" class="fixed inset-0 z-[100] bg-white flex items-center justify-center p-6">
+    <div id="login-screen" class="fixed inset-0 z-[200] bg-white flex items-center justify-center p-6 transition-all duration-700">
         <div class="w-full max-w-sm space-y-12 text-center">
             <div class="space-y-4">
-                <h1 class="font-serif text-4xl italic font-light">Thong Tran<span class="text-accent">.</span></h1>
-                <p class="text-[9px] uppercase tracking-[0.4em] text-zinc-400 font-bold">Secure Administrative Access</p>
+                <h1 class="font-serif text-5xl italic font-light tracking-tighter">Thong Tran<span class="text-accent">.</span></h1>
+                <p class="text-[10px] uppercase tracking-[0.5em] text-zinc-400 font-bold">Secure Administrative Access</p>
             </div>
             <div class="space-y-6 text-left">
                 <div class="space-y-2">
                     <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Identity</label>
-                    <input type="text" id="adminUser" value="admin" class="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-accent transition-colors bg-transparent text-sm">
+                    <input type="text" id="adminUser" value="admin" class="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-accent transition-colors bg-transparent text-sm font-medium">
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Credential</label>
-                    <input type="password" id="adminPass" value="admin" class="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-accent transition-colors bg-transparent text-sm">
+                    <input type="password" id="adminPass" value="admin" class="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-accent transition-colors bg-transparent text-sm font-medium">
                 </div>
             </div>
-            <button onclick="checkLogin()" class="w-full bg-zinc-900 text-white py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-accent transition-all duration-500">Unlock Portal</button>
+            <button onclick="checkLogin()" class="w-full bg-zinc-900 text-white py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all duration-500 shadow-xl">Unlock Portal</button>
         </div>
     </div>
 
     <!-- Dashboard Main -->
     <div id="dashboard" class="hidden min-h-screen flex flex-col md:flex-row">
-        <aside class="w-full md:w-72 bg-white border-r border-zinc-100 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0 z-20">
-            <div class="p-8 border-b border-zinc-50 flex justify-between items-center md:block space-y-2">
-                <span class="font-serif font-bold text-2xl italic tracking-tighter" onclick="location.reload()" class="cursor-pointer text-zinc-900">Portal<span class="text-accent">.</span></span>
-                <p class="text-[8px] uppercase tracking-widest text-zinc-400 font-bold hidden md:block">Management System</p>
-                <button onclick="logout()" class="md:hidden text-zinc-400"><i class="fas fa-power-off"></i></button>
+        
+        <!-- Refined Sidebar -->
+        <aside class="w-full md:w-80 bg-white border-r border-zinc-100 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0 z-50">
+            <div class="p-10 border-b border-zinc-50 space-y-2">
+                <span class="font-serif font-bold text-3xl italic tracking-tighter text-zinc-900 cursor-pointer" onclick="location.reload()">Portal<span class="text-accent">.</span></span>
+                <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-300 font-bold">Curator Dashboard v2.5</p>
             </div>
-            <nav class="flex-1 p-6 space-y-1 text-[10px] font-bold uppercase tracking-widest">
-                <a href="index.html" target="_blank" class="flex items-center gap-4 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all"><i class="fas fa-external-link-alt w-4"></i> Live Site</a>
-                <div class="h-px bg-zinc-50 my-4"></div>
-                <button onclick="switchView('albums')" class="w-full flex items-center gap-4 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all"><i class="fas fa-th-large w-4"></i> Albums</button>
-                <button onclick="createNewAlbum()" class="w-full flex items-center gap-4 p-4 rounded-sm bg-zinc-900 text-white hover:bg-accent transition-all shadow-lg mt-4"><i class="fas fa-plus w-4"></i> Create Album</button>
+            
+            <nav class="flex-1 p-8 space-y-2 text-[11px] font-bold uppercase tracking-widest">
+                <a href="index.html" target="_blank" class="flex items-center gap-5 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all">
+                    <i class="fas fa-external-link-alt w-4"></i> Live Portfolio
+                </a>
+                <div class="h-px bg-zinc-50 my-6"></div>
+                <button onclick="switchView('albums')" class="w-full flex items-center gap-5 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all">
+                    <i class="fas fa-th-large w-4"></i> Collections
+                </button>
+                <button onclick="createNewAlbum()" class="w-full flex items-center gap-5 p-4 rounded-sm bg-zinc-900 text-white hover:bg-accent transition-all shadow-lg mt-6">
+                    <i class="fas fa-plus w-4"></i> New Album
+                </button>
             </nav>
-            <div class="p-8 border-t border-zinc-50 hidden md:block">
-                <button onclick="logout()" class="flex items-center gap-3 text-red-400 hover:text-red-600 transition-colors text-[10px] font-bold uppercase tracking-widest"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+
+            <div class="p-10 border-t border-zinc-50">
+                <button onclick="logout()" class="flex items-center gap-4 text-zinc-300 hover:text-red-500 transition-colors text-[10px] font-bold uppercase tracking-widest">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out System
+                </button>
             </div>
         </aside>
 
-        <main class="flex-1 p-8 md:p-16 overflow-auto">
-            <div id="view-albums" class="animate-fade-in">
-                <div class="mb-12 text-center md:text-left">
-                    <h2 class="font-serif text-4xl italic mb-2">My Collections</h2>
-                    <p class="text-[10px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Manage your photography archives</p>
+        <!-- Content Area -->
+        <main class="flex-1 p-8 lg:p-20 overflow-auto bg-[#fafafa]">
+            
+            <!-- Albums Grid -->
+            <div id="view-albums" class="animate-fade-in max-w-6xl mx-auto">
+                <div class="mb-16 text-center md:text-left">
+                    <h2 class="font-serif text-5xl italic mb-3">My Archives</h2>
+                    <p class="text-[10px] uppercase tracking-[0.4em] text-zinc-300 font-bold">Manage and curate your visual stories</p>
                 </div>
-                <div id="admin-album-list" class="grid grid-cols-1 gap-6 max-w-5xl mx-auto md:mx-0"></div>
+                <div id="admin-album-list" class="grid grid-cols-1 gap-8"></div>
             </div>
-            <div id="view-photos" class="hidden animate-fade-in">
-                <div class="flex items-center gap-6 mb-12 border-b border-zinc-100 pb-8">
-                    <button onclick="switchView('albums')" class="w-12 h-12 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all group"><i class="fas fa-arrow-left text-xs"></i></button>
-                    <div>
-                        <h2 id="current-album-title" class="font-serif text-3xl italic">Album Title</h2>
-                        <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold mt-1">Image Asset Management</p>
+
+            <!-- Photos Detail -->
+            <div id="view-photos" class="hidden animate-fade-in max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-zinc-100 pb-10">
+                    <div class="flex items-center gap-8">
+                        <button onclick="switchView('albums')" class="w-14 h-14 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all group">
+                            <i class="fas fa-arrow-left text-sm"></i>
+                        </button>
+                        <div>
+                            <h2 id="current-album-title" class="font-serif text-4xl italic">Album Title</h2>
+                            <p class="text-[10px] uppercase tracking-[0.4em] text-zinc-300 font-bold mt-2">Asset Intelligence Management</p>
+                        </div>
                     </div>
                 </div>
-                <div id="admin-photo-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+                <div id="admin-photo-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8"></div>
             </div>
         </main>
     </div>
 
-    <!-- Upload Overlay -->
-    <div id="uploadModal" class="hidden fixed inset-0 bg-white/98 backdrop-blur-xl z-[150] flex items-center justify-center p-6 overflow-y-auto">
-        <div class="w-full max-w-7xl space-y-8 py-10">
-            <div class="text-center space-y-2">
-                <h3 class="font-serif text-4xl italic">Archive Assets</h3>
-                <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Select high-quality photographs</p>
+    <!-- Enhanced Upload Overlay -->
+    <div id="uploadModal" class="hidden fixed inset-0 bg-white/95 backdrop-blur-2xl z-[150] flex items-center justify-center p-6 overflow-y-auto">
+        <div class="w-full max-w-7xl space-y-10 py-10">
+            <div class="text-center space-y-3">
+                <h3 class="font-serif text-5xl italic">Archive Assets</h3>
+                <p class="text-[10px] uppercase tracking-[0.5em] text-zinc-300 font-bold italic">Synchronizing Vision with Cloud</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-                <!-- Left: Settings -->
-                <div class="lg:col-span-4 bg-zinc-50 border border-zinc-100 p-5 space-y-6 rounded-sm sticky top-0 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-zinc-200 pb-3">
-                        <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-500">Stamp Config</p>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                
+                <!-- Right: Settings Panel -->
+                <div class="lg:col-span-4 bg-zinc-50 border border-zinc-100 p-8 space-y-8 rounded-sm sticky top-0 shadow-sm glass-sidebar">
+                    <div class="flex items-center justify-between border-b border-zinc-200 pb-4">
+                        <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Identity Stamp</p>
                         <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="useWatermark" checked class="w-3.5 h-3.5 accent-zinc-900" onchange="renderPreviews()">
-                            <span class="text-[9px] font-bold uppercase tracking-widest">Active</span>
+                            <input type="checkbox" id="useWatermark" checked class="w-4 h-4 accent-zinc-900" onchange="renderPreviews()">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-zinc-900">Active</span>
                         </label>
                     </div>
 
-                    <div class="space-y-4">
-                        <!-- QR Option -->
-                        <div class="flex items-center justify-between bg-white p-2.5 border border-zinc-200 rounded-sm shadow-sm">
-                            <span class="text-[9px] font-bold uppercase tracking-widest">Link QR Code</span>
-                            <input type="checkbox" id="useQR" class="w-4 h-4 accent-zinc-900" onchange="renderPreviews()">
+                    <div class="space-y-6">
+                        <!-- QR Integration -->
+                        <div class="flex items-center justify-between bg-white p-4 border border-zinc-200 rounded-sm shadow-sm">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold uppercase tracking-widest block">Embedded QR</span>
+                                <span class="text-[8px] text-zinc-400">Linked to digital archive</span>
+                            </div>
+                            <input type="checkbox" id="useQR" class="w-5 h-5 accent-zinc-900" onchange="renderPreviews()">
                         </div>
 
                         <!-- Type -->
-                        <div class="space-y-1.5">
-                            <label class="text-[8px] uppercase font-bold text-zinc-400 tracking-wider">Stamp Type</label>
-                            <div class="grid grid-cols-2 gap-1.5">
-                                <input type="radio" name="wmType" id="type-custom" value="custom" checked class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-custom" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Custom</label>
-                                <input type="radio" name="wmType" id="type-fixed-a" value="fixed_a" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-fixed-a" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style A</label>
-                                <input type="radio" name="wmType" id="type-fixed-b" value="fixed_b" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-fixed-b" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B</label>
-                                <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-image" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Logo</label>
-                            </div>
-                        </div>
-
-                        <!-- Text Customization Panel -->
-                        <div id="text-config-panel" class="space-y-3">
-                            <div id="custom-text-inputs" class="space-y-2">
-                                <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-2 py-1.5 text-[10px] focus:outline-none focus:border-accent" oninput="renderPreviews()" placeholder="Line 1">
-                                <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-2 py-1.5 text-[10px] focus:outline-none focus:border-accent" oninput="renderPreviews()" placeholder="Line 2">
-                            </div>
-                            <div class="flex gap-1">
-                                <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-white" class="flex-1 py-1.5 border border-zinc-200 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">White</label>
-                                <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-black" class="flex-1 py-1.5 border border-zinc-200 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Black</label>
-                                <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-accent" class="flex-1 py-1.5 border border-zinc-200 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Gold</label>
-                            </div>
-                        </div>
-
-                        <!-- Logo Panel -->
-                        <div id="image-settings-box" class="hidden space-y-2">
-                            <div class="relative">
-                                <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
-                                <div id="logo-preview-btn" class="bg-white border border-zinc-200 py-1.5 px-3 text-center text-[9px] font-bold uppercase transition-all flex items-center justify-center gap-2">
-                                    <i class="fas fa-image"></i> <span>Logo File</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Position / Direction Pad -->
-                        <div class="space-y-2">
-                            <label class="text-[8px] uppercase font-bold text-zinc-400 tracking-wider">Positioning</label>
+                        <div class="space-y-3">
+                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Visual Style</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <div class="grid grid-cols-2 gap-1">
-                                    <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-tl" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">TL</label>
-                                    <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-tr" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">TR</label>
-                                    <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-bl" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">BL</label>
-                                    <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-br" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">BR</label>
-                                </div>
-                                <!-- Arrowpad for fine tuning -->
-                                <div class="grid grid-cols-3 gap-1 h-fit self-center">
-                                    <div></div>
-                                    <button onclick="moveStamp(0, -2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-up text-[8px]"></i></button>
-                                    <div></div>
-                                    <button onclick="moveStamp(-2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-left text-[8px]"></i></button>
-                                    <button onclick="resetStamp()" class="w-full bg-zinc-900 text-white border border-zinc-900 aspect-square flex items-center justify-center text-[8px] font-bold">R</button>
-                                    <button onclick="moveStamp(2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-right text-[8px]"></i></button>
-                                    <div></div>
-                                    <button onclick="moveStamp(0, 2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-down text-[8px]"></i></button>
-                                    <div></div>
+                                <input type="radio" name="wmType" id="type-custom" value="custom" checked class="hidden type-radio" onchange="toggleWMSettings()">
+                                <label for="type-custom" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Custom Text</label>
+                                <input type="radio" name="wmType" id="type-fixed-a" value="fixed_a" class="hidden type-radio" onchange="toggleWMSettings()">
+                                <label for="type-fixed-a" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style A</label>
+                                <input type="radio" name="wmType" id="type-fixed-b" value="fixed_b" class="hidden type-radio" onchange="toggleWMSettings()">
+                                <label for="type-fixed-b" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B</label>
+                                <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio" onchange="toggleWMSettings()">
+                                <label for="type-image" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Image Logo</label>
+                            </div>
+                        </div>
+
+                        <!-- Configs -->
+                        <div id="text-config-panel" class="space-y-5">
+                            <div id="custom-text-inputs" class="space-y-3">
+                                <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs focus:outline-none focus:border-accent font-medium" oninput="renderPreviews()">
+                                <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs focus:outline-none focus:border-accent font-medium" oninput="renderPreviews()">
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
+                                <label for="color-white" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">White</label>
+                                <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
+                                <label for="color-black" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Black</label>
+                                <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
+                                <label for="color-accent" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Gold</label>
+                            </div>
+                        </div>
+
+                        <div id="image-settings-box" class="hidden">
+                            <div class="relative group">
+                                <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
+                                <div id="logo-preview-btn" class="bg-white border border-zinc-200 py-3 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-3">
+                                    <i class="fas fa-image text-zinc-300"></i> <span>Import Branding Asset</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Size Slider -->
-                        <div class="space-y-1.5">
-                            <div class="flex justify-between items-center">
-                                <label class="text-[8px] uppercase font-bold text-zinc-400 tracking-widest">Scale</label>
-                                <span id="logo-size-val" class="text-[9px] font-bold text-accent">15%</span>
+                        <!-- Precise Positioning Pad -->
+                        <div class="space-y-3">
+                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Precision Placement</label>
+                            <div class="flex gap-4">
+                                <div class="grid grid-cols-2 gap-1.5 w-1/2">
+                                    <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-tl" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Top-L</label>
+                                    <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-tr" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Top-R</label>
+                                    <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-bl" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Bot-L</label>
+                                    <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-br" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Bot-R</label>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1.5 w-1/2 h-fit">
+                                    <div></div><button onclick="moveStamp(0, -2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-up text-[9px]"></i></button><div></div>
+                                    <button onclick="moveStamp(-2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-left text-[9px]"></i></button>
+                                    <button onclick="resetStamp()" class="w-full bg-zinc-900 text-white aspect-square flex items-center justify-center text-[10px] font-bold">R</button>
+                                    <button onclick="moveStamp(2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-right text-[9px]"></i></button>
+                                    <div></div><button onclick="moveStamp(0, 2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-down text-[9px]"></i></button><div></div>
+                                </div>
                             </div>
-                            <input type="range" id="logoSize" min="3" max="40" value="12" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
+                        </div>
+
+                        <!-- Scale Slider -->
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Global Scale</label>
+                                <span id="logo-size-val" class="text-[11px] font-bold text-accent">12%</span>
+                            </div>
+                            <input type="range" id="logoSize" min="3" max="45" value="12" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
                         </div>
                     </div>
                 </div>
 
-                <!-- Right: Previews -->
-                <div class="lg:col-span-8 space-y-6">
+                <!-- Left: Previews -->
+                <div class="lg:col-span-8 space-y-10">
                     <div class="relative group">
                         <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelection()">
-                        <div class="border border-dashed border-zinc-200 rounded-sm p-8 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
-                            <p class="text-[9px] uppercase tracking-[0.2em] font-bold text-zinc-400">Thả ảnh vào đây hoặc nhấn để chọn</p>
+                        <div class="border border-dashed border-zinc-200 rounded-sm p-14 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-zinc-100 mb-4 block"></i>
+                            <p class="text-[11px] uppercase tracking-[0.3em] font-bold text-zinc-400">Import Visual Masterpieces</p>
                         </div>
                     </div>
 
-                    <div id="preview-container" class="hidden space-y-3">
-                        <div class="flex justify-between items-end border-b border-zinc-100 pb-2">
-                            <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-400 italic">Mẹo: Bạn có thể kéo stamp trên ảnh đầu tiên để di chuyển</p>
-                            <button onclick="clearSelection()" class="text-[8px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Xóa hết</button>
+                    <div id="preview-container" class="hidden space-y-6">
+                        <div class="flex justify-between items-end border-b border-zinc-100 pb-4">
+                            <p class="text-[11px] uppercase tracking-widest font-bold text-zinc-900">Live Stage (<span id="preview-count">0</span> Assets)</p>
+                            <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 tracking-widest">Clear Cache</button>
                         </div>
-                        <div id="preview-grid" class="preview-columns max-h-[500px] overflow-y-auto pr-3 py-1"></div>
+                        <div id="preview-grid" class="preview-columns max-h-[700px] overflow-y-auto pr-4 py-2"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-center gap-12 pt-6">
-                <button onclick="closeUploadModal()" class="text-[9px] uppercase font-bold tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-colors">Hủy bỏ</button>
-                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-10 py-4 text-[9px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-xl">Push to Gallery</button>
+            <div class="flex justify-center gap-16 pt-12">
+                <button onclick="closeUploadModal()" class="text-[11px] uppercase font-bold tracking-[0.3em] text-zinc-300 hover:text-zinc-900 transition-colors">Abort</button>
+                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-16 py-6 text-[11px] font-bold uppercase tracking-[0.5em] hover:bg-accent transition-all shadow-2xl">
+                    Push to Production
+                </button>
             </div>
         </div>
     </div>
 
     <canvas id="wm-canvas" class="hidden"></canvas>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="config.js"></script>
@@ -270,7 +298,7 @@
         let logoImageObj = null;
         let selectedFiles = []; 
         let currentRenderId = 0; 
-        let stampOffsetX = 0; // Fine tuning offset in percentage
+        let stampOffsetX = 0; 
         let stampOffsetY = 0;
 
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
@@ -280,7 +308,7 @@
         function checkLogin() {
             if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin') {
                 localStorage.setItem('admin_auth_thongtran', 'true'); showDashboard();
-            } else { Swal.fire({ icon: 'error', title: 'Unauthorized', text: 'Sai thông tin đăng nhập.' }); }
+            } else { Swal.fire({ icon: 'error', title: 'Security Alert', text: 'Administrative credentials invalid.', confirmButtonColor: '#000' }); }
         }
         function showDashboard() {
             document.getElementById('login-screen').classList.add('hidden');
@@ -297,15 +325,9 @@
             else { vP.classList.add('hidden'); vA.classList.remove('hidden'); loadAdminAlbums(); }
         }
 
-        // --- STAMP CONTROLS ---
-        function moveStamp(x, y) {
-            stampOffsetX += x; stampOffsetY += y;
-            renderPreviews();
-        }
-        function resetStamp() {
-            stampOffsetX = 0; stampOffsetY = 0;
-            renderPreviews();
-        }
+        // --- STAMP ---
+        function moveStamp(x, y) { stampOffsetX += x; stampOffsetY += y; renderPreviews(); }
+        function resetStamp() { stampOffsetX = 0; stampOffsetY = 0; renderPreviews(); }
 
         function toggleWMSettings() {
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
@@ -328,13 +350,12 @@
             reader.readAsDataURL(file);
         }
 
-        // --- PREVIEW LOGIC ---
+        // --- PREVIEWS ---
         function handleFileSelection() {
             const input = document.getElementById('fileInput');
             if (input.files.length > 0) {
                 selectedFiles = Array.from(input.files);
                 document.getElementById('preview-container').classList.remove('hidden');
-                document.getElementById('upload-placeholder').classList.add('hidden');
                 renderPreviews();
             }
         }
@@ -342,14 +363,15 @@
             selectedFiles = [];
             document.getElementById('preview-grid').innerHTML = '';
             document.getElementById('preview-container').classList.add('hidden');
-            document.getElementById('upload-placeholder').classList.remove('hidden');
         }
 
         async function renderPreviews() {
             const grid = document.getElementById('preview-grid');
+            const countDisplay = document.getElementById('preview-count');
             const renderId = ++currentRenderId;
             grid.innerHTML = '';
             if (selectedFiles.length === 0) return;
+            countDisplay.innerText = selectedFiles.length;
 
             const useWm = document.getElementById('useWatermark').checked;
             const useQR = document.getElementById('useQR').checked;
@@ -366,10 +388,9 @@
             for (let i = 0; i < selectedFiles.length; i++) {
                 if (renderId !== currentRenderId) return;
                 const file = selectedFiles[i];
-
                 const itemWrap = document.createElement('div');
-                itemWrap.className = "preview-item bg-zinc-100 rounded-sm overflow-hidden relative border border-zinc-100 animate-fade-in";
-                if(i === 0) itemWrap.classList.add('drag-reference'); // Only the first image is the reference
+                itemWrap.className = "preview-item bg-zinc-100 rounded-sm overflow-hidden border border-zinc-200 animate-fade-in";
+                if(i === 0) itemWrap.classList.add('drag-reference'); 
                 
                 const loader = document.createElement('div');
                 loader.className = "absolute inset-0 flex items-center justify-center bg-white/40 z-10";
@@ -378,8 +399,7 @@
                 grid.appendChild(itemWrap);
 
                 try {
-                    const mockId = "PREVIEW_ID";
-                    const previewBlob = await applyWatermark(file, useWm, useQR, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub, mockId, stampOffsetX, stampOffsetY);
+                    const previewBlob = await applyWatermark(file, useWm, useQR, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub, "PREVIEW_ID", stampOffsetX, stampOffsetY);
                     if (renderId !== currentRenderId) { itemWrap.remove(); continue; }
                     
                     const url = URL.createObjectURL(previewBlob);
@@ -388,17 +408,15 @@
                     img.onload = () => { loader.remove(); };
                     itemWrap.appendChild(img);
 
-                    // SIMPLE DRAG LOGIC FOR THE FIRST IMAGE
                     if(i === 0) {
                         let isDragging = false;
-                        img.addEventListener('mousedown', (e) => { isDragging = true; });
-                        window.addEventListener('mouseup', () => { isDragging = false; });
+                        img.addEventListener('mousedown', () => isDragging = true);
+                        window.addEventListener('mouseup', () => isDragging = false);
                         img.addEventListener('mousemove', (e) => {
                             if(!isDragging) return;
                             const rect = img.getBoundingClientRect();
-                            const xMove = (e.movementX / rect.width) * 50;
-                            const yMove = (e.movementY / rect.height) * 50;
-                            stampOffsetX += xMove; stampOffsetY += yMove;
+                            stampOffsetX += (e.movementX / rect.width) * 50;
+                            stampOffsetY += (e.movementY / rect.height) * 50;
                             renderPreviews();
                         });
                     }
@@ -406,7 +424,7 @@
             }
         }
 
-        // --- CORE WATERMARK PROCESSING ---
+        // --- CORE PROCESSOR ---
         function applyWatermark(file, useWm, useQR, type, color, pos, logoImage, logoScale, textName, textSub, docId, offX, offY) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -429,20 +447,16 @@
                                 else if (pos === 'bl') { lx = padding; ly = canvas.height - logoH - padding; }
                                 else if (pos === 'tr') { lx = canvas.width - logoW - padding; ly = padding; }
                                 else { lx = padding; ly = padding; }
-                                
-                                // Apply Offsets
                                 lx += (canvas.width * (offX / 100)); ly += (canvas.height * (offY / 100));
-
-                                ctx.globalAlpha = 0.95; ctx.drawImage(logoImage, lx, ly, logoW, logoH); ctx.globalAlpha = 1.0;
+                                ctx.globalAlpha = 0.98; ctx.drawImage(logoImage, lx, ly, logoW, logoH); ctx.globalAlpha = 1.0;
                             } else {
-                                // IMPROVED BALANCED LAYOUT: | Line 1   Qr | \n | Line 2 |
-                                const baseSize = canvas.width * logoScale * 0.22; 
+                                // LAYOUT: | Line 1   Qr | \n | Line 2 | (Balanced & Centered)
+                                const baseSize = canvas.width * logoScale * 0.25; 
                                 const isStyleB = type === 'fixed_b';
                                 
-                                // High Res QR: Make it larger and clearer
                                 let qrS = 0; let qrCanvas = null;
                                 if(useQR) {
-                                    qrS = baseSize * 1.8; // PROMINENT QR: Bigger than before
+                                    qrS = baseSize * 1.6; // Large high-res QR
                                     const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
                                     qrCanvas = document.createElement('canvas');
                                     await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS, color: { dark: '#000000', light: '#ffffff' } });
@@ -453,25 +467,23 @@
                                 ctx.font = `700 ${baseSize * 0.45}px 'Inter'`;
                                 const line2W = ctx.measureText(textSub).width;
                                 
-                                const spacingX = baseSize * 0.8;
+                                const spacingX = baseSize * 0.7;
                                 const firstRowW = line1W + (useQR ? qrS + spacingX : 0);
                                 const maxW = Math.max(firstRowW, line2W);
                                 
-                                const bgPadX = baseSize * 0.8;
-                                const bgPadY = baseSize * 0.6;
+                                const bgPadX = baseSize * 0.9;
+                                const bgPadY = baseSize * 0.7;
                                 const bgW = maxW + (bgPadX * 2);
-                                const bgH = (baseSize * 2.0) + (bgPadY * 2); // Compact high-quality tag
+                                const bgH = (baseSize * 1.8) + (bgPadY * 2); 
 
                                 let rx, ry;
                                 if (pos === 'br') { rx = canvas.width - bgW - padding; ry = canvas.height - bgH - padding; }
                                 else if (pos === 'bl') { rx = padding; ry = canvas.height - bgH - padding; }
                                 else if (pos === 'tr') { rx = canvas.width - bgW - padding; ry = padding; }
                                 else { rx = padding; ry = padding; }
-
-                                // Apply Offsets
                                 rx += (canvas.width * (offX / 100)); ry += (canvas.height * (offY / 100));
 
-                                // 1. Glass Background
+                                // Glass
                                 ctx.save(); ctx.beginPath();
                                 const r = baseSize * 0.4;
                                 ctx.moveTo(rx + r, ry); ctx.arcTo(rx + bgW, ry, rx + bgW, ry + bgH, r);
@@ -479,18 +491,19 @@
                                 ctx.arcTo(rx, ry + bgH, rx, ry, r);
                                 ctx.arcTo(rx, ry, rx + bgW, ry, r); ctx.closePath();
                                 const isDark = color.toLowerCase() === '#000000';
-                                ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.38)';
-                                ctx.fill(); ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)';
+                                ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.4)';
+                                ctx.fill(); ctx.strokeStyle = isDark ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
                                 ctx.stroke(); ctx.restore();
 
-                                // 2. Drawing
+                                // Center Content Logic
                                 const cx = rx + bgPadX; const cy = ry + bgPadY;
                                 ctx.textBaseline = 'top'; ctx.textAlign = 'left';
                                 
+                                // Line 1
                                 if(isStyleB) {
                                     const tNormal = "ThongTran";
-                                    ctx.font = `700 ${baseSize}px 'Playfair Display'`;
-                                    ctx.fillStyle = color; ctx.fillText(tNormal, cx, cy);
+                                    ctx.font = `700 ${baseSize}px 'Playfair Display'`; ctx.fillStyle = color;
+                                    ctx.fillText(tNormal, cx, cy);
                                     const nW = ctx.measureText(tNormal).width;
                                     ctx.fillStyle = '#c5a059'; ctx.fillText(".", cx + nW, cy);
                                 } else {
@@ -500,16 +513,17 @@
 
                                 if(useQR && qrCanvas) {
                                     const qrx = rx + bgW - bgPadX - qrS;
-                                    ctx.globalAlpha = 0.9;
-                                    ctx.drawImage(qrCanvas, qrx, cy - (qrS * 0.05), qrS, qrS);
+                                    ctx.globalAlpha = 0.95;
+                                    ctx.drawImage(qrCanvas, qrx, cy - (qrS * 0.1), qrS, qrS);
                                     ctx.globalAlpha = 1.0;
                                 }
 
+                                // Line 2
                                 ctx.fillStyle = color; ctx.font = `700 ${baseSize * 0.45}px 'Inter'`;
                                 ctx.fillText(textSub, cx, cy + (baseSize * 1.1));
                             }
                         }
-                        canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.94);
+                        canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.95);
                     };
                     img.src = e.target.result;
                 };
@@ -517,18 +531,18 @@
             });
         }
 
-        // --- ALBUMS MGMT ---
+        // --- DASHBOARD MGMT ---
         async function loadAdminAlbums() {
             const container = document.getElementById('admin-album-list');
-            container.innerHTML = '<p class="text-center py-10 text-zinc-400">Đang tải...</p>';
+            container.innerHTML = '<p class="text-center py-20 text-zinc-300 italic">Retrieving visual database...</p>';
             try {
                 const snap = await db.collection('albums').orderBy('createdAt', 'desc').get();
-                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-center">Empty.</p>'; return; }
+                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-center py-20">No archives published.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const cover = d.coverUrl ? d.coverUrl.replace('/upload/', '/upload/w_200,h_200,c_fill/') : 'https://placehold.co/200x200?text=Empty';
-                    html += `<div class="bg-white p-5 border border-zinc-100 flex flex-col md:flex-row justify-between items-center hover:shadow-lg transition-all gap-4"><div class="flex items-center gap-6 w-full cursor-pointer group" onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')"><img src="${cover}" class="w-14 h-14 object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div><h3 class="font-serif text-xl italic group-hover:text-accent transition-colors">${d.title}</h3><p class="text-[8px] uppercase tracking-widest text-zinc-400 mt-1">${d.photoCount || 0} ITEMS</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openUpload('${doc.id}')" class="w-8 h-8 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button><button onclick="editAlbum('${doc.id}')" class="w-8 h-8 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button><button onclick="deleteAlbum('${doc.id}')" class="w-8 h-8 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button></div></div>`;
+                    html += `<div class="bg-white p-8 border border-zinc-100 flex flex-col md:flex-row justify-between items-center hover:shadow-2xl transition-all duration-500 gap-6 rounded-sm"><div class="flex items-center gap-10 w-full cursor-pointer group" onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')"><img src="${cover}" class="w-16 h-16 object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 rounded-full border border-zinc-100 shadow-lg"><div><h3 class="font-serif text-2xl italic group-hover:text-accent transition-colors">${d.title}</h3><p class="text-[9px] uppercase tracking-[0.3em] text-zinc-300 mt-2 font-bold">${d.photoCount || 0} ASSETS PUBLISHED</p></div></div><div class="flex gap-3 w-full md:w-auto justify-end"><button onclick="openUpload('${doc.id}')" class="w-12 h-12 border border-zinc-100 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[11px]"></i></button><button onclick="editAlbum('${doc.id}')" class="w-12 h-12 border border-zinc-100 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[11px]"></i></button><button onclick="deleteAlbum('${doc.id}')" class="w-12 h-12 border border-zinc-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[11px]"></i></button></div></div>`;
                 });
                 container.innerHTML = html;
             } catch (e) { console.error(e); }
@@ -536,8 +550,8 @@
 
         async function createNewAlbum() {
             const { value: form } = await Swal.fire({
-                title: 'New Album',
-                html: `<input id="swal-title" class="swal2-input !m-1" placeholder="Title"><textarea id="swal-desc" class="swal2-textarea !m-1" placeholder="Description"></textarea><div class="grid grid-cols-2 gap-1"><input id="swal-loc" class="swal2-input !m-1" placeholder="Location"><input type="date" id="swal-date" class="swal2-input !m-1"></div>`,
+                title: 'Initialize New Archive',
+                html: `<input id="swal-title" class="swal2-input !m-2" placeholder="Ex: Summer in Long Xuyen"><textarea id="swal-desc" class="swal2-textarea !m-2" placeholder="Visual narrative or description"></textarea><div class="grid grid-cols-2 gap-2"><input id="swal-loc" class="swal2-input !m-2" placeholder="Location"><input type="date" id="swal-date" class="swal2-input !m-2"></div>`,
                 focusConfirm: false, showCancelButton: true,
                 preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-loc').value, dateTaken: document.getElementById('swal-date').value })
             });
@@ -550,8 +564,8 @@
         async function editAlbum(id) {
             const doc = await db.collection('albums').doc(id).get(); const d = doc.data();
             const { value: form } = await Swal.fire({
-                title: 'Edit Album',
-                html: `<input id="swal-e-title" class="swal2-input !m-1" value="${d.title}"><textarea id="swal-e-desc" class="swal2-textarea !m-1">${d.description||''}</textarea><div class="grid grid-cols-2 gap-1"><input id="swal-e-loc" class="swal2-input !m-1" value="${d.location||''}"><input type="date" id="swal-e-date" class="swal2-input !m-1" value="${d.dateTaken||''}"></div>`,
+                title: 'Modify Archive Meta',
+                html: `<input id="swal-e-title" class="swal2-input !m-2" value="${d.title}"><textarea id="swal-e-desc" class="swal2-textarea !m-2">${d.description||''}</textarea><div class="grid grid-cols-2 gap-2"><input id="swal-e-loc" class="swal2-input !m-2" value="${d.location||''}"><input type="date" id="swal-e-date" class="swal2-input !m-2" value="${d.dateTaken||''}"></div>`,
                 focusConfirm: false, showCancelButton: true,
                 preConfirm: () => ({ title: document.getElementById('swal-e-title').value, description: document.getElementById('swal-e-desc').value, location: document.getElementById('swal-e-loc').value, dateTaken: document.getElementById('swal-e-date').value })
             });
@@ -559,7 +573,7 @@
         }
 
         async function deleteAlbum(id) {
-            const res = await Swal.fire({ title: 'Purge Album?', text: "Hành động không thể hoàn tác!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
+            const res = await Swal.fire({ title: 'Destructive Action', text: "Permanently delete this entire collection?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
             if (res.isConfirmed) { await db.collection('albums').doc(id).delete(); loadAdminAlbums(); }
         }
 
@@ -569,39 +583,39 @@
         }
         async function loadPhotosInGrid(albumId) {
             const grid = document.getElementById('admin-photo-grid');
-            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Syncing...</p>';
+            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-20">Refreshing assets...</p>';
             try {
                 const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
-                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-center py-10">Empty.</p>'; return; }
+                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-center py-20 text-zinc-300">No assets in this archive.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data(); const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
-                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Untitled'}</p></div></div>`;
+                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500 transition-colors"><i class="fas fa-trash"></i></button></div></div><div class="p-4"><p class="text-[10px] font-bold truncate uppercase tracking-widest text-zinc-800">${d.caption || 'UNTAGGED'}</p></div></div>`;
                 });
                 grid.innerHTML = html;
             } catch (e) { console.error(e); }
         }
         async function deletePhoto(id) {
-            if (confirm('Xóa ảnh này?')) {
+            if (confirm('Permanently remove this asset?')) {
                 await db.collection('photos').doc(id).delete();
                 await db.collection('albums').doc(currentAlbumId).update({ photoCount: firebase.firestore.FieldValue.increment(-1) });
                 loadPhotosInGrid(currentAlbumId);
             }
         }
 
-        // --- UPLOAD ---
+        // --- UPLOAD LOGIC ---
         function openUpload(id) { currentAlbumId = id; clearSelection(); resetStamp(); document.getElementById('uploadModal').classList.remove('hidden'); }
         function closeUploadModal() { document.getElementById('uploadModal').classList.add('hidden'); }
         function getExif(file) {
             return new Promise((resolve) => {
                 EXIF.getData(file, function() {
                     let make = EXIF.getTag(this, "Make") || ""; let model = EXIF.getTag(this, "Model") || "";
-                    let cam = (make + " " + model).trim().replace(/canon canon/i, "Canon") || "Unknown";
+                    let cam = (make + " " + model).trim().replace(/canon canon/i, "Canon") || "Visual Optic";
                     let fn = EXIF.getTag(this, "FNumber"); let ap = fn ? `f/${fn}` : "";
                     let iso = EXIF.getTag(this, "ISOSpeedRatings"); let isoS = iso ? `ISO ${iso}` : "";
-                    let exp = EXIF.getTag(this, "ExposureTime");
-                    let shut = (exp && exp.numerator) ? `${exp.numerator}/${exp.denominator}s` : (exp ? `${exp}s` : "");
-                    resolve({ camera: cam, aperture: ap, iso: isoS, shutter: shut });
+                    let shut = EXIF.getTag(this, "ExposureTime");
+                    let shutS = (shut && shut.numerator) ? `${shut.numerator}/${shut.denominator}s` : (shut ? `${shut}s` : "");
+                    resolve({ camera: cam, aperture: ap, iso: isoS, shutter: shutS });
                 });
             });
         }
@@ -621,7 +635,7 @@
             else { textName = document.getElementById('wmTextName').value; textSub = document.getElementById('wmTextSub').value; }
 
             const btn = document.getElementById('btn-upload-submit');
-            btn.disabled = true; btn.innerHTML = '<span class="custom-loader"></span> Processing...';
+            btn.disabled = true; btn.innerHTML = '<span class="custom-loader"></span> Syncing Assets...';
 
             for(let file of selectedFiles) {
                 const exif = await getExif(file);
@@ -638,9 +652,9 @@
                     }
                 } catch(e) { console.error(e); }
             }
-            btn.disabled = false; btn.innerHTML = 'Push to Gallery';
+            btn.disabled = false; btn.innerHTML = 'Push to Production';
             closeUploadModal(); loadAdminAlbums();
-            Swal.fire({ icon: 'success', title: 'Hoàn tất!', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Archive Synchronized', timer: 1500, showConfirmButton: false });
         }
     </script>
 </body>
