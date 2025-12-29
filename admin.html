@@ -144,7 +144,10 @@
                     <div class="space-y-5">
                         <!-- QR Code Option -->
                         <div class="flex items-center justify-between bg-white p-3 border border-zinc-200 rounded-sm shadow-sm">
-                            <span class="text-[10px] font-bold uppercase tracking-widest">Link QR Code</span>
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold uppercase tracking-widest block">Gắn mã QR Link</span>
+                                <span class="text-[8px] text-zinc-400">(Sẽ được nhúng chung vào stamp)</span>
+                            </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="useQR" class="sr-only peer" onchange="renderPreviews()">
                                 <div class="w-9 h-5 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-zinc-900"></div>
@@ -156,16 +159,16 @@
                             <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Stamp Type</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="radio" name="wmType" id="type-custom" value="custom" checked class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-custom" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Custom Text</label>
+                                <label for="type-custom" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Tùy chỉnh</label>
                                 
                                 <input type="radio" name="wmType" id="type-fixed-a" value="fixed_a" class="hidden type-radio" onchange="toggleWMSettings()">
                                 <label for="type-fixed-a" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style A</label>
 
                                 <input type="radio" name="wmType" id="type-fixed-b" value="fixed_b" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-fixed-b" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B</label>
+                                <label for="type-fixed-b" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B (Index)</label>
 
                                 <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-image" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Logo Image</label>
+                                <label for="type-image" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Logo Ảnh</label>
                             </div>
                         </div>
 
@@ -173,57 +176,57 @@
                         <div id="text-config-panel" class="space-y-4">
                             <div id="custom-text-inputs" class="space-y-3">
                                 <div class="space-y-1">
-                                    <label class="text-[9px] uppercase font-bold text-zinc-400">Line 1</label>
+                                    <label class="text-[9px] uppercase font-bold text-zinc-400">Dòng 1</label>
                                     <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-3 py-2 text-xs focus:outline-none focus:border-accent" oninput="renderPreviews()">
                                 </div>
                                 <div class="space-y-1">
-                                    <label class="text-[9px] uppercase font-bold text-zinc-400">Line 2</label>
+                                    <label class="text-[9px] uppercase font-bold text-zinc-400">Dòng 2</label>
                                     <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-3 py-2 text-xs focus:outline-none focus:border-accent" oninput="renderPreviews()">
                                 </div>
                             </div>
                             <div class="space-y-2">
-                                <label class="text-[9px] uppercase font-bold text-zinc-400">Text Color</label>
+                                <label class="text-[9px] uppercase font-bold text-zinc-400">Màu sắc</label>
                                 <div class="flex gap-2">
                                     <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
-                                    <label for="color-white" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">White</label>
+                                    <label for="color-white" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trắng</label>
                                     <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
-                                    <label for="color-black" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Black</label>
+                                    <label for="color-black" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Đen</label>
                                     <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
-                                    <label for="color-accent" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Gold</label>
+                                    <label for="color-accent" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Vàng</label>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Logo Upload Panel -->
                         <div id="image-settings-box" class="hidden space-y-3">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400">Upload Logo (.png)</label>
+                            <label class="text-[9px] uppercase font-bold text-zinc-400">Tải lên Logo (.png)</label>
                             <div class="relative">
                                 <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
                                 <div id="logo-preview-btn" class="bg-white border border-zinc-200 py-2 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-2">
-                                    <i class="fas fa-image"></i> <span>Select Logo</span>
+                                    <i class="fas fa-image"></i> <span>Chọn Logo</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Position Selection -->
                         <div class="space-y-2">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Position</label>
+                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Vị trí</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-tl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Top Left</label>
+                                <label for="pos-tl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trên-Trái</label>
                                 <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-tr" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Top Right</label>
+                                <label for="pos-tr" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trên-Phải</label>
                                 <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-bl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Bottom Left</label>
+                                <label for="pos-bl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Dưới-Trái</label>
                                 <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-br" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Bottom Right</label>
+                                <label for="pos-br" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Dưới-Phải</label>
                             </div>
                         </div>
 
                         <!-- Size Slider -->
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Stamp Scale</label>
+                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Kích cỡ Stamp</label>
                                 <span id="logo-size-val" class="text-[10px] font-bold text-accent">15%</span>
                             </div>
                             <input type="range" id="logoSize" min="5" max="50" value="15" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
@@ -238,15 +241,15 @@
                         <div class="border border-dashed border-zinc-200 rounded-sm p-10 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
                             <div id="upload-placeholder" class="space-y-3">
                                 <i class="fas fa-camera text-xl text-zinc-300"></i>
-                                <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400">Drag or drop images here</p>
+                                <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400">Thả ảnh vào đây hoặc nhấn để chọn</p>
                             </div>
                         </div>
                     </div>
 
                     <div id="preview-container" class="hidden space-y-4">
                         <div class="flex justify-between items-end border-b border-zinc-100 pb-2">
-                            <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Live Preview (<span id="preview-count">0</span> images)</p>
-                            <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Clear All</button>
+                            <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Xem trước kết quả (<span id="preview-count">0</span> ảnh)</p>
+                            <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Xóa tất cả</button>
                         </div>
                         <div id="preview-grid" class="preview-columns max-h-[600px] overflow-y-auto pr-4 py-2"></div>
                     </div>
@@ -254,8 +257,8 @@
             </div>
 
             <div class="flex justify-center gap-12 pt-8">
-                <button onclick="closeUploadModal()" class="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-colors">Cancel</button>
-                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-2xl">Start Upload</button>
+                <button onclick="closeUploadModal()" class="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-colors">Hủy bỏ</button>
+                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-2xl">Bắt đầu Upload</button>
             </div>
         </div>
     </div>
@@ -364,7 +367,7 @@
             if(wmType === 'fixed_a') {
                 textName = "I'm Thong Tran"; textSub = "MY FIRST LENS";
             } else if(wmType === 'fixed_b') {
-                textName = "ThongTran."; textSub = "my first lens";
+                textName = "ThongTran."; textSub = "My First Lens";
             } else {
                 textName = document.getElementById('wmTextName').value || "";
                 textSub = document.getElementById('wmTextSub').value || "";
@@ -412,6 +415,7 @@
 
                         if (useWm) {
                             if (type === 'image' && logoImage) {
+                                // Draw Logo Image
                                 const logoW = canvas.width * logoScale;
                                 const logoH = (logoImage.height / logoImage.width) * logoW;
                                 let logoX, logoY;
@@ -419,9 +423,23 @@
                                 else if (pos === 'bl') { logoX = padding; logoY = canvas.height - logoH - padding; }
                                 else if (pos === 'tr') { logoX = canvas.width - logoW - padding; logoY = padding; }
                                 else { logoX = padding; logoY = padding; }
+
+                                // If QR active, embed in box? Prompt says embed QR with stamp.
+                                // Let's create a glass box even for logo image if QR is active.
+                                if(useQR) {
+                                    const qrS = canvas.width * 0.08;
+                                    const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
+                                    const qrCanvas = document.createElement('canvas');
+                                    await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS });
+                                    
+                                    const combinedW = Math.max(logoW, qrS) + (padding*0.5);
+                                    const combinedH = logoH + qrS + (padding*0.8);
+                                    
+                                    // Simplification: We'll mainly focus text embedding for QR as requested
+                                }
                                 ctx.globalAlpha = 0.95; ctx.drawImage(logoImage, logoX, logoY, logoW, logoH); ctx.globalAlpha = 1.0;
                             } else {
-                                // Draw Text Stamp
+                                // Draw Text Stamp (Can contain QR)
                                 const baseSize = canvas.width * logoScale * 0.3; 
                                 const isStyleB = type === 'fixed_b';
                                 
@@ -431,20 +449,34 @@
                                 ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
                                 const line2W = ctx.measureText(textSub).width;
                                 
-                                const maxW = Math.max(line1W, line2W);
+                                // QR Measure
+                                let qrS = 0;
+                                let qrCanvas = null;
+                                if(useQR) {
+                                    qrS = canvas.width * 0.08;
+                                    const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
+                                    qrCanvas = document.createElement('canvas');
+                                    await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS });
+                                }
+
+                                const maxW = Math.max(line1W, line2W, qrS);
                                 const bgPadX = baseSize * 0.8;
                                 const bgPadY = baseSize * 0.6;
                                 const bgW = maxW + (bgPadX * 2);
-                                const bgH = (baseSize * 2.2) + (bgPadY * 2);
+                                
+                                // Calculate bgHeight based on components
+                                let bgH = (baseSize * 2.2) + (bgPadY * 2);
+                                if(useQR) bgH += qrS + (baseSize * 0.5);
 
-                                let stampX, stampY, rectX, rectY, align;
-                                if (pos === 'br') { align = 'right'; stampX = canvas.width - padding; stampY = canvas.height - padding; rectX = canvas.width - bgW - (padding/2); rectY = canvas.height - bgH - (padding/2); }
-                                else if (pos === 'bl') { align = 'left'; stampX = padding; stampY = canvas.height - padding; rectX = padding/2; rectY = canvas.height - bgH - (padding/2); }
-                                else if (pos === 'tr') { align = 'right'; stampX = canvas.width - padding; stampY = padding + bgH - (bgPadY*1.5); rectX = canvas.width - bgW - (padding/2); rectY = padding/2; }
-                                else { align = 'left'; stampX = padding; stampY = padding + bgH - (bgPadY*1.5); rectX = padding/2; rectY = padding/2; }
+                                let rectX, rectY, stampX, stampY;
+                                // Simplified positioning for all corners
+                                if (pos === 'br') { rectX = canvas.width - bgW - padding; rectY = canvas.height - bgH - padding; }
+                                else if (pos === 'bl') { rectX = padding; rectY = canvas.height - bgH - padding; }
+                                else if (pos === 'tr') { rectX = canvas.width - bgW - padding; rectY = padding; }
+                                else { rectX = padding; rectY = padding; }
 
-                                // Style B centering logic
-                                if(isStyleB) align = 'center';
+                                stampX = rectX + (bgW / 2);
+                                stampY = rectY + bgPadY + (baseSize * 0.85);
 
                                 // Glass Background
                                 ctx.save();
@@ -463,54 +495,58 @@
                                 ctx.stroke();
                                 ctx.restore();
 
-                                // Drawing Text
-                                ctx.textBaseline = 'bottom';
-                                ctx.fillStyle = color;
+                                // Drawing Text (Always centered within the stamp box now)
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
                                 
+                                // Line 1
                                 if(isStyleB) {
-                                    // Centered logic for Style B
-                                    const centerX = rectX + (bgW / 2);
-                                    ctx.textAlign = 'center';
-                                    
-                                    // Line 1: ThongTran. (Dot is gold)
-                                    ctx.font = `700 ${baseSize}px 'Playfair Display'`;
                                     const textWithoutDot = "ThongTran";
+                                    ctx.font = `700 ${baseSize}px 'Playfair Display'`;
                                     const fullW = ctx.measureText("ThongTran.").width;
-                                    const startX = centerX - (fullW / 2);
+                                    const startX = stampX - (fullW / 2);
                                     
                                     ctx.textAlign = 'left';
-                                    ctx.fillText(textWithoutDot, startX, stampY - (baseSize * 0.95));
+                                    ctx.fillStyle = color;
+                                    ctx.fillText(textWithoutDot, startX, stampY);
                                     const nameW = ctx.measureText(textWithoutDot).width;
                                     ctx.fillStyle = '#c5a059'; // Gold dot
-                                    ctx.fillText(".", startX + nameW, stampY - (baseSize * 0.95));
-                                    
-                                    // Line 2: my first lens (centered)
-                                    ctx.fillStyle = color;
-                                    ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
-                                    ctx.textAlign = 'center';
-                                    ctx.fillText(textSub, centerX, stampY);
+                                    ctx.fillText(".", startX + nameW, stampY);
                                 } else {
-                                    ctx.textAlign = align;
+                                    ctx.fillStyle = color;
                                     ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
-                                    ctx.fillText(textName, stampX, stampY - (baseSize * 0.95));
-                                    ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
-                                    ctx.fillText(textSub, stampX, stampY);
+                                    ctx.fillText(textName, stampX, stampY);
+                                }
+
+                                // Line 2
+                                ctx.textAlign = 'center';
+                                ctx.fillStyle = color;
+                                ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
+                                const line2Y = stampY + (baseSize * 0.9);
+                                ctx.fillText(textSub, stampX, line2Y);
+
+                                // QR Integrated inside box
+                                if(useQR && qrCanvas) {
+                                    const qrY = line2Y + (baseSize * 0.8);
+                                    ctx.globalAlpha = 0.85;
+                                    ctx.drawImage(qrCanvas, stampX - (qrS / 2), qrY, qrS, qrS);
+                                    ctx.globalAlpha = 1.0;
                                 }
                             }
-                        }
-
-                        if (useQR) {
+                        } else if (useQR) {
+                            // Only QR, separate corner logic
                             const qrS = canvas.width * 0.08;
                             const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
                             const qrCanvas = document.createElement('canvas');
                             await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS });
                             let qrX, qrY;
-                            if (pos === 'br') { qrX = padding; qrY = canvas.height - qrS - padding; }
-                            else if (pos === 'bl') { qrX = canvas.width - qrS - padding; qrY = canvas.height - qrS - padding; }
-                            else if (pos === 'tr') { qrX = padding; qrY = padding; }
-                            else { qrX = canvas.width - qrS - padding; qrY = padding; }
+                            if (pos === 'br') { qrX = canvas.width - qrS - padding; qrY = canvas.height - qrS - padding; }
+                            else if (pos === 'bl') { qrX = padding; qrY = canvas.height - qrS - padding; }
+                            else if (pos === 'tr') { qrX = canvas.width - qrS - padding; qrY = padding; }
+                            else { qrX = padding; qrY = padding; }
                             ctx.save(); ctx.globalAlpha = 0.85; ctx.drawImage(qrCanvas, qrX, qrY, qrS, qrS); ctx.restore();
                         }
+
                         canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.92);
                     };
                     img.src = e.target.result;
@@ -622,7 +658,7 @@
             
             let textName, textSub;
             if(wmType === 'fixed_a') { textName = "I'm Thong Tran"; textSub = "MY FIRST LENS"; }
-            else if(wmType === 'fixed_b') { textName = "ThongTran."; textSub = "my first lens"; }
+            else if(wmType === 'fixed_b') { textName = "ThongTran."; textSub = "My First Lens"; }
             else { textName = document.getElementById('wmTextName').value; textSub = document.getElementById('wmTextSub').value; }
 
             const btn = document.getElementById('btn-upload-submit');
