@@ -37,14 +37,8 @@
         .swal2-input, .swal2-textarea { border-radius: 0px !important; font-size: 13px !important; border: 1px solid #eee !important; box-shadow: none !important; }
         
         .custom-loader {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #fff;
-            border-bottom-color: transparent;
-            border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
+            width: 20px; height: 20px; border: 2px solid #fff; border-bottom-color: transparent;
+            border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite;
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -58,7 +52,9 @@
         input[type=range]::-webkit-slider-runnable-track { background: #e5e7eb; height: 4px; border-radius: 2px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #c5a059; margin-top: -6px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
         
-        #preview-grid img { object-fit: cover; width: 100%; height: 100%; display: block; }
+        .preview-columns { columns: 2; column-gap: 1.5rem; }
+        @media (min-width: 640px) { .preview-columns { columns: 3; } }
+        .preview-item { break-inside: avoid; margin-bottom: 1.5rem; }
     </style>
 </head>
 <body class="bg-[#fafafa] font-sans text-zinc-900 antialiased">
@@ -70,7 +66,6 @@
                 <h1 class="font-serif text-4xl italic font-light">Thong Tran<span class="text-accent">.</span></h1>
                 <p class="text-[9px] uppercase tracking-[0.4em] text-zinc-400 font-bold">Secure Administrative Access</p>
             </div>
-            
             <div class="space-y-6 text-left">
                 <div class="space-y-2">
                     <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Identity</label>
@@ -81,45 +76,29 @@
                     <input type="password" id="adminPass" value="admin" class="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-accent transition-colors bg-transparent text-sm">
                 </div>
             </div>
-
-            <button onclick="checkLogin()" class="w-full bg-zinc-900 text-white py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-accent transition-all duration-500">
-                Unlock Portal
-            </button>
+            <button onclick="checkLogin()" class="w-full bg-zinc-900 text-white py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-accent transition-all duration-500">Unlock Portal</button>
         </div>
     </div>
 
     <!-- Dashboard Main -->
     <div id="dashboard" class="hidden min-h-screen flex flex-col md:flex-row">
-        
-        <!-- Sidebar Navigation -->
         <aside class="w-full md:w-72 bg-white border-r border-zinc-100 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0 z-20">
             <div class="p-8 border-b border-zinc-50 flex justify-between items-center md:block space-y-2">
                 <span class="font-serif font-bold text-2xl italic tracking-tighter">Portal<span class="text-accent">.</span></span>
                 <p class="text-[8px] uppercase tracking-widest text-zinc-400 font-bold hidden md:block">Management System</p>
                 <button onclick="logout()" class="md:hidden text-zinc-400"><i class="fas fa-power-off"></i></button>
             </div>
-            
             <nav class="flex-1 p-6 space-y-1 text-[10px] font-bold uppercase tracking-widest">
-                <a href="index.html" target="_blank" class="flex items-center gap-4 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all">
-                    <i class="fas fa-external-link-alt w-4"></i> Live Site
-                </a>
+                <a href="index.html" target="_blank" class="flex items-center gap-4 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all"><i class="fas fa-external-link-alt w-4"></i> Live Site</a>
                 <div class="h-px bg-zinc-50 my-4"></div>
-                <button onclick="switchView('albums')" class="w-full flex items-center gap-4 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all">
-                    <i class="fas fa-th-large w-4"></i> Albums
-                </button>
-                <button onclick="createNewAlbum()" class="w-full flex items-center gap-4 p-4 rounded-sm bg-zinc-900 text-white hover:bg-accent transition-all shadow-lg mt-4">
-                    <i class="fas fa-plus w-4"></i> Create Album
-                </button>
+                <button onclick="switchView('albums')" class="w-full flex items-center gap-4 p-4 rounded-sm hover:bg-zinc-50 text-zinc-400 hover:text-accent transition-all"><i class="fas fa-th-large w-4"></i> Albums</button>
+                <button onclick="createNewAlbum()" class="w-full flex items-center gap-4 p-4 rounded-sm bg-zinc-900 text-white hover:bg-accent transition-all shadow-lg mt-4"><i class="fas fa-plus w-4"></i> Create Album</button>
             </nav>
-
             <div class="p-8 border-t border-zinc-50 hidden md:block">
-                <button onclick="logout()" class="flex items-center gap-3 text-red-400 hover:text-red-600 transition-colors text-[10px] font-bold uppercase tracking-widest">
-                    <i class="fas fa-sign-out-alt"></i> Sign Out
-                </button>
+                <button onclick="logout()" class="flex items-center gap-3 text-red-400 hover:text-red-600 transition-colors text-[10px] font-bold uppercase tracking-widest"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
             </div>
         </aside>
 
-        <!-- Content Area -->
         <main class="flex-1 p-8 md:p-16 overflow-auto">
             <div id="view-albums" class="animate-fade-in">
                 <div class="mb-12 text-center md:text-left">
@@ -128,12 +107,9 @@
                 </div>
                 <div id="admin-album-list" class="grid grid-cols-1 gap-6 max-w-5xl mx-auto md:mx-0"></div>
             </div>
-
             <div id="view-photos" class="hidden animate-fade-in">
                 <div class="flex items-center gap-6 mb-12 border-b border-zinc-100 pb-8">
-                    <button onclick="switchView('albums')" class="w-12 h-12 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all group">
-                        <i class="fas fa-arrow-left text-xs"></i>
-                    </button>
+                    <button onclick="switchView('albums')" class="w-12 h-12 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all group"><i class="fas fa-arrow-left text-xs"></i></button>
                     <div>
                         <h2 id="current-album-title" class="font-serif text-3xl italic">Album Title</h2>
                         <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold mt-1">Image Asset Management</p>
@@ -146,7 +122,7 @@
 
     <!-- Upload Overlay -->
     <div id="uploadModal" class="hidden fixed inset-0 bg-white/98 backdrop-blur-xl z-[150] flex items-center justify-center p-6 overflow-y-auto">
-        <div class="w-full max-w-6xl space-y-8 py-10">
+        <div class="w-full max-w-7xl space-y-8 py-10">
             <div class="text-center space-y-2">
                 <h3 class="font-serif text-4xl italic">Archive Assets</h3>
                 <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Select high-quality photographs</p>
@@ -164,34 +140,28 @@
                     </div>
 
                     <div class="space-y-6">
-                        <!-- Type Selection -->
                         <div class="space-y-3">
                             <label class="text-[9px] uppercase font-bold text-zinc-400">Loại Watermark</label>
                             <div class="flex border border-zinc-200 rounded-sm overflow-hidden bg-white">
                                 <input type="radio" name="wmType" id="type-text" value="text" checked class="hidden type-radio" onchange="toggleWMSettings()">
                                 <label for="type-text" class="flex-1 py-3 text-center text-[10px] font-bold uppercase cursor-pointer transition-all border-r border-zinc-200">Chữ ký</label>
-                                
                                 <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio" onchange="toggleWMSettings()">
                                 <label for="type-image" class="flex-1 py-3 text-center text-[10px] font-bold uppercase cursor-pointer transition-all">Logo Ảnh</label>
                             </div>
                         </div>
 
-                        <!-- Text Color Selection -->
                         <div id="text-settings-box" class="space-y-3">
                             <label class="text-[9px] uppercase font-bold text-zinc-400">Màu sắc Chữ</label>
                             <div class="flex gap-2">
                                 <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
                                 <label for="color-white" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trắng</label>
-                                
                                 <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
                                 <label for="color-black" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Đen</label>
-                                
                                 <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
                                 <label for="color-accent" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Vàng</label>
                             </div>
                         </div>
 
-                        <!-- Logo Upload -->
                         <div id="image-settings-box" class="hidden space-y-3">
                             <label class="text-[9px] uppercase font-bold text-zinc-400">Tải lên Logo (.png)</label>
                             <div class="relative">
@@ -202,10 +172,9 @@
                             </div>
                         </div>
 
-                        <!-- Shared Size Slider -->
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Kích thước Watermark</label>
+                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Kích thước</label>
                                 <span id="logo-size-val" class="text-[10px] font-bold text-accent">15%</span>
                             </div>
                             <input type="range" id="logoSize" min="5" max="50" value="15" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
@@ -215,7 +184,6 @@
 
                 <!-- Right: Previews -->
                 <div class="lg:col-span-8 space-y-8">
-                    <!-- Dropzone -->
                     <div class="relative group">
                         <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelection()">
                         <div class="border border-dashed border-zinc-200 rounded-sm p-10 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
@@ -226,13 +194,12 @@
                         </div>
                     </div>
 
-                    <!-- Live Preview Grid -->
                     <div id="preview-container" class="hidden space-y-4">
                         <div class="flex justify-between items-end border-b border-zinc-100 pb-2">
                             <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Xem trước kết quả (<span id="preview-count">0</span> ảnh)</p>
                             <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Xóa tất cả</button>
                         </div>
-                        <div id="preview-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-6 max-h-[500px] overflow-y-auto pr-2 py-2">
+                        <div id="preview-grid" class="preview-columns max-h-[600px] overflow-y-auto pr-4 py-2">
                             <!-- Previews will appear here -->
                         </div>
                     </div>
@@ -241,17 +208,13 @@
 
             <div class="flex justify-center gap-12 pt-8">
                 <button onclick="closeUploadModal()" class="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-colors">Hủy bỏ</button>
-                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-2xl">
-                    Bắt đầu Upload
-                </button>
+                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-2xl">Bắt đầu Upload</button>
             </div>
         </div>
     </div>
 
-    <!-- Hidden Canvas (For actual final processing if needed, but we use local canvases) -->
     <canvas id="wm-canvas" class="hidden"></canvas>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="config.js"></script>
@@ -260,7 +223,7 @@
         let currentAlbumId = null;
         let logoImageObj = null;
         let selectedFiles = []; 
-        let currentRenderId = 0; // Để tránh xung đột khi render liên tục
+        let currentRenderId = 0; 
 
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
@@ -293,11 +256,7 @@
             document.getElementById('image-settings-box').classList.toggle('hidden', wmType !== 'image');
             renderPreviews();
         }
-
-        function updateSizeDisplay(val) {
-            document.getElementById('logo-size-val').innerText = val + '%';
-        }
-
+        function updateSizeDisplay(val) { document.getElementById('logo-size-val').innerText = val + '%'; }
         function previewLogo() {
             const file = document.getElementById('logoInput').files[0];
             if (!file) return;
@@ -324,7 +283,6 @@
                 renderPreviews();
             }
         }
-
         function clearSelection() {
             selectedFiles = [];
             document.getElementById('fileInput').value = '';
@@ -336,10 +294,7 @@
         async function renderPreviews() {
             const grid = document.getElementById('preview-grid');
             const countDisplay = document.getElementById('preview-count');
-            
-            // Tăng renderId để các luồng render cũ tự dừng lại
             const renderId = ++currentRenderId;
-            
             grid.innerHTML = '';
             if (selectedFiles.length === 0) return;
             countDisplay.innerText = selectedFiles.length;
@@ -350,43 +305,30 @@
             const logoScale = document.getElementById('logoSize').value / 100;
 
             for (let file of selectedFiles) {
-                // Nếu renderId đã thay đổi, dừng luồng render này lại
                 if (renderId !== currentRenderId) return;
 
                 const itemWrap = document.createElement('div');
-                itemWrap.className = "aspect-square bg-zinc-100 rounded-sm overflow-hidden relative border border-zinc-100 shadow-sm transition-transform hover:scale-[1.02]";
-                
+                itemWrap.className = "preview-item bg-zinc-50 rounded-sm overflow-hidden relative border border-zinc-100 shadow-sm animate-fade-in";
                 const loader = document.createElement('div');
-                loader.className = "absolute inset-0 flex items-center justify-center bg-white/50 z-10";
+                loader.className = "absolute inset-0 flex items-center justify-center bg-white/40 z-10";
                 loader.innerHTML = '<span class="custom-loader !border-zinc-300"></span>';
                 itemWrap.appendChild(loader);
                 grid.appendChild(itemWrap);
 
                 try {
-                    // Xử lý Watermark bằng canvas cục bộ để tránh xung đột
                     let previewBlob = file;
                     if (useWm) {
-                        if (wmType === 'image' && !logoImageObj) {
-                            // Bỏ qua nếu chưa chọn logo ảnh
-                        } else {
+                        if (wmType === 'image' && !logoImageObj) { /* Skip */ } 
+                        else {
                             previewBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
                         }
                     }
-
-                    // Nếu renderId đã thay đổi sau khi await, xóa phần tử này
-                    if (renderId !== currentRenderId) {
-                        itemWrap.remove();
-                        continue;
-                    }
-
+                    if (renderId !== currentRenderId) { itemWrap.remove(); continue; }
                     const url = URL.createObjectURL(previewBlob);
                     const img = document.createElement('img');
                     img.src = url;
-                    img.className = "w-full h-full object-cover";
-                    img.onload = () => {
-                        loader.remove();
-                        // Chúng ta không revokeObjectURL ngay lập tức để browser có thể render lại khi scroll
-                    };
+                    img.className = "w-full h-auto block";
+                    img.onload = () => { loader.remove(); };
                     itemWrap.appendChild(img);
                 } catch (err) {
                     console.error("Preview error:", err);
@@ -395,13 +337,101 @@
             }
         }
 
-        // --- ALBUMS LOGIC ---
+        // --- CORE WATERMARK PROCESSING ---
+        function applyWatermark(file, type, color, logoImage, logoScale) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+
+                        const padding = canvas.width * 0.04;
+
+                        if (type === 'text') {
+                            const baseSize = canvas.width * logoScale * 0.3; 
+                            
+                            // 1. Đo kích thước text để vẽ khung nền
+                            ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
+                            const line1Width = ctx.measureText("I'm Thong Tran").width;
+                            ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
+                            const line2Width = ctx.measureText("MY FIRST LENS").width;
+                            
+                            const maxLineWidth = Math.max(line1Width, line2Width);
+                            const bgPaddingX = baseSize * 0.8;
+                            const bgPaddingY = baseSize * 0.6;
+                            const bgWidth = maxLineWidth + (bgPaddingX * 2);
+                            const bgHeight = (baseSize * 2.2) + (bgPaddingY * 2);
+                            
+                            const bgX = canvas.width - bgWidth - padding + bgPaddingX;
+                            const bgY = canvas.height - bgHeight - padding + bgPaddingY;
+
+                            // 2. Vẽ Rounded Glass Background
+                            ctx.save();
+                            ctx.beginPath();
+                            const radius = baseSize * 0.5;
+                            const rectX = canvas.width - bgWidth - (padding / 2);
+                            const rectY = canvas.height - bgHeight - (padding / 2);
+                            
+                            ctx.moveTo(rectX + radius, rectY);
+                            ctx.arcTo(rectX + bgWidth, rectY, rectX + bgWidth, rectY + bgHeight, radius);
+                            ctx.arcTo(rectX + bgWidth, rectY + bgHeight, rectX, rectY + bgHeight, radius);
+                            ctx.arcTo(rectX, rectY + bgHeight, rectX, rectY, radius);
+                            ctx.arcTo(rectX, rectY, rectX + bgWidth, rectY, radius);
+                            ctx.closePath();
+                            
+                            // Hiệu ứng Glass mờ
+                            const isDarkText = color.toLowerCase() === '#000000';
+                            ctx.fillStyle = isDarkText ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.35)';
+                            ctx.fill();
+                            // Stroke nhẹ cho cảm giác kính
+                            ctx.strokeStyle = isDarkText ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                            ctx.restore();
+
+                            // 3. Vẽ Text
+                            ctx.textAlign = 'right';
+                            ctx.textBaseline = 'bottom';
+                            ctx.fillStyle = color;
+                            
+                            ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
+                            ctx.fillText("I'm Thong Tran", canvas.width - padding, canvas.height - padding - (baseSize * 0.95));
+                            
+                            ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
+                            ctx.fillText("MY FIRST LENS", canvas.width - padding, canvas.height - padding);
+                        } 
+                        else if (type === 'image' && logoImage) {
+                            const logoW = canvas.width * logoScale;
+                            const logoH = (logoImage.height / logoImage.width) * logoW;
+                            ctx.globalAlpha = 0.95;
+                            ctx.drawImage(logoImage, canvas.width - logoW - padding, canvas.height - logoH - padding, logoW, logoH);
+                            ctx.globalAlpha = 1.0;
+                        }
+
+                        canvas.toBlob((blob) => {
+                            if (blob) resolve(blob); else reject(new Error("Canvas failure"));
+                        }, 'image/jpeg', 0.92);
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // --- ALBUMS MGMT ---
         async function loadAdminAlbums() {
             const container = document.getElementById('admin-album-list');
-            container.innerHTML = '<div class="text-zinc-400 text-[10px] animate-pulse text-center py-10">Đang tải kho lưu trữ...</div>';
+            container.innerHTML = '<div class="text-zinc-400 text-[10px] animate-pulse text-center py-10">Đang tải...</div>';
             try {
                 const snap = await db.collection('albums').orderBy('createdAt', 'desc').get();
-                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400 text-center py-10">Chưa có album nào.</p>'; return; }
+                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400 text-center py-10">Album trống.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
@@ -419,10 +449,10 @@
                             </div>
                         </div>
                         <div class="flex gap-2 w-full md:w-auto justify-end">
-                            <button onclick="openUpload('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all" title="Upload"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button>
-                            <button onclick="editAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all" title="Sửa"><i class="fas fa-pen text-[10px]"></i></button>
-                            <button onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all" title="Quản lý ảnh"><i class="fas fa-images text-[10px]"></i></button>
-                            <button onclick="deleteAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all" title="Xóa"><i class="fas fa-trash text-[10px]"></i></button>
+                            <button onclick="openUpload('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button>
+                            <button onclick="editAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
+                            <button onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-images text-[10px]"></i></button>
+                            <button onclick="deleteAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
                         </div>
                     </div>`;
                 });
@@ -433,8 +463,8 @@
         async function createNewAlbum() {
             const { value: form } = await Swal.fire({
                 title: 'Album mới',
-                html: `<div class="text-left space-y-4 p-2"><input id="swal-title" class="swal2-input !m-0 w-full" placeholder="Tiêu đề Album"><textarea id="swal-desc" class="swal2-textarea !m-0 w-full" placeholder="Mô tả"></textarea><div class="grid grid-cols-2 gap-2"><input id="swal-loc" class="swal2-input !m-0 w-full" placeholder="Địa điểm"><input type="date" id="swal-date" class="swal2-input !m-0 w-full"></div></div>`,
-                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Khởi tạo',
+                html: `<div class="text-left space-y-4 p-2"><input id="swal-title" class="swal2-input !m-0 w-full" placeholder="Tiêu đề"><textarea id="swal-desc" class="swal2-textarea !m-0 w-full" placeholder="Mô tả"></textarea><div class="grid grid-cols-2 gap-2"><input id="swal-loc" class="swal2-input !m-0 w-full" placeholder="Địa điểm"><input type="date" id="swal-date" class="swal2-input !m-0 w-full"></div></div>`,
+                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Tạo',
                 preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-loc').value, dateTaken: document.getElementById('swal-date').value })
             });
             if (form && form.title) {
@@ -456,18 +486,17 @@
         }
 
         async function deleteAlbum(id) {
-            const res = await Swal.fire({ title: 'Xóa Album?', text: "Hành động này không thể hoàn tác!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
+            const res = await Swal.fire({ title: 'Xóa Album?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
             if (res.isConfirmed) { await db.collection('albums').doc(id).delete(); loadAdminAlbums(); }
         }
 
-        // --- PHOTOS LOGIC ---
         async function openPhotoManager(id, title) {
             currentAlbumId = id; document.getElementById('current-album-title').innerText = title;
             switchView('photos'); loadPhotosInGrid(id);
         }
         async function loadPhotosInGrid(albumId) {
             const grid = document.getElementById('admin-photo-grid');
-            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Đang tải tài nguyên...</p>';
+            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Đang tải...</p>';
             try {
                 const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
                 if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 text-center py-10">Album trống.</p>'; return; }
@@ -475,7 +504,7 @@
                 snap.forEach(doc => {
                     const d = doc.data();
                     const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
-                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Chưa đặt tên'}</p></div></div>`;
+                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Untitled'}</p></div></div>`;
                 });
                 grid.innerHTML = html;
             } catch (e) { console.error(e); }
@@ -493,72 +522,9 @@
             if (caption !== undefined) { await db.collection('photos').doc(id).update({ caption }); loadPhotosInGrid(currentAlbumId); }
         }
 
-        // --- CORE WATERMARK PROCESSING (REFACTORED FOR NO CONFLICTS) ---
-        function applyWatermark(file, type, color, logoImage, logoScale) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        // Tạo canvas nội bộ để tránh xung đột
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        ctx.drawImage(img, 0, 0);
-
-                        const padding = canvas.width * 0.04;
-
-                        if (type === 'text') {
-                            const baseSize = canvas.width * logoScale * 0.3; 
-                            ctx.textAlign = 'right';
-                            ctx.textBaseline = 'bottom';
-                            ctx.fillStyle = color;
-                            
-                            // Shadow for clarity
-                            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-                            ctx.shadowBlur = baseSize * 0.3;
-                            ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
-
-                            // Line 1: I'm Thong Tran
-                            ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
-                            ctx.fillText("I'm Thong Tran", canvas.width - padding, canvas.height - padding - (baseSize * 1.1));
-                            
-                            // Line 2: My First Lens
-                            ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
-                            ctx.font = `700 ${baseSize * 0.45}px 'Inter'`;
-                            ctx.fillText("MY FIRST LENS", canvas.width - padding, canvas.height - padding);
-                        } 
-                        else if (type === 'image' && logoImage) {
-                            const logoW = canvas.width * logoScale;
-                            const logoH = (logoImage.height / logoImage.width) * logoW;
-                            
-                            ctx.globalAlpha = 0.9;
-                            ctx.drawImage(logoImage, canvas.width - logoW - padding, canvas.height - logoH - padding, logoW, logoH);
-                            ctx.globalAlpha = 1.0;
-                        }
-
-                        canvas.toBlob((blob) => {
-                            if (blob) resolve(blob);
-                            else reject(new Error("Canvas to Blob failed"));
-                        }, 'image/jpeg', 0.90);
-                    };
-                    img.onerror = reject;
-                    img.src = e.target.result;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // --- UPLOAD LOGIC ---
-        function openUpload(id) {
-            currentAlbumId = id;
-            clearSelection();
-            document.getElementById('uploadModal').classList.remove('hidden');
-        }
+        // --- UPLOAD ---
+        function openUpload(id) { currentAlbumId = id; clearSelection(); document.getElementById('uploadModal').classList.remove('hidden'); }
         function closeUploadModal() { document.getElementById('uploadModal').classList.add('hidden'); }
-
         function getExif(file) {
             return new Promise((resolve) => {
                 EXIF.getData(file, function() {
@@ -575,15 +541,11 @@
 
         async function startUpload() {
             if(!selectedFiles.length) return;
-            
             const useWm = document.getElementById('useWatermark').checked;
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
             const wmColor = document.querySelector('input[name="wmColor"]:checked').value;
             const logoScale = document.getElementById('logoSize').value / 100;
-
-            if (useWm && wmType === 'image' && !logoImageObj) {
-                Swal.fire('Lỗi', 'Vui lòng tải lên file Logo trước!', 'error'); return;
-            }
+            if (useWm && wmType === 'image' && !logoImageObj) { Swal.fire('Lỗi', 'Vui lòng chọn logo trước!', 'error'); return; }
 
             const btn = document.getElementById('btn-upload-submit');
             btn.disabled = true; btn.innerHTML = '<span class="custom-loader"></span> Processing...';
@@ -592,37 +554,20 @@
                 const exif = await getExif(file);
                 let finalBlob = file;
                 try {
-                    if(useWm) {
-                        finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
-                    }
-
-                    const fd = new FormData(); 
-                    fd.append('file', finalBlob); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
-                    
+                    if(useWm) finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
+                    const fd = new FormData(); fd.append('file', finalBlob); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
                     const res = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.cloudinary.cloudName}/image/upload`, { method: 'POST', body: fd });
                     const data = await res.json();
                     if(data.secure_url) {
-                        await db.collection('photos').add({ 
-                            albumId: currentAlbumId, 
-                            url: data.secure_url, 
-                            likes: 0, 
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(), 
-                            exif, 
-                            caption: '' 
-                        });
-                        await db.collection('albums').doc(currentAlbumId).update({ 
-                            coverUrl: data.secure_url, 
-                            photoCount: firebase.firestore.FieldValue.increment(1) 
-                        });
+                        await db.collection('photos').add({ albumId: currentAlbumId, url: data.secure_url, likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp(), exif, caption: '' });
+                        await db.collection('albums').doc(currentAlbumId).update({ coverUrl: data.secure_url, photoCount: firebase.firestore.FieldValue.increment(1) });
                     }
-                } catch(e) { 
-                    console.error("Upload failed for a file:", e);
-                }
+                } catch(e) { console.error(e); }
             }
             btn.disabled = false; btn.innerHTML = 'Bắt đầu Upload';
             closeUploadModal(); loadAdminAlbums();
             if(!document.getElementById('view-photos').classList.contains('hidden')) loadPhotosInGrid(currentAlbumId);
-            Swal.fire({ icon: 'success', title: 'Upload thành công', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Hoàn tất', timer: 1500, showConfirmButton: false });
         }
     </script>
 </body>
