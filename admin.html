@@ -56,7 +56,10 @@
         
         .preview-columns { columns: 2; column-gap: 1.5rem; }
         @media (min-width: 640px) { .preview-columns { columns: 3; } }
-        .preview-item { break-inside: avoid; margin-bottom: 1.5rem; }
+        .preview-item { break-inside: avoid; margin-bottom: 1.5rem; position: relative; }
+
+        /* Draggable reference style */
+        .drag-reference { cursor: move; outline: 2px dashed #c5a059; outline-offset: -2px; }
     </style>
 </head>
 <body class="bg-[#fafafa] font-sans text-zinc-900 antialiased">
@@ -132,133 +135,125 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
                 <!-- Left: Settings -->
-                <div class="lg:col-span-4 bg-zinc-50 border border-zinc-100 p-6 space-y-6 rounded-sm sticky top-0">
-                    <div class="flex items-center justify-between border-b border-zinc-200 pb-4">
-                        <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-500">Stamp Configuration</p>
+                <div class="lg:col-span-4 bg-zinc-50 border border-zinc-100 p-5 space-y-6 rounded-sm sticky top-0 shadow-sm">
+                    <div class="flex items-center justify-between border-b border-zinc-200 pb-3">
+                        <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-500">Stamp Config</p>
                         <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="useWatermark" checked class="w-4 h-4 accent-zinc-900" onchange="renderPreviews()">
-                            <span class="text-[10px] font-bold uppercase tracking-widest">Active</span>
+                            <input type="checkbox" id="useWatermark" checked class="w-3.5 h-3.5 accent-zinc-900" onchange="renderPreviews()">
+                            <span class="text-[9px] font-bold uppercase tracking-widest">Active</span>
                         </label>
                     </div>
 
-                    <div class="space-y-5">
-                        <!-- QR Code Option -->
-                        <div class="flex items-center justify-between bg-white p-3 border border-zinc-200 rounded-sm shadow-sm">
-                            <div class="space-y-1">
-                                <span class="text-[10px] font-bold uppercase tracking-widest block">Gắn mã QR Link</span>
-                                <span class="text-[8px] text-zinc-400">(Tích hợp vào cùng stamp)</span>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="useQR" class="sr-only peer" onchange="renderPreviews()">
-                                <div class="w-9 h-5 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-zinc-900"></div>
-                            </label>
+                    <div class="space-y-4">
+                        <!-- QR Option -->
+                        <div class="flex items-center justify-between bg-white p-2.5 border border-zinc-200 rounded-sm shadow-sm">
+                            <span class="text-[9px] font-bold uppercase tracking-widest">Link QR Code</span>
+                            <input type="checkbox" id="useQR" class="w-4 h-4 accent-zinc-900" onchange="renderPreviews()">
                         </div>
 
-                        <!-- Type Selection -->
-                        <div class="space-y-2">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Stamp Type</label>
-                            <div class="grid grid-cols-2 gap-2">
+                        <!-- Type -->
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] uppercase font-bold text-zinc-400 tracking-wider">Stamp Type</label>
+                            <div class="grid grid-cols-2 gap-1.5">
                                 <input type="radio" name="wmType" id="type-custom" value="custom" checked class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-custom" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Tùy chỉnh</label>
-                                
+                                <label for="type-custom" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Custom</label>
                                 <input type="radio" name="wmType" id="type-fixed-a" value="fixed_a" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-fixed-a" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style A</label>
-
+                                <label for="type-fixed-a" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style A</label>
                                 <input type="radio" name="wmType" id="type-fixed-b" value="fixed_b" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-fixed-b" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B (Index)</label>
-
+                                <label for="type-fixed-b" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B</label>
                                 <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-image" class="py-2 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Logo Ảnh</label>
+                                <label for="type-image" class="py-1.5 text-center text-[8px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Logo</label>
                             </div>
                         </div>
 
                         <!-- Text Customization Panel -->
-                        <div id="text-config-panel" class="space-y-4">
-                            <div id="custom-text-inputs" class="space-y-3">
-                                <div class="space-y-1">
-                                    <label class="text-[9px] uppercase font-bold text-zinc-400">Dòng 1</label>
-                                    <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-3 py-2 text-xs focus:outline-none focus:border-accent" oninput="renderPreviews()">
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[9px] uppercase font-bold text-zinc-400">Dòng 2</label>
-                                    <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-3 py-2 text-xs focus:outline-none focus:border-accent" oninput="renderPreviews()">
-                                </div>
+                        <div id="text-config-panel" class="space-y-3">
+                            <div id="custom-text-inputs" class="space-y-2">
+                                <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-2 py-1.5 text-[10px] focus:outline-none focus:border-accent" oninput="renderPreviews()" placeholder="Line 1">
+                                <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-2 py-1.5 text-[10px] focus:outline-none focus:border-accent" oninput="renderPreviews()" placeholder="Line 2">
                             </div>
-                            <div class="space-y-2">
-                                <label class="text-[9px] uppercase font-bold text-zinc-400">Màu sắc</label>
-                                <div class="flex gap-2">
-                                    <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
-                                    <label for="color-white" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trắng</label>
-                                    <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
-                                    <label for="color-black" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Đen</label>
-                                    <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
-                                    <label for="color-accent" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Vàng</label>
-                                </div>
+                            <div class="flex gap-1">
+                                <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
+                                <label for="color-white" class="flex-1 py-1.5 border border-zinc-200 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">White</label>
+                                <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
+                                <label for="color-black" class="flex-1 py-1.5 border border-zinc-200 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Black</label>
+                                <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
+                                <label for="color-accent" class="flex-1 py-1.5 border border-zinc-200 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Gold</label>
                             </div>
                         </div>
 
-                        <!-- Logo Upload Panel -->
-                        <div id="image-settings-box" class="hidden space-y-3">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400">Tải lên Logo (.png)</label>
+                        <!-- Logo Panel -->
+                        <div id="image-settings-box" class="hidden space-y-2">
                             <div class="relative">
                                 <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
-                                <div id="logo-preview-btn" class="bg-white border border-zinc-200 py-2 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-2">
-                                    <i class="fas fa-image"></i> <span>Chọn Logo</span>
+                                <div id="logo-preview-btn" class="bg-white border border-zinc-200 py-1.5 px-3 text-center text-[9px] font-bold uppercase transition-all flex items-center justify-center gap-2">
+                                    <i class="fas fa-image"></i> <span>Logo File</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Position Selection -->
+                        <!-- Position / Direction Pad -->
                         <div class="space-y-2">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Vị trí</label>
+                            <label class="text-[8px] uppercase font-bold text-zinc-400 tracking-wider">Positioning</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-tl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trên-Trái</label>
-                                <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-tr" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trên-Phải</label>
-                                <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-bl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Dưới-Trái</label>
-                                <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
-                                <label for="pos-br" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Dưới-Phải</label>
+                                <div class="grid grid-cols-2 gap-1">
+                                    <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-tl" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">TL</label>
+                                    <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-tr" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">TR</label>
+                                    <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-bl" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">BL</label>
+                                    <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
+                                    <label for="pos-br" class="py-1.5 border border-zinc-100 text-center text-[7px] font-bold uppercase cursor-pointer transition-all bg-white">BR</label>
+                                </div>
+                                <!-- Arrowpad for fine tuning -->
+                                <div class="grid grid-cols-3 gap-1 h-fit self-center">
+                                    <div></div>
+                                    <button onclick="moveStamp(0, -2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-up text-[8px]"></i></button>
+                                    <div></div>
+                                    <button onclick="moveStamp(-2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-left text-[8px]"></i></button>
+                                    <button onclick="resetStamp()" class="w-full bg-zinc-900 text-white border border-zinc-900 aspect-square flex items-center justify-center text-[8px] font-bold">R</button>
+                                    <button onclick="moveStamp(2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-right text-[8px]"></i></button>
+                                    <div></div>
+                                    <button onclick="moveStamp(0, 2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100"><i class="fas fa-chevron-down text-[8px]"></i></button>
+                                    <div></div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Size Slider -->
-                        <div class="space-y-3">
+                        <div class="space-y-1.5">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Tỉ lệ Stamp</label>
-                                <span id="logo-size-val" class="text-[10px] font-bold text-accent">15%</span>
+                                <label class="text-[8px] uppercase font-bold text-zinc-400 tracking-widest">Scale</label>
+                                <span id="logo-size-val" class="text-[9px] font-bold text-accent">15%</span>
                             </div>
-                            <input type="range" id="logoSize" min="5" max="50" value="15" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
+                            <input type="range" id="logoSize" min="3" max="40" value="12" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
                         </div>
                     </div>
                 </div>
 
                 <!-- Right: Previews -->
-                <div class="lg:col-span-8 space-y-8">
+                <div class="lg:col-span-8 space-y-6">
                     <div class="relative group">
                         <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelection()">
-                        <div class="border border-dashed border-zinc-200 rounded-sm p-10 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
-                            <div id="upload-placeholder" class="space-y-3">
-                                <i class="fas fa-camera text-xl text-zinc-300"></i>
-                                <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400">Thả ảnh vào đây hoặc nhấn để chọn</p>
-                            </div>
+                        <div class="border border-dashed border-zinc-200 rounded-sm p-8 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
+                            <p class="text-[9px] uppercase tracking-[0.2em] font-bold text-zinc-400">Thả ảnh vào đây hoặc nhấn để chọn</p>
                         </div>
                     </div>
 
-                    <div id="preview-container" class="hidden space-y-4">
+                    <div id="preview-container" class="hidden space-y-3">
                         <div class="flex justify-between items-end border-b border-zinc-100 pb-2">
-                            <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Xem trước kết quả (<span id="preview-count">0</span> ảnh)</p>
-                            <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Xóa tất cả</button>
+                            <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-400 italic">Mẹo: Bạn có thể kéo stamp trên ảnh đầu tiên để di chuyển</p>
+                            <button onclick="clearSelection()" class="text-[8px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Xóa hết</button>
                         </div>
-                        <div id="preview-grid" class="preview-columns max-h-[600px] overflow-y-auto pr-4 py-2"></div>
+                        <div id="preview-grid" class="preview-columns max-h-[500px] overflow-y-auto pr-3 py-1"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-center gap-12 pt-8">
-                <button onclick="closeUploadModal()" class="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-colors">Hủy bỏ</button>
-                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-2xl">Bắt đầu Upload</button>
+            <div class="flex justify-center gap-12 pt-6">
+                <button onclick="closeUploadModal()" class="text-[9px] uppercase font-bold tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-colors">Hủy bỏ</button>
+                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-10 py-4 text-[9px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-xl">Push to Gallery</button>
             </div>
         </div>
     </div>
@@ -275,6 +270,8 @@
         let logoImageObj = null;
         let selectedFiles = []; 
         let currentRenderId = 0; 
+        let stampOffsetX = 0; // Fine tuning offset in percentage
+        let stampOffsetY = 0;
 
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
@@ -283,7 +280,7 @@
         function checkLogin() {
             if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin') {
                 localStorage.setItem('admin_auth_thongtran', 'true'); showDashboard();
-            } else { Swal.fire({ icon: 'error', title: 'Unauthorized', text: 'Sai thông tin đăng nhập.', confirmButtonColor: '#000' }); }
+            } else { Swal.fire({ icon: 'error', title: 'Unauthorized', text: 'Sai thông tin đăng nhập.' }); }
         }
         function showDashboard() {
             document.getElementById('login-screen').classList.add('hidden');
@@ -300,31 +297,32 @@
             else { vP.classList.add('hidden'); vA.classList.remove('hidden'); loadAdminAlbums(); }
         }
 
-        // --- UI TOGGLES ---
+        // --- STAMP CONTROLS ---
+        function moveStamp(x, y) {
+            stampOffsetX += x; stampOffsetY += y;
+            renderPreviews();
+        }
+        function resetStamp() {
+            stampOffsetX = 0; stampOffsetY = 0;
+            renderPreviews();
+        }
+
         function toggleWMSettings() {
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
-            const textPanel = document.getElementById('text-config-panel');
-            const customInputs = document.getElementById('custom-text-inputs');
-            const imageBox = document.getElementById('image-settings-box');
-
-            textPanel.classList.toggle('hidden', wmType === 'image');
-            customInputs.classList.toggle('hidden', wmType !== 'custom');
-            imageBox.classList.toggle('hidden', wmType !== 'image');
-            
+            document.getElementById('text-config-panel').classList.toggle('hidden', wmType === 'image');
+            document.getElementById('custom-text-inputs').classList.toggle('hidden', wmType !== 'custom');
+            document.getElementById('image-settings-box').classList.toggle('hidden', wmType !== 'image');
             renderPreviews();
         }
         function updateSizeDisplay(val) { document.getElementById('logo-size-val').innerText = val + '%'; }
+        
         function previewLogo() {
             const file = document.getElementById('logoInput').files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
-                img.onload = () => {
-                    logoImageObj = img;
-                    document.getElementById('logo-preview-btn').innerHTML = `<i class="fas fa-check text-green-500"></i> <span>Logo Ready</span>`;
-                    renderPreviews();
-                };
+                img.onload = () => { logoImageObj = img; renderPreviews(); };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
@@ -342,7 +340,6 @@
         }
         function clearSelection() {
             selectedFiles = [];
-            document.getElementById('fileInput').value = '';
             document.getElementById('preview-grid').innerHTML = '';
             document.getElementById('preview-container').classList.add('hidden');
             document.getElementById('upload-placeholder').classList.remove('hidden');
@@ -350,11 +347,9 @@
 
         async function renderPreviews() {
             const grid = document.getElementById('preview-grid');
-            const countDisplay = document.getElementById('preview-count');
             const renderId = ++currentRenderId;
             grid.innerHTML = '';
             if (selectedFiles.length === 0) return;
-            countDisplay.innerText = selectedFiles.length;
 
             const useWm = document.getElementById('useWatermark').checked;
             const useQR = document.getElementById('useQR').checked;
@@ -364,20 +359,18 @@
             const logoScale = document.getElementById('logoSize').value / 100;
             
             let textName, textSub;
-            if(wmType === 'fixed_a') {
-                textName = "I'm Thong Tran"; textSub = "MY FIRST LENS";
-            } else if(wmType === 'fixed_b') {
-                textName = "ThongTran."; textSub = "My First Lens";
-            } else {
-                textName = document.getElementById('wmTextName').value || "";
-                textSub = document.getElementById('wmTextSub').value || "";
-            }
+            if(wmType === 'fixed_a') { textName = "I'm Thong Tran"; textSub = "MY FIRST LENS"; } 
+            else if(wmType === 'fixed_b') { textName = "ThongTran."; textSub = "My First Lens"; } 
+            else { textName = document.getElementById('wmTextName').value; textSub = document.getElementById('wmTextSub').value; }
 
-            for (let file of selectedFiles) {
+            for (let i = 0; i < selectedFiles.length; i++) {
                 if (renderId !== currentRenderId) return;
+                const file = selectedFiles[i];
 
                 const itemWrap = document.createElement('div');
-                itemWrap.className = "preview-item bg-zinc-50 rounded-sm overflow-hidden relative border border-zinc-100 shadow-sm animate-fade-in";
+                itemWrap.className = "preview-item bg-zinc-100 rounded-sm overflow-hidden relative border border-zinc-100 animate-fade-in";
+                if(i === 0) itemWrap.classList.add('drag-reference'); // Only the first image is the reference
+                
                 const loader = document.createElement('div');
                 loader.className = "absolute inset-0 flex items-center justify-center bg-white/40 z-10";
                 loader.innerHTML = '<span class="custom-loader !border-zinc-300"></span>';
@@ -386,20 +379,35 @@
 
                 try {
                     const mockId = "PREVIEW_ID";
-                    const previewBlob = await applyWatermark(file, useWm, useQR, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub, mockId);
+                    const previewBlob = await applyWatermark(file, useWm, useQR, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub, mockId, stampOffsetX, stampOffsetY);
                     if (renderId !== currentRenderId) { itemWrap.remove(); continue; }
+                    
                     const url = URL.createObjectURL(previewBlob);
                     const img = document.createElement('img');
-                    img.src = url;
-                    img.className = "w-full h-auto block";
+                    img.src = url; img.className = "w-full h-auto block";
                     img.onload = () => { loader.remove(); };
                     itemWrap.appendChild(img);
+
+                    // SIMPLE DRAG LOGIC FOR THE FIRST IMAGE
+                    if(i === 0) {
+                        let isDragging = false;
+                        img.addEventListener('mousedown', (e) => { isDragging = true; });
+                        window.addEventListener('mouseup', () => { isDragging = false; });
+                        img.addEventListener('mousemove', (e) => {
+                            if(!isDragging) return;
+                            const rect = img.getBoundingClientRect();
+                            const xMove = (e.movementX / rect.width) * 50;
+                            const yMove = (e.movementY / rect.height) * 50;
+                            stampOffsetX += xMove; stampOffsetY += yMove;
+                            renderPreviews();
+                        });
+                    }
                 } catch (err) { console.error(err); }
             }
         }
 
         // --- CORE WATERMARK PROCESSING ---
-        function applyWatermark(file, useWm, useQR, type, color, pos, logoImage, logoScale, textName, textSub, docId) {
+        function applyWatermark(file, useWm, useQR, type, color, pos, logoImage, logoScale, textName, textSub, docId, offX, offY) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -407,122 +415,101 @@
                     img.onload = async () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
+                        canvas.width = img.width; canvas.height = img.height;
                         ctx.drawImage(img, 0, 0);
 
                         const padding = canvas.width * 0.04;
 
                         if (useWm) {
                             if (type === 'image' && logoImage) {
-                                // Simple logo image drawing
                                 const logoW = canvas.width * logoScale;
                                 const logoH = (logoImage.height / logoImage.width) * logoW;
-                                let logoX, logoY;
-                                if (pos === 'br') { logoX = canvas.width - logoW - padding; logoY = canvas.height - logoH - padding; }
-                                else if (pos === 'bl') { logoX = padding; logoY = canvas.height - logoH - padding; }
-                                else if (pos === 'tr') { logoX = canvas.width - logoW - padding; logoY = padding; }
-                                else { logoX = padding; logoY = padding; }
-                                ctx.globalAlpha = 0.95; ctx.drawImage(logoImage, logoX, logoY, logoW, logoH); ctx.globalAlpha = 1.0;
-                            } else {
-                                // BALANCED TEXT + QR LAYOUT
-                                // | Line 1        QR |
-                                // | Line 2           |
+                                let lx, ly;
+                                if (pos === 'br') { lx = canvas.width - logoW - padding; ly = canvas.height - logoH - padding; }
+                                else if (pos === 'bl') { lx = padding; ly = canvas.height - logoH - padding; }
+                                else if (pos === 'tr') { lx = canvas.width - logoW - padding; ly = padding; }
+                                else { lx = padding; ly = padding; }
                                 
-                                const baseSize = canvas.width * logoScale * 0.25; // Adjusted down for better proportion
+                                // Apply Offsets
+                                lx += (canvas.width * (offX / 100)); ly += (canvas.height * (offY / 100));
+
+                                ctx.globalAlpha = 0.95; ctx.drawImage(logoImage, lx, ly, logoW, logoH); ctx.globalAlpha = 1.0;
+                            } else {
+                                // IMPROVED BALANCED LAYOUT: | Line 1   Qr | \n | Line 2 |
+                                const baseSize = canvas.width * logoScale * 0.22; 
                                 const isStyleB = type === 'fixed_b';
                                 
-                                // QR Settings
-                                let qrS = 0;
-                                let qrCanvas = null;
+                                // High Res QR: Make it larger and clearer
+                                let qrS = 0; let qrCanvas = null;
                                 if(useQR) {
-                                    qrS = baseSize * 1.5; // QR size proportional to text
+                                    qrS = baseSize * 1.8; // PROMINENT QR: Bigger than before
                                     const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
                                     qrCanvas = document.createElement('canvas');
-                                    await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS });
+                                    await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS, color: { dark: '#000000', light: '#ffffff' } });
                                 }
 
-                                // Measure Line 1
                                 ctx.font = isStyleB ? `700 ${baseSize}px 'Playfair Display'` : `italic bold ${baseSize}px 'Playfair Display'`;
                                 const line1W = ctx.measureText(textName).width;
-                                
-                                // Measure Line 2
-                                ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
+                                ctx.font = `700 ${baseSize * 0.45}px 'Inter'`;
                                 const line2W = ctx.measureText(textSub).width;
                                 
-                                // Calculations for Glass Box
-                                const spacingX = baseSize * 0.6;
+                                const spacingX = baseSize * 0.8;
                                 const firstRowW = line1W + (useQR ? qrS + spacingX : 0);
                                 const maxW = Math.max(firstRowW, line2W);
                                 
                                 const bgPadX = baseSize * 0.8;
                                 const bgPadY = baseSize * 0.6;
                                 const bgW = maxW + (bgPadX * 2);
-                                const bgH = (baseSize * 1.8) + (bgPadY * 2); // Compacted height
+                                const bgH = (baseSize * 2.0) + (bgPadY * 2); // Compact high-quality tag
 
-                                let rectX, rectY;
-                                if (pos === 'br') { rectX = canvas.width - bgW - padding; rectY = canvas.height - bgH - padding; }
-                                else if (pos === 'bl') { rectX = padding; rectY = canvas.height - bgH - padding; }
-                                else if (pos === 'tr') { rectX = canvas.width - bgW - padding; rectY = padding; }
-                                else { rectX = padding; rectY = padding; }
+                                let rx, ry;
+                                if (pos === 'br') { rx = canvas.width - bgW - padding; ry = canvas.height - bgH - padding; }
+                                else if (pos === 'bl') { rx = padding; ry = canvas.height - bgH - padding; }
+                                else if (pos === 'tr') { rx = canvas.width - bgW - padding; ry = padding; }
+                                else { rx = padding; ry = padding; }
+
+                                // Apply Offsets
+                                rx += (canvas.width * (offX / 100)); ry += (canvas.height * (offY / 100));
 
                                 // 1. Glass Background
-                                ctx.save();
-                                ctx.beginPath();
+                                ctx.save(); ctx.beginPath();
                                 const r = baseSize * 0.4;
-                                ctx.moveTo(rectX + r, rectY);
-                                ctx.arcTo(rectX + bgW, rectY, rectX + bgW, rectY + bgH, r);
-                                ctx.arcTo(rectX + bgW, rectY + bgH, rectX, rectY + bgH, r);
-                                ctx.arcTo(rectX, rectY + bgH, rectX, rectY, r);
-                                ctx.arcTo(rectX, rectY, rectX + bgW, rectY, r);
-                                ctx.closePath();
+                                ctx.moveTo(rx + r, ry); ctx.arcTo(rx + bgW, ry, rx + bgW, ry + bgH, r);
+                                ctx.arcTo(rx + bgW, ry + bgH, rx, ry + bgH, r);
+                                ctx.arcTo(rx, ry + bgH, rx, ry, r);
+                                ctx.arcTo(rx, ry, rx + bgW, ry, r); ctx.closePath();
                                 const isDark = color.toLowerCase() === '#000000';
-                                ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.42)' : 'rgba(0, 0, 0, 0.35)';
-                                ctx.fill();
-                                ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)';
-                                ctx.stroke();
-                                ctx.restore();
+                                ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.38)';
+                                ctx.fill(); ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)';
+                                ctx.stroke(); ctx.restore();
 
-                                // 2. Draw Elements (Left Aligned within box for balanced grid look)
-                                const contentX = rectX + bgPadX;
-                                const contentY = rectY + bgPadY;
-                                
-                                // ROW 1: Text Name + QR
-                                ctx.textBaseline = 'top';
-                                ctx.textAlign = 'left';
+                                // 2. Drawing
+                                const cx = rx + bgPadX; const cy = ry + bgPadY;
+                                ctx.textBaseline = 'top'; ctx.textAlign = 'left';
                                 
                                 if(isStyleB) {
-                                    // Line 1 Style B: ThongTran. (Dot is Gold)
-                                    const textWithoutDot = "ThongTran";
+                                    const tNormal = "ThongTran";
                                     ctx.font = `700 ${baseSize}px 'Playfair Display'`;
-                                    ctx.fillStyle = color;
-                                    ctx.fillText(textWithoutDot, contentX, contentY);
-                                    const nameW = ctx.measureText(textWithoutDot).width;
-                                    ctx.fillStyle = '#c5a059'; // Gold dot
-                                    ctx.fillText(".", contentX + nameW, contentY);
+                                    ctx.fillStyle = color; ctx.fillText(tNormal, cx, cy);
+                                    const nW = ctx.measureText(tNormal).width;
+                                    ctx.fillStyle = '#c5a059'; ctx.fillText(".", cx + nW, cy);
                                 } else {
-                                    ctx.fillStyle = color;
-                                    ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
-                                    ctx.fillText(textName, contentX, contentY);
+                                    ctx.fillStyle = color; ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
+                                    ctx.fillText(textName, cx, cy);
                                 }
 
-                                // Draw QR at the end of Row 1
                                 if(useQR && qrCanvas) {
-                                    const qrX = rectX + bgW - bgPadX - qrS;
-                                    ctx.globalAlpha = 0.85;
-                                    // Align QR vertically with Line 1
-                                    ctx.drawImage(qrCanvas, qrX, contentY - (qrS * 0.1), qrS, qrS);
+                                    const qrx = rx + bgW - bgPadX - qrS;
+                                    ctx.globalAlpha = 0.9;
+                                    ctx.drawImage(qrCanvas, qrx, cy - (qrS * 0.05), qrS, qrS);
                                     ctx.globalAlpha = 1.0;
                                 }
 
-                                // ROW 2: Subtitle (Line 2)
-                                ctx.fillStyle = color;
-                                ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
-                                ctx.fillText(textSub, contentX, contentY + (baseSize * 1.1));
+                                ctx.fillStyle = color; ctx.font = `700 ${baseSize * 0.45}px 'Inter'`;
+                                ctx.fillText(textSub, cx, cy + (baseSize * 1.1));
                             }
                         }
-
-                        canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.92);
+                        canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.94);
                     };
                     img.src = e.target.result;
                 };
@@ -533,15 +520,15 @@
         // --- ALBUMS MGMT ---
         async function loadAdminAlbums() {
             const container = document.getElementById('admin-album-list');
-            container.innerHTML = '<p class="text-center py-10 text-zinc-400">Đang tải dữ liệu...</p>';
+            container.innerHTML = '<p class="text-center py-10 text-zinc-400">Đang tải...</p>';
             try {
                 const snap = await db.collection('albums').orderBy('createdAt', 'desc').get();
-                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400 text-center">No albums found.</p>'; return; }
+                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-center">Empty.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const cover = d.coverUrl ? d.coverUrl.replace('/upload/', '/upload/w_200,h_200,c_fill/') : 'https://placehold.co/200x200?text=Empty';
-                    html += `<div class="bg-white p-6 border border-zinc-100 flex flex-col md:flex-row justify-between items-center hover:shadow-lg transition-all gap-6"><div class="flex items-center gap-8 w-full cursor-pointer group" onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')"><img src="${cover}" class="w-20 h-20 object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div><h3 class="font-serif text-2xl italic group-hover:text-accent transition-colors">${d.title}</h3><div class="flex gap-4 mt-1"><span class="text-[8px] font-bold uppercase tracking-widest text-zinc-400"><i class="fas fa-map-marker-alt mr-1"></i> ${d.location || '--'}</span><span class="text-[8px] font-bold uppercase tracking-widest text-zinc-400"><i class="fas fa-images mr-1"></i> ${d.photoCount || 0} ITEMS</span></div></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openUpload('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button><button onclick="editAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button><button onclick="deleteAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button></div></div>`;
+                    html += `<div class="bg-white p-5 border border-zinc-100 flex flex-col md:flex-row justify-between items-center hover:shadow-lg transition-all gap-4"><div class="flex items-center gap-6 w-full cursor-pointer group" onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')"><img src="${cover}" class="w-14 h-14 object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div><h3 class="font-serif text-xl italic group-hover:text-accent transition-colors">${d.title}</h3><p class="text-[8px] uppercase tracking-widest text-zinc-400 mt-1">${d.photoCount || 0} ITEMS</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openUpload('${doc.id}')" class="w-8 h-8 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button><button onclick="editAlbum('${doc.id}')" class="w-8 h-8 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button><button onclick="deleteAlbum('${doc.id}')" class="w-8 h-8 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button></div></div>`;
                 });
                 container.innerHTML = html;
             } catch (e) { console.error(e); }
@@ -550,9 +537,9 @@
         async function createNewAlbum() {
             const { value: form } = await Swal.fire({
                 title: 'New Album',
-                html: `<div class="text-left space-y-4 p-2"><input id="swal-title" class="swal2-input !m-0 w-full" placeholder="Title"><textarea id="swal-desc" class="swal2-textarea !m-0 w-full" placeholder="Description"></textarea><div class="grid grid-cols-2 gap-2"><input id="swal-loc" class="swal2-input !m-0 w-full" placeholder="Location"><input type="date" id="swal-date" class="swal2-input !m-0 w-full"></div></div>`,
+                html: `<input id="swal-title" class="swal2-input !m-1" placeholder="Title"><textarea id="swal-desc" class="swal2-textarea !m-1" placeholder="Description"></textarea><div class="grid grid-cols-2 gap-1"><input id="swal-loc" class="swal2-input !m-1" placeholder="Location"><input type="date" id="swal-date" class="swal2-input !m-1"></div>`,
                 focusConfirm: false, showCancelButton: true,
-                preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-location').value, dateTaken: document.getElementById('swal-date').value })
+                preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-loc').value, dateTaken: document.getElementById('swal-date').value })
             });
             if (form && form.title) {
                 await db.collection('albums').add({ ...form, createdAt: firebase.firestore.FieldValue.serverTimestamp(), coverUrl: '', photoCount: 0 });
@@ -561,11 +548,10 @@
         }
 
         async function editAlbum(id) {
-            const doc = await db.collection('albums').doc(id).get();
-            const d = doc.data();
+            const doc = await db.collection('albums').doc(id).get(); const d = doc.data();
             const { value: form } = await Swal.fire({
-                title: 'Sửa Album',
-                html: `<div class="text-left space-y-4 p-2"><input id="swal-e-title" class="swal2-input !m-0 w-full" value="${d.title}"><textarea id="swal-e-desc" class="swal2-textarea !m-0 w-full">${d.description||''}</textarea><div class="grid grid-cols-2 gap-2"><input id="swal-e-loc" class="swal2-input !m-0 w-full" value="${d.location||''}"><input type="date" id="swal-e-date" class="swal2-input !m-0 w-full" value="${d.dateTaken||''}"></div></div>`,
+                title: 'Edit Album',
+                html: `<input id="swal-e-title" class="swal2-input !m-1" value="${d.title}"><textarea id="swal-e-desc" class="swal2-textarea !m-1">${d.description||''}</textarea><div class="grid grid-cols-2 gap-1"><input id="swal-e-loc" class="swal2-input !m-1" value="${d.location||''}"><input type="date" id="swal-e-date" class="swal2-input !m-1" value="${d.dateTaken||''}"></div>`,
                 focusConfirm: false, showCancelButton: true,
                 preConfirm: () => ({ title: document.getElementById('swal-e-title').value, description: document.getElementById('swal-e-desc').value, location: document.getElementById('swal-e-loc').value, dateTaken: document.getElementById('swal-e-date').value })
             });
@@ -583,41 +569,39 @@
         }
         async function loadPhotosInGrid(albumId) {
             const grid = document.getElementById('admin-photo-grid');
-            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Đang tải...</p>';
+            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Syncing...</p>';
             try {
                 const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
-                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 text-center py-10">Album trống.</p>'; return; }
+                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-center py-10">Empty.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
-                    const d = doc.data();
-                    const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
+                    const d = doc.data(); const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
                     html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Untitled'}</p></div></div>`;
                 });
                 grid.innerHTML = html;
             } catch (e) { console.error(e); }
         }
         async function deletePhoto(id) {
-            const res = await Swal.fire({ title: 'Delete?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#000' });
-            if (res.isConfirmed) {
+            if (confirm('Xóa ảnh này?')) {
                 await db.collection('photos').doc(id).delete();
                 await db.collection('albums').doc(currentAlbumId).update({ photoCount: firebase.firestore.FieldValue.increment(-1) });
                 loadPhotosInGrid(currentAlbumId);
             }
         }
 
-        // --- UPLOAD CORE ---
-        function openUpload(id) { currentAlbumId = id; clearSelection(); document.getElementById('uploadModal').classList.remove('hidden'); }
+        // --- UPLOAD ---
+        function openUpload(id) { currentAlbumId = id; clearSelection(); resetStamp(); document.getElementById('uploadModal').classList.remove('hidden'); }
         function closeUploadModal() { document.getElementById('uploadModal').classList.add('hidden'); }
         function getExif(file) {
             return new Promise((resolve) => {
                 EXIF.getData(file, function() {
                     let make = EXIF.getTag(this, "Make") || ""; let model = EXIF.getTag(this, "Model") || "";
-                    let camera = (make + " " + model).trim().replace(/canon canon/i, "Canon") || "Unknown Camera";
-                    let fn = EXIF.getTag(this, "FNumber"); let aperture = fn ? `f/${fn}` : "";
-                    let iso = EXIF.getTag(this, "ISOSpeedRatings"); let isoStr = iso ? `ISO ${iso}` : "";
+                    let cam = (make + " " + model).trim().replace(/canon canon/i, "Canon") || "Unknown";
+                    let fn = EXIF.getTag(this, "FNumber"); let ap = fn ? `f/${fn}` : "";
+                    let iso = EXIF.getTag(this, "ISOSpeedRatings"); let isoS = iso ? `ISO ${iso}` : "";
                     let exp = EXIF.getTag(this, "ExposureTime");
-                    let shutter = (exp && exp.numerator) ? `${exp.numerator}/${exp.denominator}s` : (exp ? `${exp}s` : "");
-                    resolve({ camera, aperture, iso: isoStr, shutter });
+                    let shut = (exp && exp.numerator) ? `${exp.numerator}/${exp.denominator}s` : (exp ? `${exp}s` : "");
+                    resolve({ camera: cam, aperture: ap, iso: isoS, shutter: shut });
                 });
             });
         }
@@ -637,14 +621,14 @@
             else { textName = document.getElementById('wmTextName').value; textSub = document.getElementById('wmTextSub').value; }
 
             const btn = document.getElementById('btn-upload-submit');
-            btn.disabled = true; btn.innerHTML = '<span class="custom-loader"></span> Syncing...';
+            btn.disabled = true; btn.innerHTML = '<span class="custom-loader"></span> Processing...';
 
             for(let file of selectedFiles) {
                 const exif = await getExif(file);
                 const photoDocRef = db.collection('photos').doc();
                 const photoId = photoDocRef.id;
                 try {
-                    const finalBlob = await applyWatermark(file, useWm, useQR, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub, photoId);
+                    const finalBlob = await applyWatermark(file, useWm, useQR, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub, photoId, stampOffsetX, stampOffsetY);
                     const fd = new FormData(); fd.append('file', finalBlob); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
                     const res = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.cloudinary.cloudName}/image/upload`, { method: 'POST', body: fd });
                     const data = await res.json();
@@ -654,7 +638,7 @@
                     }
                 } catch(e) { console.error(e); }
             }
-            btn.disabled = false; btn.innerHTML = 'Start Upload';
+            btn.disabled = false; btn.innerHTML = 'Push to Gallery';
             closeUploadModal(); loadAdminAlbums();
             Swal.fire({ icon: 'success', title: 'Hoàn tất!', timer: 1500, showConfirmButton: false });
         }
