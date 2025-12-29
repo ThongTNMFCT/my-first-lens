@@ -68,6 +68,17 @@
         }
 
         .glass-sidebar { backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        
+        /* Cover Badge Style */
+        .is-cover-badge {
+            position: absolute; top: 10px; left: 10px;
+            background: #c5a059; color: white;
+            padding: 4px 12px; font-size: 9px; font-weight: 800;
+            letter-spacing: 1px; text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+        .is-cover-border { outline: 4px solid #c5a059; outline-offset: -4px; }
     </style>
 </head>
 <body class="bg-[#fafafa] font-sans text-zinc-900 antialiased overflow-x-hidden">
@@ -100,7 +111,7 @@
         <aside class="w-full md:w-80 bg-white border-r border-zinc-100 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0 z-50">
             <div class="p-10 border-b border-zinc-50 space-y-2">
                 <span class="font-serif font-bold text-3xl italic tracking-tighter text-zinc-900 cursor-pointer" onclick="location.reload()">Portal<span class="text-accent">.</span></span>
-                <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-300 font-bold">Curator Dashboard v2.5</p>
+                <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-300 font-bold">Curator Dashboard v2.6</p>
             </div>
             
             <nav class="flex-1 p-8 space-y-2 text-[11px] font-bold uppercase tracking-widest">
@@ -147,13 +158,16 @@
                             <p class="text-[10px] uppercase tracking-[0.4em] text-zinc-300 font-bold mt-2">Asset Intelligence Management</p>
                         </div>
                     </div>
+                    <div class="flex items-center gap-4">
+                         <span class="text-[10px] uppercase tracking-widest text-zinc-400"><i class="fas fa-info-circle mr-1"></i> Tip: Click Star to set Cover</span>
+                    </div>
                 </div>
                 <div id="admin-photo-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8"></div>
             </div>
         </main>
     </div>
 
-    <!-- Enhanced Upload Overlay (Đã sửa lỗi hiển thị) -->
+    <!-- Enhanced Upload Overlay -->
     <div id="uploadModal" class="hidden fixed inset-0 z-[150] overflow-y-auto bg-white/95 backdrop-blur-2xl">
         <div class="flex min-h-full items-center justify-center p-6">
             <div class="w-full max-w-7xl space-y-10 py-10 relative">
@@ -303,6 +317,7 @@
     
     <script>
         let currentAlbumId = null;
+        let currentAlbumCoverUrl = ''; // Store current album cover
         let logoImageObj = null;
         let selectedFiles = []; 
         let currentRenderId = 0; 
@@ -586,10 +601,18 @@
         }
 
         async function openPhotoManager(id, title) {
-            currentAlbumId = id; document.getElementById('current-album-title').innerText = title;
-            switchView('photos'); loadPhotosInGrid(id);
+            currentAlbumId = id; 
+            document.getElementById('current-album-title').innerText = title;
+            switchView('photos'); 
+            
+            // Get Album Cover
+            const albumDoc = await db.collection('albums').doc(id).get();
+            currentAlbumCoverUrl = albumDoc.exists ? albumDoc.data().coverUrl : '';
+            
+            loadPhotosInManager(id);
         }
-        async function loadPhotosInGrid(albumId) {
+
+        async function loadPhotosInManager(albumId) {
             const grid = document.getElementById('admin-photo-grid');
             grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-20">Refreshing assets...</p>';
             try {
@@ -597,17 +620,61 @@
                 if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-center py-20 text-zinc-300">No assets in this archive.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
-                    const d = doc.data(); const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
-                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500 transition-colors"><i class="fas fa-trash"></i></button></div></div><div class="p-4"><p class="text-[10px] font-bold truncate uppercase tracking-widest text-zinc-800">${d.caption || 'UNTAGGED'}</p></div></div>`;
+                    const d = doc.data(); 
+                    const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
+                    const isCover = d.url === currentAlbumCoverUrl;
+                    const borderClass = isCover ? 'is-cover-border' : '';
+                    const badge = isCover ? '<div class="is-cover-badge">COVER</div>' : '';
+                    const starIcon = isCover ? 'fas fa-star text-accent' : 'far fa-star text-zinc-400 hover:text-accent';
+
+                    html += `
+                    <div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm ${borderClass}">
+                        ${badge}
+                        <div class="aspect-square relative overflow-hidden">
+                            <img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                <button onclick="setCover('${doc.id}', '${d.url}')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center transition-transform hover:scale-110" title="Set as Cover"><i class="${starIcon} text-xs"></i></button>
+                                <button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-zinc-800 hover:scale-110 transition-transform" title="Edit Caption"><i class="fas fa-pen text-xs"></i></button>
+                                <button onclick="deletePhoto('${doc.id}')" class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-red-500 hover:scale-110 transition-transform" title="Delete"><i class="fas fa-trash text-xs"></i></button>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white">
+                            <p class="text-[9px] font-bold truncate uppercase tracking-widest text-zinc-800" title="${d.caption || ''}">${d.caption || 'Untagged'}</p>
+                        </div>
+                    </div>`;
                 });
                 grid.innerHTML = html;
             } catch (e) { console.error(e); }
         }
+
+        async function setCover(photoId, url) {
+            await db.collection('albums').doc(currentAlbumId).update({ coverUrl: url });
+            currentAlbumCoverUrl = url;
+            loadPhotosInManager(currentAlbumId);
+            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, timerProgressBar: true });
+            Toast.fire({ icon: 'success', title: 'Cover Updated' });
+        }
+
         async function deletePhoto(id) {
             if (confirm('Permanently remove this asset?')) {
                 await db.collection('photos').doc(id).delete();
                 await db.collection('albums').doc(currentAlbumId).update({ photoCount: firebase.firestore.FieldValue.increment(-1) });
-                loadPhotosInGrid(currentAlbumId);
+                loadPhotosInManager(currentAlbumId);
+            }
+        }
+
+        async function editPhoto(id, cap) {
+            const { value: caption } = await Swal.fire({ 
+                title: 'Edit Caption', 
+                input: 'textarea', 
+                inputLabel: 'Description',
+                inputValue: cap, 
+                showCancelButton: true,
+                inputPlaceholder: 'Enter photo description...'
+            });
+            if (caption !== undefined) { 
+                await db.collection('photos').doc(id).update({ caption }); 
+                loadPhotosInManager(currentAlbumId); 
             }
         }
 
@@ -645,6 +712,11 @@
             const btn = document.getElementById('btn-upload-submit');
             btn.disabled = true; btn.innerHTML = '<span class="custom-loader"></span> Syncing Assets...';
 
+            let firstUpload = false;
+            // Check if album is empty to set first cover
+            const snap = await db.collection('photos').where('albumId', '==', currentAlbumId).limit(1).get();
+            if(snap.empty) firstUpload = true;
+
             for(let file of selectedFiles) {
                 const exif = await getExif(file);
                 const photoDocRef = db.collection('photos').doc();
@@ -656,12 +728,27 @@
                     const data = await res.json();
                     if(data.secure_url) {
                         await photoDocRef.set({ albumId: currentAlbumId, url: data.secure_url, likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp(), exif, caption: '' });
-                        await db.collection('albums').doc(currentAlbumId).update({ coverUrl: data.secure_url, photoCount: firebase.firestore.FieldValue.increment(1) });
+                        
+                        // Update photo count
+                        await db.collection('albums').doc(currentAlbumId).update({ photoCount: firebase.firestore.FieldValue.increment(1) });
+                        
+                        // Set cover ONLY if first upload ever for this album
+                        if(firstUpload) {
+                            await db.collection('albums').doc(currentAlbumId).update({ coverUrl: data.secure_url });
+                            firstUpload = false; // Prevent subsequent images from overwriting
+                        }
                     }
                 } catch(e) { console.error(e); }
             }
             btn.disabled = false; btn.innerHTML = 'Push to Production';
             closeUploadModal(); loadAdminAlbums();
+            if(!document.getElementById('view-photos').classList.contains('hidden')) {
+                // Refresh to show new photos and cover status
+                // We need to fetch cover url again
+                const albumDoc = await db.collection('albums').doc(currentAlbumId).get();
+                currentAlbumCoverUrl = albumDoc.data().coverUrl;
+                loadPhotosInManager(currentAlbumId);
+            }
             Swal.fire({ icon: 'success', title: 'Archive Synchronized', timer: 1500, showConfirmButton: false });
         }
     </script>
