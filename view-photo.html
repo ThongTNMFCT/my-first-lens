@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo View | Thong Tran Photography</title>
+    <title>Photo Detail | Thong Tran Photography</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Fonts: Cormorant Garamond & Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
@@ -16,115 +16,145 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
                     },
                     colors: {
                         darkBg: '#050505',
-                        lightBg: '#fafafa',
-                        accent: '#c5a059',
+                        lightBg: '#f8f8f8',
+                        accent: '#d4af37',
                     },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
                 }
             }
         }
     </script>
     <style>
+        /* Glass Sidebar Style */
         .glass-sidebar {
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
         }
+        .dark .glass-sidebar {
+            background: rgba(10, 10, 10, 0.7);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .glass-nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         #comments-list::-webkit-scrollbar { width: 3px; }
-        #comments-list::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #comments-list::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
         
         .album-link:hover .album-underline { width: 100%; }
     </style>
 </head>
-<body class="bg-lightBg dark:bg-darkBg text-zinc-900 dark:text-zinc-100 antialiased overflow-x-hidden transition-colors duration-500 min-h-screen">
+<body class="bg-lightBg dark:bg-darkBg text-zinc-900 dark:text-zinc-200 antialiased overflow-hidden transition-colors duration-700 h-screen flex flex-col">
 
-    <!-- Simple Nav -->
+    <!-- Simple Floating Nav -->
     <nav class="fixed top-0 left-0 w-full z-50 px-6 py-6 flex justify-between items-center pointer-events-none">
-        <a href="index.html" class="font-serif text-2xl font-bold tracking-tighter hover:text-accent transition-colors pointer-events-auto">
+        <a href="index.html" class="font-serif text-3xl font-medium tracking-tight hover:text-accent transition-colors pointer-events-auto drop-shadow-md">
             Thong Tran<span class="text-accent">.</span>
         </a>
         <div class="flex gap-4 pointer-events-auto">
-            <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-white/10 glass-sidebar">
+            <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-full glass-nav-btn hover:bg-white/20 transition-all">
                 <i class="fas fa-moon dark:hidden text-xs"></i> 
-                <i class="fas fa-sun hidden dark:block text-xs text-yellow-500"></i>
+                <i class="fas fa-sun hidden dark:block text-xs text-accent"></i>
             </button>
-            <a id="back-link" href="collection.html" class="w-10 h-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-white/10 glass-sidebar" title="Back to Collection">
+            <a id="back-link" href="collection.html" class="w-10 h-10 flex items-center justify-center rounded-full glass-nav-btn hover:bg-white/20 transition-all" title="Back to Collection">
                 <i class="fas fa-th-large text-xs"></i>
             </a>
         </div>
     </nav>
 
-    <main class="flex flex-col lg:flex-row h-screen pt-20 lg:pt-0">
-        <!-- Photo Container -->
-        <div class="w-full lg:w-3/4 h-2/3 lg:h-full flex items-center justify-center p-4 lg:p-10 relative">
-            <div id="loader" class="absolute inset-0 flex items-center justify-center z-10 bg-darkBg">
-                <div class="w-10 h-10 border-2 border-accent border-b-transparent rounded-full animate-spin"></div>
+    <!-- Main Layout -->
+    <main class="flex-1 flex flex-col lg:flex-row h-full pt-0 relative">
+        
+        <!-- Photo Container (Cinema View) -->
+        <div class="w-full lg:w-3/4 h-[60vh] lg:h-full flex items-center justify-center bg-zinc-100 dark:bg-black relative p-4 lg:p-12 overflow-hidden group">
+            <div id="loader" class="absolute inset-0 flex items-center justify-center z-10 bg-inherit">
+                <div class="w-8 h-8 border-2 border-accent border-b-transparent rounded-full animate-spin"></div>
             </div>
-            <img id="photo-img" src="" class="max-w-full max-h-full object-contain shadow-2xl rounded-sm opacity-0 transition-opacity duration-1000">
+            
+            <!-- Main Image -->
+            <img id="photo-img" src="" class="max-w-full max-h-full object-contain shadow-2xl opacity-0 transition-all duration-1000 transform scale-95 group-hover:scale-100">
+            
+            <!-- Vignette Overlay -->
+            <div class="absolute inset-0 pointer-events-none bg-radial-gradient from-transparent to-black/10 dark:to-black/30"></div>
         </div>
 
-        <!-- Details Sidebar -->
-        <div class="w-full lg:w-1/4 h-1/3 lg:h-full bg-white dark:bg-zinc-900/30 border-l border-zinc-200 dark:border-zinc-800 flex flex-col glass-sidebar overflow-hidden">
+        <!-- Details Sidebar (Editorial Info) -->
+        <div class="w-full lg:w-1/4 h-[40vh] lg:h-full flex flex-col glass-sidebar z-20">
             
-            <!-- Metadata Area -->
-            <div class="p-8 border-b border-zinc-200 dark:border-zinc-800 space-y-8">
+            <!-- Header Info -->
+            <div class="p-8 border-b border-zinc-200 dark:border-white/5 space-y-6 flex-shrink-0">
                 
-                <!-- Album Info Section -->
-                <div class="space-y-1">
-                    <p class="text-[8px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Published in Collection</p>
+                <!-- Album Context -->
+                <div class="space-y-2">
+                    <p class="text-[9px] uppercase tracking-[0.3em] text-accent font-bold">Featured in</p>
                     <a id="album-link" href="#" class="album-link inline-block group">
-                        <h2 id="album-name" class="font-serif italic text-2xl group-hover:text-accent transition-colors">Loading Album...</h2>
-                        <div class="album-underline w-0 h-[1px] bg-accent transition-all duration-500"></div>
+                        <h2 id="album-name" class="font-serif italic text-3xl leading-none group-hover:text-accent transition-colors">Loading...</h2>
+                        <div class="album-underline w-0 h-[1px] bg-accent transition-all duration-500 mt-1"></div>
                     </a>
                 </div>
 
-                <!-- Technical Specs -->
-                <div id="exif-grid" class="grid grid-cols-4 gap-4 text-center">
-                    <div class="space-y-1">
-                        <i class="fas fa-camera text-[10px] text-accent"></i>
-                        <p id="exif-camera" class="text-[9px] font-bold truncate opacity-60">--</p>
+                <!-- Technical Specs (Minimal Grid) -->
+                <div id="exif-grid" class="grid grid-cols-4 gap-2 pt-4 border-t border-zinc-200 dark:border-white/5 opacity-60 hover:opacity-100 transition-opacity">
+                    <div class="text-center space-y-1">
+                        <i class="fas fa-camera text-[10px]"></i>
+                        <p id="exif-camera" class="text-[9px] font-bold truncate">--</p>
                     </div>
-                    <div class="space-y-1">
-                        <i class="fas fa-dot-circle text-[10px] text-accent"></i>
-                        <p id="exif-aperture" class="text-[9px] font-bold opacity-60">--</p>
+                    <div class="text-center space-y-1">
+                        <i class="fas fa-dot-circle text-[10px]"></i>
+                        <p id="exif-aperture" class="text-[9px] font-bold">--</p>
                     </div>
-                    <div class="space-y-1">
-                        <i class="fas fa-bolt text-[10px] text-accent"></i>
-                        <p id="exif-shutter" class="text-[9px] font-bold opacity-60">--</p>
+                    <div class="text-center space-y-1">
+                        <i class="fas fa-bolt text-[10px]"></i>
+                        <p id="exif-shutter" class="text-[9px] font-bold">--</p>
                     </div>
-                    <div class="space-y-1">
-                        <i class="fas fa-adjust text-[10px] text-accent"></i>
-                        <p id="exif-iso" class="text-[9px] font-bold opacity-60">--</p>
+                    <div class="text-center space-y-1">
+                        <i class="fas fa-adjust text-[10px]"></i>
+                        <p id="exif-iso" class="text-[9px] font-bold">--</p>
                     </div>
                 </div>
 
+                <!-- Action Bar -->
                 <div class="flex justify-between items-center pt-2">
-                    <h4 class="font-serif italic text-xl">Comments</h4>
-                    <button id="btn-like" onclick="toggleLike()" class="flex items-center gap-2 group">
-                        <i id="icon-heart" class="far fa-heart text-sm group-hover:scale-110 transition-transform"></i>
-                        <span id="like-count" class="text-[10px] font-bold">0</span>
+                    <h4 class="font-serif italic text-lg text-zinc-500">Dialogue</h4>
+                    <button id="btn-like" onclick="toggleLike()" class="flex items-center gap-2 group transition-colors hover:text-red-500">
+                        <i id="icon-heart" class="far fa-heart text-lg group-hover:scale-110 transition-transform"></i>
+                        <span id="like-count" class="text-[10px] font-bold font-sans">0</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Comments -->
-            <div id="comments-list" class="flex-1 overflow-y-auto p-8 space-y-6">
-                <p class="text-center text-zinc-500 italic text-[10px]">Loading discussion...</p>
+            <!-- Comments Scroll Area -->
+            <div id="comments-list" class="flex-1 overflow-y-auto p-8 space-y-5">
+                <p class="text-center text-zinc-400 text-xs italic mt-4 font-serif">Awaiting thoughts...</p>
             </div>
 
-            <!-- Input -->
-            <div class="p-6 bg-zinc-50 dark:bg-zinc-800/20">
-                <div class="flex gap-4">
-                    <input type="text" id="comment-input" placeholder="Say something..." 
-                           class="flex-1 bg-transparent border-b border-zinc-300 dark:border-zinc-700 py-2 text-[11px] focus:outline-none focus:border-accent transition-colors"
+            <!-- Input Area -->
+            <div class="p-6 border-t border-zinc-200 dark:border-white/5 bg-zinc-50/50 dark:bg-black/20 flex-shrink-0">
+                <div class="relative">
+                    <input type="text" id="comment-input" placeholder="Leave a note..." 
+                           class="w-full bg-transparent border-b border-zinc-300 dark:border-zinc-700 py-3 pr-10 text-xs font-medium focus:outline-none focus:border-accent transition-colors"
                            onkeypress="if(event.key === 'Enter') postComment()">
-                    <button onclick="postComment()" class="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center hover:bg-accent transition-colors">
-                        <i class="fas fa-paper-plane text-[10px]"></i>
+                    <button onclick="postComment()" class="absolute right-0 bottom-3 text-zinc-400 hover:text-accent transition-colors">
+                        <i class="fas fa-paper-plane text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -167,18 +197,20 @@
                 // 1. Fetch Photo Doc
                 const photoDoc = await db.collection('photos').doc(currentId).get();
                 if (!photoDoc.exists) { 
-                    document.getElementById('album-name').innerText = "Tác phẩm không tồn tại";
+                    document.getElementById('album-name').innerText = "Asset Not Found";
                     return; 
                 }
                 
                 const photoData = photoDoc.data();
-                document.getElementById('photo-img').src = photoData.url;
-                document.getElementById('photo-img').onload = () => {
+                const img = document.getElementById('photo-img');
+                img.src = photoData.url;
+                img.onload = () => {
                     document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('photo-img').classList.replace('opacity-0', 'opacity-100');
+                    img.classList.replace('opacity-0', 'opacity-100');
+                    img.classList.replace('scale-95', 'scale-100');
                 };
 
-                // 2. Fetch Album Info (New Step)
+                // 2. Fetch Album Info
                 if(photoData.albumId) {
                     const albumDoc = await db.collection('albums').doc(photoData.albumId).get();
                     if(albumDoc.exists) {
@@ -186,11 +218,12 @@
                         document.getElementById('album-name').innerText = albumData.title;
                         document.getElementById('album-link').href = `view-collection.html?id=${photoData.albumId}`;
                         document.getElementById('back-link').href = `view-collection.html?id=${photoData.albumId}`;
+                        document.title = `${albumData.title} | Detail`;
                     } else {
-                        document.getElementById('album-name').innerText = "Unknown Archive";
+                        document.getElementById('album-name').innerText = "Unknown Collection";
                     }
                 } else {
-                    document.getElementById('album-name').innerText = "Individual Work";
+                    document.getElementById('album-name').innerText = "Single Asset";
                 }
 
                 // 3. Fill EXIF
@@ -218,7 +251,7 @@
                 .onSnapshot(snap => {
                     const list = document.getElementById('comments-list');
                     if (snap.empty) {
-                        list.innerHTML = '<p class="text-center text-zinc-500 italic text-[10px]">No comments yet.</p>';
+                        list.innerHTML = '<p class="text-center text-zinc-400 text-[10px] italic mt-10 font-serif">Be the first to share a thought.</p>';
                         return;
                     }
                     let html = '';
@@ -226,12 +259,12 @@
                         const c = d.data();
                         const time = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
                         html += `
-                            <div class="space-y-1 fade-in">
-                                <div class="flex justify-between items-baseline">
+                            <div class="animate-fade-in group">
+                                <div class="flex justify-between items-baseline mb-1">
                                     <p class="text-[9px] font-bold uppercase tracking-widest text-accent">${c.name || 'Visitor'}</p>
-                                    <p class="text-[8px] opacity-40">${time}</p>
+                                    <p class="text-[8px] opacity-30 font-mono">${time}</p>
                                 </div>
-                                <p class="text-[11px] leading-relaxed opacity-80">${c.content}</p>
+                                <p class="text-[11px] leading-relaxed opacity-80 text-justify border-l-2 border-transparent group-hover:border-accent pl-2 transition-all duration-300">${c.content}</p>
                             </div>`;
                     });
                     list.innerHTML = html;

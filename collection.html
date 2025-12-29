@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
@@ -16,26 +16,21 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
                     },
                     colors: {
                         darkBg: '#050505',
-                        lightBg: '#fafafa',
-                        accent: '#c5a059',
+                        lightBg: '#f8f8f8',
+                        accent: '#d4af37',
                     },
                     animation: {
-                        'reveal': 'reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards',
-                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: {
-                        reveal: {
-                            '0%': { transform: 'translateY(100%)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
                         }
                     }
                 }
@@ -43,113 +38,116 @@
         }
     </script>
     <style>
-        body { scroll-behavior: smooth; }
         .glass-nav {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .reveal-container { overflow: hidden; }
-        
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
         .shimmer {
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
             background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+            animation: shimmer 2s infinite linear;
         }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     </style>
 </head>
-<body class="bg-lightBg dark:bg-darkBg text-zinc-900 dark:text-zinc-100 antialiased transition-colors duration-500">
+<body class="bg-lightBg dark:bg-darkBg text-zinc-900 dark:text-zinc-200 antialiased transition-colors duration-700">
 
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-500">
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 px-8 py-6 transition-all duration-500">
         <div class="max-w-screen-2xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="font-serif text-2xl font-bold tracking-tighter hover:text-accent transition-colors">
+            <a href="index.html" class="font-serif text-3xl font-medium tracking-tight hover:text-accent transition-colors relative z-50">
                 Thong Tran<span class="text-accent">.</span>
             </a>
 
-            <div class="hidden md:flex items-center gap-12 text-[10px] font-semibold uppercase tracking-[0.3em]">
-                <a href="collection.html" class="text-accent transition-all relative group" data-i18n="nav_collection">
+            <div class="hidden md:flex items-center gap-16 text-[11px] font-medium uppercase tracking-[0.2em]">
+                <a href="collection.html" class="text-accent transition-colors relative group py-2" data-i18n="nav_collection">
                     Bộ Sưu Tập
-                    <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-accent transition-all duration-500"></span>
+                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-accent transition-all duration-500"></span>
                 </a>
-                <a href="about-me.html" class="hover:text-accent transition-all relative group" data-i18n="nav_about">
+                <a href="about-me.html" class="hover:text-accent transition-colors relative group py-2" data-i18n="nav_about">
                     Góc Nhìn
-                    <span class="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all duration-500 group-hover:w-full"></span>
+                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-accent transition-all duration-500 group-hover:w-full"></span>
                 </a>
             </div>
 
-            <div class="flex items-center gap-6">
-                <div class="hidden sm:flex items-center gap-3 text-[9px] font-bold tracking-widest">
-                    <button onclick="setLanguage('vi')" id="btn-vi" class="opacity-40 hover:opacity-100 transition-opacity">VIE</button>
-                    <span class="opacity-20">/</span>
-                    <button onclick="setLanguage('en')" id="btn-en" class="opacity-40 hover:opacity-100 transition-opacity">ENG</button>
+            <div class="flex items-center gap-8 relative z-50">
+                <div class="hidden sm:flex items-center gap-3 text-[10px] font-bold tracking-widest">
+                    <button onclick="setLanguage('vi')" id="btn-vi" class="opacity-40 hover:opacity-100 transition-opacity">VN</button>
+                    <span class="opacity-20 text-xs font-light">/</span>
+                    <button onclick="setLanguage('en')" id="btn-en" class="opacity-40 hover:opacity-100 transition-opacity">EN</button>
                 </div>
                 
-                <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all">
+                <button id="theme-toggle" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-white/10 transition-all">
                     <i class="fas fa-moon dark:hidden text-xs"></i> 
-                    <i class="fas fa-sun hidden dark:block text-xs text-yellow-500"></i>
+                    <i class="fas fa-sun hidden dark:block text-xs text-accent"></i>
                 </button>
 
                 <a href="admin.html" class="text-zinc-400 hover:text-accent transition-colors">
-                    <i class="fas fa-fingerprint text-sm"></i>
+                    <i class="fas fa-grip-lines text-sm"></i>
                 </a>
             </div>
         </div>
     </nav>
 
     <!-- Header Section -->
-    <header class="pt-48 pb-20 px-6 text-center">
-        <div class="reveal-container mb-4">
-            <p class="text-[10px] uppercase tracking-[0.5em] text-zinc-500 opacity-0 animate-reveal" data-i18n="collection_subtitle">
-                Visual Archives
-            </p>
-        </div>
-        <div class="reveal-container">
-            <h1 class="font-serif text-6xl md:text-8xl italic font-light opacity-0 animate-reveal" style="animation-delay: 0.2s;" data-i18n="collection_title">
-                The <span class="font-bold not-italic">Gallery</span>
-            </h1>
-        </div>
-        <div class="mt-10 w-12 h-[1px] bg-accent mx-auto opacity-0 animate-fade-in" style="animation-delay: 0.8s;"></div>
+    <header class="pt-48 pb-20 px-6 text-center relative z-10">
+        <p class="text-accent text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] mb-4 opacity-0 animate-fade-in-up" data-i18n="collection_subtitle">
+            Visual Archives
+        </p>
+        <h1 class="font-serif text-6xl md:text-8xl italic font-light text-zinc-900 dark:text-zinc-100 opacity-0 animate-fade-in-up" style="animation-delay: 0.2s;" data-i18n="collection_title">
+            The <span class="font-normal not-italic">Gallery</span>
+        </h1>
+        <div class="mt-12 h-16 w-[1px] bg-gradient-to-b from-transparent via-accent to-transparent mx-auto opacity-0 animate-fade-in-up" style="animation-delay: 0.4s;"></div>
     </header>
 
-    <!-- Main Content: Album Grid -->
-    <main class="max-w-screen-2xl mx-auto px-6 pb-32">
-        <div id="album-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+    <!-- Main Content: Staggered Grid -->
+    <main class="max-w-screen-2xl mx-auto px-6 md:px-12 pb-32">
+        <div id="album-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-start">
             <!-- Loading States -->
-            <div class="space-y-6 shimmer-item">
-                <div class="aspect-[16/9] bg-zinc-100 dark:bg-zinc-900 shimmer rounded-sm"></div>
-                <div class="h-8 w-3/4 bg-zinc-100 dark:bg-zinc-900 shimmer"></div>
-            </div>
-            <div class="space-y-6 shimmer-item">
-                <div class="aspect-[16/9] bg-zinc-100 dark:bg-zinc-900 shimmer rounded-sm"></div>
-                <div class="h-8 w-3/4 bg-zinc-100 dark:bg-zinc-900 shimmer"></div>
-            </div>
-            <div class="space-y-6 shimmer-item">
-                <div class="aspect-[16/9] bg-zinc-100 dark:bg-zinc-900 shimmer rounded-sm"></div>
-                <div class="h-8 w-3/4 bg-zinc-100 dark:bg-zinc-900 shimmer"></div>
-            </div>
+            <div class="aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 shimmer rounded-sm"></div>
+            <div class="aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 shimmer rounded-sm md:mt-24"></div>
+            <div class="aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 shimmer rounded-sm"></div>
+            <div class="aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 shimmer rounded-sm md:mt-24"></div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="py-20 px-6 border-t border-zinc-200 dark:border-zinc-800">
-        <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-            <div class="text-center md:text-left">
-                <p class="font-serif text-3xl font-bold italic mb-2">Thong Tran<span class="text-accent">.</span></p>
-                <p class="text-[9px] uppercase tracking-[0.2em] opacity-40">&copy; 2026 Thong Tran. All rights reserved.</p>
+    <footer class="py-24 px-6 md:px-20 border-t border-zinc-200 dark:border-zinc-800 bg-lightBg dark:bg-darkBg">
+        <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+            <div class="space-y-6 max-w-md">
+                <a href="#" class="font-serif text-4xl font-bold tracking-tighter block">Thong Tran<span class="text-accent">.</span></a>
+                <p class="text-xs font-light text-zinc-500 leading-relaxed">
+                    Captured with passion. Preserved for eternity. <br>
+                    Based in Mekong Delta, Vietnam.
+                </p>
+                
+                <!-- Day Counter Widget -->
+                <div class="inline-flex items-center gap-3 px-4 py-2 border border-zinc-200 dark:border-zinc-800 rounded-full bg-white dark:bg-zinc-900/50">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                    </span>
+                    <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-600 dark:text-zinc-300">
+                        <span data-i18n="journey_text">Hành trình</span>: <span id="days-count" class="font-mono text-accent">0</span> <span data-i18n="days_label">Ngày</span>
+                    </p>
+                </div>
             </div>
             
-            <div class="flex gap-8 text-xs font-bold uppercase tracking-widest">
-                <a href="#" class="hover:text-accent transition-colors">Instagram</a>
-                <a href="#" class="hover:text-accent transition-colors">Facebook</a>
-                <a href="#" class="hover:text-accent transition-colors">Behance</a>
+            <div class="flex flex-col gap-4 text-right">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">Connect</p>
+                <a href="#" class="text-sm font-medium hover:text-accent transition-colors">Instagram</a>
+                <a href="#" class="text-sm font-medium hover:text-accent transition-colors">Facebook</a>
+                <a href="#" class="text-sm font-medium hover:text-accent transition-colors">Email</a>
             </div>
+        </div>
+        <div class="mt-20 pt-8 border-t border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] uppercase tracking-widest text-zinc-400">
+            <p>&copy; 2026 Thong Tran. All Rights Reserved.</p>
+            <p>Designed for My First Lens</p>
         </div>
     </footer>
 
@@ -167,7 +165,9 @@
                 collection_subtitle: "Kho lưu trữ thị giác",
                 collection_title: "Thư Viện Ảnh",
                 empty_msg: "Chưa có album nào được xuất bản.",
-                photos_label: "Ảnh"
+                photos_label: "Ảnh",
+                journey_text: "Hành trình",
+                days_label: "Ngày"
             },
             en: {
                 nav_collection: "Collection",
@@ -175,7 +175,9 @@
                 collection_subtitle: "Visual Archives",
                 collection_title: "The Gallery",
                 empty_msg: "No albums published yet.",
-                photos_label: "Photos"
+                photos_label: "Photos",
+                journey_text: "Journaling",
+                days_label: "Days"
             }
         };
 
@@ -196,10 +198,21 @@
                 btnEn.classList.replace('opacity-40', 'opacity-100'); btnEn.classList.add('text-accent');
                 btnVi.classList.replace('opacity-100', 'opacity-40'); btnVi.classList.remove('text-accent');
             }
-            if(db) loadAlbums(); // Tải lại để dịch nhãn trong album
+            if(db) loadAlbums();
         }
 
-        // --- 2. FIREBASE LOGIC ---
+        // --- 2. JOURNEY COUNTER ---
+        function updateDaysCounter() {
+            const startDate = new Date('2026-01-01');
+            const now = new Date();
+            const diffTime = now - startDate;
+            let days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            if (days < 0) days = 0;
+            const el = document.getElementById('days-count');
+            if(el) el.innerText = days;
+        }
+
+        // --- 3. FIREBASE LOGIC ---
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
 
@@ -216,28 +229,29 @@
                 }
 
                 let html = '';
+                let index = 0;
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    const cover = data.coverUrl ? data.coverUrl.replace('/upload/', '/upload/w_800,f_auto,q_auto/') : 'https://placehold.co/800x450?text=No+Cover';
+                    const cover = data.coverUrl ? data.coverUrl.replace('/upload/', '/upload/w_1200,f_auto,q_auto/') : 'https://placehold.co/800x1200?text=No+Cover';
+                    
+                    // Staggered Layout Logic: Every 2nd item gets top margin
+                    const mtClass = (index % 2 !== 0) ? 'md:mt-24' : '';
                     
                     html += `
-                        <div class="group animate-fade-in">
-                            <a href="view-collection.html?id=${doc.id}" class="block space-y-6">
-                                <div class="relative aspect-[16/9] overflow-hidden bg-zinc-100 dark:bg-zinc-900 rounded-sm">
-                                    <img src="${cover}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="${data.title}" loading="lazy">
-                                    <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                </div>
-                                <div class="space-y-2">
-                                    <div class="flex justify-between items-end">
-                                        <h3 class="font-serif text-2xl italic group-hover:text-accent transition-colors">${data.title}</h3>
-                                        <span class="text-[9px] uppercase tracking-widest text-zinc-400 font-bold mb-1">
-                                            ${data.photoCount || 0} ${photosLabel}
-                                        </span>
-                                    </div>
-                                    <div class="w-full h-[1px] bg-zinc-200 dark:bg-zinc-800 group-hover:bg-accent/30 transition-colors"></div>
-                                </div>
-                            </a>
-                        </div>`;
+                        <a href="view-collection.html?id=${doc.id}" class="group relative block aspect-[3/4] overflow-hidden bg-zinc-100 dark:bg-zinc-900 ${mtClass} animate-fade-in-up" style="animation-delay: ${index * 0.1}s">
+                            <img src="${cover}" class="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105" alt="${data.title}">
+                            
+                            <!-- Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 md:opacity-0 md:group-hover:opacity-60 transition-opacity duration-500"></div>
+                            
+                            <!-- Content -->
+                            <div class="absolute bottom-8 left-8 text-white translate-y-4 md:translate-y-8 md:opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                                <p class="text-[9px] uppercase tracking-[0.3em] font-bold mb-2 text-accent">0${index + 1}</p>
+                                <h3 class="font-serif text-3xl italic leading-none mb-1">${data.title}</h3>
+                                <p class="text-[9px] uppercase tracking-widest opacity-80 font-light">${data.photoCount || 0} ${photosLabel}</p>
+                            </div>
+                        </a>`;
+                    index++;
                 });
                 container.innerHTML = html;
             } catch (e) {
@@ -246,9 +260,11 @@
             }
         }
 
-        // --- 3. INIT & THEME ---
+        // --- 4. INIT & THEME ---
         document.addEventListener('DOMContentLoaded', () => {
-            setLanguage(localStorage.getItem('lang') || 'vi');
+            const currentLang = localStorage.getItem('lang') || 'vi';
+            setLanguage(currentLang);
+            updateDaysCounter();
             
             const html = document.documentElement;
             if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -270,8 +286,6 @@
             const navbar = document.getElementById('navbar');
             if (currentScroll > 50) navbar.classList.add('glass-nav', 'py-4');
             else navbar.classList.remove('glass-nav', 'py-4');
-            if (currentScroll > lastScroll && currentScroll > 200) navbar.style.transform = 'translateY(-100%)';
-            else navbar.style.transform = 'translateY(0)';
             lastScroll = currentScroll;
         });
     </script>
