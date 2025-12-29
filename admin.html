@@ -146,7 +146,7 @@
                         <div class="flex items-center justify-between bg-white p-3 border border-zinc-200 rounded-sm shadow-sm">
                             <div class="space-y-1">
                                 <span class="text-[10px] font-bold uppercase tracking-widest block">Gắn mã QR Link</span>
-                                <span class="text-[8px] text-zinc-400">(Sẽ được nhúng chung vào stamp)</span>
+                                <span class="text-[8px] text-zinc-400">(Tích hợp vào cùng stamp)</span>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="useQR" class="sr-only peer" onchange="renderPreviews()">
@@ -226,7 +226,7 @@
                         <!-- Size Slider -->
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Kích cỡ Stamp</label>
+                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Tỉ lệ Stamp</label>
                                 <span id="logo-size-val" class="text-[10px] font-bold text-accent">15%</span>
                             </div>
                             <input type="range" id="logoSize" min="5" max="50" value="15" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
@@ -415,7 +415,7 @@
 
                         if (useWm) {
                             if (type === 'image' && logoImage) {
-                                // Draw Logo Image
+                                // Simple logo image drawing
                                 const logoW = canvas.width * logoScale;
                                 const logoH = (logoImage.height / logoImage.width) * logoW;
                                 let logoX, logoY;
@@ -423,65 +423,53 @@
                                 else if (pos === 'bl') { logoX = padding; logoY = canvas.height - logoH - padding; }
                                 else if (pos === 'tr') { logoX = canvas.width - logoW - padding; logoY = padding; }
                                 else { logoX = padding; logoY = padding; }
-
-                                // If QR active, embed in box? Prompt says embed QR with stamp.
-                                // Let's create a glass box even for logo image if QR is active.
-                                if(useQR) {
-                                    const qrS = canvas.width * 0.08;
-                                    const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
-                                    const qrCanvas = document.createElement('canvas');
-                                    await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS });
-                                    
-                                    const combinedW = Math.max(logoW, qrS) + (padding*0.5);
-                                    const combinedH = logoH + qrS + (padding*0.8);
-                                    
-                                    // Simplification: We'll mainly focus text embedding for QR as requested
-                                }
                                 ctx.globalAlpha = 0.95; ctx.drawImage(logoImage, logoX, logoY, logoW, logoH); ctx.globalAlpha = 1.0;
                             } else {
-                                // Draw Text Stamp (Can contain QR)
-                                const baseSize = canvas.width * logoScale * 0.3; 
+                                // BALANCED TEXT + QR LAYOUT
+                                // | Line 1        QR |
+                                // | Line 2           |
+                                
+                                const baseSize = canvas.width * logoScale * 0.25; // Adjusted down for better proportion
                                 const isStyleB = type === 'fixed_b';
                                 
-                                // Measures
-                                ctx.font = isStyleB ? `700 ${baseSize}px 'Playfair Display'` : `italic bold ${baseSize}px 'Playfair Display'`;
-                                const line1W = ctx.measureText(textName).width;
-                                ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
-                                const line2W = ctx.measureText(textSub).width;
-                                
-                                // QR Measure
+                                // QR Settings
                                 let qrS = 0;
                                 let qrCanvas = null;
                                 if(useQR) {
-                                    qrS = canvas.width * 0.08;
+                                    qrS = baseSize * 1.5; // QR size proportional to text
                                     const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
                                     qrCanvas = document.createElement('canvas');
                                     await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS });
                                 }
 
-                                const maxW = Math.max(line1W, line2W, qrS);
+                                // Measure Line 1
+                                ctx.font = isStyleB ? `700 ${baseSize}px 'Playfair Display'` : `italic bold ${baseSize}px 'Playfair Display'`;
+                                const line1W = ctx.measureText(textName).width;
+                                
+                                // Measure Line 2
+                                ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
+                                const line2W = ctx.measureText(textSub).width;
+                                
+                                // Calculations for Glass Box
+                                const spacingX = baseSize * 0.6;
+                                const firstRowW = line1W + (useQR ? qrS + spacingX : 0);
+                                const maxW = Math.max(firstRowW, line2W);
+                                
                                 const bgPadX = baseSize * 0.8;
                                 const bgPadY = baseSize * 0.6;
                                 const bgW = maxW + (bgPadX * 2);
-                                
-                                // Calculate bgHeight based on components
-                                let bgH = (baseSize * 2.2) + (bgPadY * 2);
-                                if(useQR) bgH += qrS + (baseSize * 0.5);
+                                const bgH = (baseSize * 1.8) + (bgPadY * 2); // Compacted height
 
-                                let rectX, rectY, stampX, stampY;
-                                // Simplified positioning for all corners
+                                let rectX, rectY;
                                 if (pos === 'br') { rectX = canvas.width - bgW - padding; rectY = canvas.height - bgH - padding; }
                                 else if (pos === 'bl') { rectX = padding; rectY = canvas.height - bgH - padding; }
                                 else if (pos === 'tr') { rectX = canvas.width - bgW - padding; rectY = padding; }
                                 else { rectX = padding; rectY = padding; }
 
-                                stampX = rectX + (bgW / 2);
-                                stampY = rectY + bgPadY + (baseSize * 0.85);
-
-                                // Glass Background
+                                // 1. Glass Background
                                 ctx.save();
                                 ctx.beginPath();
-                                const r = baseSize * 0.5;
+                                const r = baseSize * 0.4;
                                 ctx.moveTo(rectX + r, rectY);
                                 ctx.arcTo(rectX + bgW, rectY, rectX + bgW, rectY + bgH, r);
                                 ctx.arcTo(rectX + bgW, rectY + bgH, rectX, rectY + bgH, r);
@@ -489,62 +477,49 @@
                                 ctx.arcTo(rectX, rectY, rectX + bgW, rectY, r);
                                 ctx.closePath();
                                 const isDark = color.toLowerCase() === '#000000';
-                                ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.38)';
+                                ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.42)' : 'rgba(0, 0, 0, 0.35)';
                                 ctx.fill();
-                                ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)';
+                                ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)';
                                 ctx.stroke();
                                 ctx.restore();
 
-                                // Drawing Text (Always centered within the stamp box now)
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
+                                // 2. Draw Elements (Left Aligned within box for balanced grid look)
+                                const contentX = rectX + bgPadX;
+                                const contentY = rectY + bgPadY;
                                 
-                                // Line 1
+                                // ROW 1: Text Name + QR
+                                ctx.textBaseline = 'top';
+                                ctx.textAlign = 'left';
+                                
                                 if(isStyleB) {
+                                    // Line 1 Style B: ThongTran. (Dot is Gold)
                                     const textWithoutDot = "ThongTran";
                                     ctx.font = `700 ${baseSize}px 'Playfair Display'`;
-                                    const fullW = ctx.measureText("ThongTran.").width;
-                                    const startX = stampX - (fullW / 2);
-                                    
-                                    ctx.textAlign = 'left';
                                     ctx.fillStyle = color;
-                                    ctx.fillText(textWithoutDot, startX, stampY);
+                                    ctx.fillText(textWithoutDot, contentX, contentY);
                                     const nameW = ctx.measureText(textWithoutDot).width;
                                     ctx.fillStyle = '#c5a059'; // Gold dot
-                                    ctx.fillText(".", startX + nameW, stampY);
+                                    ctx.fillText(".", contentX + nameW, contentY);
                                 } else {
                                     ctx.fillStyle = color;
                                     ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
-                                    ctx.fillText(textName, stampX, stampY);
+                                    ctx.fillText(textName, contentX, contentY);
                                 }
 
-                                // Line 2
-                                ctx.textAlign = 'center';
-                                ctx.fillStyle = color;
-                                ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
-                                const line2Y = stampY + (baseSize * 0.9);
-                                ctx.fillText(textSub, stampX, line2Y);
-
-                                // QR Integrated inside box
+                                // Draw QR at the end of Row 1
                                 if(useQR && qrCanvas) {
-                                    const qrY = line2Y + (baseSize * 0.8);
+                                    const qrX = rectX + bgW - bgPadX - qrS;
                                     ctx.globalAlpha = 0.85;
-                                    ctx.drawImage(qrCanvas, stampX - (qrS / 2), qrY, qrS, qrS);
+                                    // Align QR vertically with Line 1
+                                    ctx.drawImage(qrCanvas, qrX, contentY - (qrS * 0.1), qrS, qrS);
                                     ctx.globalAlpha = 1.0;
                                 }
+
+                                // ROW 2: Subtitle (Line 2)
+                                ctx.fillStyle = color;
+                                ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
+                                ctx.fillText(textSub, contentX, contentY + (baseSize * 1.1));
                             }
-                        } else if (useQR) {
-                            // Only QR, separate corner logic
-                            const qrS = canvas.width * 0.08;
-                            const photoUrl = window.location.origin + '/view-photo.html?id=' + docId;
-                            const qrCanvas = document.createElement('canvas');
-                            await QRCode.toCanvas(qrCanvas, photoUrl, { margin: 1, width: qrS });
-                            let qrX, qrY;
-                            if (pos === 'br') { qrX = canvas.width - qrS - padding; qrY = canvas.height - qrS - padding; }
-                            else if (pos === 'bl') { qrX = padding; qrY = canvas.height - qrS - padding; }
-                            else if (pos === 'tr') { qrX = canvas.width - qrS - padding; qrY = padding; }
-                            else { qrX = padding; qrY = padding; }
-                            ctx.save(); ctx.globalAlpha = 0.85; ctx.drawImage(qrCanvas, qrX, qrY, qrS, qrS); ctx.restore();
                         }
 
                         canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.92);
@@ -577,7 +552,7 @@
                 title: 'New Album',
                 html: `<div class="text-left space-y-4 p-2"><input id="swal-title" class="swal2-input !m-0 w-full" placeholder="Title"><textarea id="swal-desc" class="swal2-textarea !m-0 w-full" placeholder="Description"></textarea><div class="grid grid-cols-2 gap-2"><input id="swal-loc" class="swal2-input !m-0 w-full" placeholder="Location"><input type="date" id="swal-date" class="swal2-input !m-0 w-full"></div></div>`,
                 focusConfirm: false, showCancelButton: true,
-                preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-loc').value, dateTaken: document.getElementById('swal-date').value })
+                preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-location').value, dateTaken: document.getElementById('swal-date').value })
             });
             if (form && form.title) {
                 await db.collection('albums').add({ ...form, createdAt: firebase.firestore.FieldValue.serverTimestamp(), coverUrl: '', photoCount: 0 });
@@ -589,7 +564,7 @@
             const doc = await db.collection('albums').doc(id).get();
             const d = doc.data();
             const { value: form } = await Swal.fire({
-                title: 'Edit Album',
+                title: 'Sửa Album',
                 html: `<div class="text-left space-y-4 p-2"><input id="swal-e-title" class="swal2-input !m-0 w-full" value="${d.title}"><textarea id="swal-e-desc" class="swal2-textarea !m-0 w-full">${d.description||''}</textarea><div class="grid grid-cols-2 gap-2"><input id="swal-e-loc" class="swal2-input !m-0 w-full" value="${d.location||''}"><input type="date" id="swal-e-date" class="swal2-input !m-0 w-full" value="${d.dateTaken||''}"></div></div>`,
                 focusConfirm: false, showCancelButton: true,
                 preConfirm: () => ({ title: document.getElementById('swal-e-title').value, description: document.getElementById('swal-e-desc').value, location: document.getElementById('swal-e-loc').value, dateTaken: document.getElementById('swal-e-date').value })
@@ -608,10 +583,10 @@
         }
         async function loadPhotosInGrid(albumId) {
             const grid = document.getElementById('admin-photo-grid');
-            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Loading assets...</p>';
+            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Đang tải...</p>';
             try {
                 const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
-                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 text-center py-10">Empty.</p>'; return; }
+                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 text-center py-10">Album trống.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
