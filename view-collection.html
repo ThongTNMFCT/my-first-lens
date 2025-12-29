@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi Tiết Album | My First Lens</title>
+    <title>Album Detail | Thong Tran Photography</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
@@ -15,20 +16,23 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
                     },
                     colors: {
-                        darkBg: '#0a0a0a',
-                        lightBg: '#ffffff',
-                        darkText: '#1a1a1a',
-                        lightText: '#fcfcfc',
-                        gold: '#d4af37'
+                        darkBg: '#050505',
+                        lightBg: '#fafafa',
+                        accent: '#c5a059',
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'reveal': 'reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
                     },
                     keyframes: {
+                        reveal: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' },
@@ -39,130 +43,149 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 6px; }
+        body { scroll-behavior: smooth; }
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
-        body:not(.dark) ::-webkit-scrollbar-thumb { background: #ccc; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .reveal-container { overflow: hidden; }
         
-        /* Đảm bảo ảnh trong Grid luôn vuông vức hoặc tỉ lệ chuẩn nếu cần */
+        /* Lightbox Custom Scroll */
+        #comments-list::-webkit-scrollbar { width: 3px; }
+        
         .photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            aspect-ratio: 1/1; /* Bạn có thể bỏ dòng này nếu muốn giữ tỉ lệ gốc của ảnh */
+            transition: filter 0.5s ease, transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .photo-item:hover img {
+            filter: brightness(0.8);
+            transform: scale(1.03);
         }
     </style>
 </head>
-<body class="bg-lightBg dark:bg-darkBg text-darkText dark:text-lightText antialiased overflow-x-hidden transition-colors duration-300">
+<body class="bg-lightBg dark:bg-darkBg text-zinc-900 dark:text-zinc-100 antialiased transition-colors duration-500 overflow-x-hidden">
 
-    <div id="nav-container" class="fixed top-6 left-0 right-0 z-40 flex justify-center px-4 transition-all duration-300">
-        <nav class="w-full max-w-5xl flex items-center justify-between px-6 py-3 rounded-full backdrop-blur-md transition-all duration-300
-                    bg-white/80 dark:bg-black/70 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
-            
-            <a href="collection.html" class="text-xs uppercase tracking-widest hover:text-gold transition-colors flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i> <span class="hidden sm:inline">Trở lại</span>
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-500">
+        <div class="max-w-screen-2xl mx-auto flex justify-between items-center">
+            <a href="collection.html" class="flex items-center gap-4 group">
+                <div class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-accent group-hover:border-accent group-hover:text-white transition-all">
+                    <i class="fas fa-arrow-left text-[10px]"></i>
+                </div>
+                <span class="text-[9px] uppercase tracking-[0.3em] font-bold hidden sm:inline" data-i18n="back_to_gallery">Back to Gallery</span>
             </a>
 
-            <a href="index.html" class="font-serif text-2xl italic tracking-wide font-bold hover:text-gold transition-colors absolute left-1/2 transform -translate-x-1/2">
-                My First Lens.
+            <a href="index.html" class="font-serif text-2xl font-bold tracking-tighter hover:text-accent transition-colors absolute left-1/2 -translate-x-1/2">
+                Thong Tran<span class="text-accent">.</span>
             </a>
 
-            <div class="flex items-center gap-4">
-                <button id="theme-toggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-                    <i class="fas fa-moon dark:hidden text-sm"></i> 
-                    <i class="fas fa-sun hidden dark:block text-sm text-yellow-300"></i>
+            <div class="flex items-center gap-6">
+                <div class="hidden sm:flex items-center gap-3 text-[9px] font-bold tracking-widest">
+                    <button onclick="setLanguage('vi')" id="btn-vi" class="opacity-40 hover:opacity-100 transition-opacity">VIE</button>
+                    <button onclick="setLanguage('en')" id="btn-en" class="opacity-40 hover:opacity-100 transition-opacity">ENG</button>
+                </div>
+                
+                <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all">
+                    <i class="fas fa-moon dark:hidden text-xs"></i> 
+                    <i class="fas fa-sun hidden dark:block text-xs text-yellow-500"></i>
                 </button>
             </div>
-        </nav>
-    </div>
+        </div>
+    </nav>
 
-    <header class="pt-40 pb-12 text-center px-4 animate-[fadeIn_1s_ease-out]">
-        <h1 id="album-title" class="font-serif text-5xl md:text-7xl italic font-thin mb-4">Loading...</h1>
-        <p id="album-desc" class="font-sans text-sm md:text-base font-light text-gray-500 dark:text-gray-400 max-w-2xl mx-auto tracking-wide leading-relaxed">...</p>
+    <!-- Header -->
+    <header class="pt-48 pb-16 px-6 max-w-4xl mx-auto text-center">
+        <div class="reveal-container mb-4">
+            <h1 id="album-title" class="font-serif text-5xl md:text-7xl italic font-light opacity-0 animate-reveal text-zinc-900 dark:text-zinc-100">
+                Loading Archive...
+            </h1>
+        </div>
+        <p id="album-desc" class="text-sm font-light text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed opacity-0 animate-fade-in" style="animation-delay: 0.5s;">
+            ---
+        </p>
+        <div class="mt-12 flex items-center justify-center gap-8 opacity-0 animate-fade-in" style="animation-delay: 0.8s;">
+            <div class="text-center">
+                <p class="text-[8px] uppercase tracking-[0.3em] text-zinc-400 mb-1" data-i18n="meta_location">Location</p>
+                <p id="album-location" class="text-[10px] font-bold">---</p>
+            </div>
+            <div class="w-[1px] h-4 bg-zinc-200 dark:bg-zinc-800"></div>
+            <div class="text-center">
+                <p class="text-[8px] uppercase tracking-[0.3em] text-zinc-400 mb-1" data-i18n="meta_date">Date</p>
+                <p id="album-date" class="text-[10px] font-bold">---</p>
+            </div>
+        </div>
     </header>
 
-    <main class="px-4 md:px-8 max-w-7xl mx-auto pb-20 min-h-screen">
-        <div id="photo-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            </div>
+    <!-- Gallery Grid -->
+    <main class="max-w-screen-2xl mx-auto px-4 md:px-8 pb-32 min-h-screen">
+        <div id="photo-container" class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+            <!-- Loading state will be here -->
+        </div>
     </main>
 
-    <div id="lightboxModal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl transition-opacity" onclick="closeLightbox()"></div>
-        <button onclick="closeLightbox()" class="absolute top-4 right-6 z-[60] text-3xl font-thin hover:text-gold transition-colors">&times;</button>
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="fixed inset-0 z-[100] hidden overflow-hidden">
+        <div class="absolute inset-0 bg-white/95 dark:bg-black/98 backdrop-blur-xl transition-opacity" onclick="closeLightbox()"></div>
+        
+        <!-- Close Button -->
+        <button onclick="closeLightbox()" class="absolute top-8 right-8 z-[110] w-12 h-12 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all">
+            <i class="fas fa-times text-xs"></i>
+        </button>
 
-        <div class="absolute inset-0 md:inset-10 flex flex-col md:flex-row shadow-2xl overflow-hidden pointer-events-none z-[55]">
-            
-            <div class="w-full md:w-3/4 h-1/2 md:h-full flex items-center justify-center bg-transparent pointer-events-auto relative p-4">
-                <img id="lightbox-img" src="" class="max-w-full max-h-full object-contain shadow-lg rounded-sm">
+        <div class="absolute inset-0 flex flex-col lg:flex-row pointer-events-none p-4 lg:p-10 gap-6">
+            <!-- Image View -->
+            <div class="w-full lg:w-2/3 h-2/3 lg:h-full flex items-center justify-center pointer-events-auto">
+                <img id="lightbox-img" src="" class="max-w-full max-h-full object-contain shadow-2xl rounded-sm">
             </div>
 
-            <div class="w-full md:w-1/4 h-1/2 md:h-full bg-white dark:bg-[#111] border-l border-gray-200 dark:border-white/10 pointer-events-auto flex flex-col">
+            <!-- Sidebar Info -->
+            <div class="w-full lg:w-1/3 h-1/3 lg:h-full bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 pointer-events-auto flex flex-col rounded-sm">
                 
-                <div class="p-6 pb-4 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/5 overflow-y-auto max-h-[40%]">
-                    
-                    <div class="flex items-center gap-4 mb-3">
-                         <div class="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold">
-                             <i class="fas fa-map-marker-alt text-xs"></i>
-                         </div>
-                         <div>
-                             <p class="text-[9px] uppercase tracking-widest text-gray-400">Location</p>
-                             <p id="meta-location" class="text-sm font-medium dark:text-gray-200">Vietnam</p>
-                         </div>
+                <!-- Metadata Section -->
+                <div class="p-8 border-b border-zinc-200 dark:border-zinc-800 space-y-6">
+                    <div id="meta-exif" class="grid grid-cols-4 gap-4 text-center">
+                        <div class="space-y-1">
+                            <i class="fas fa-camera text-[10px] text-accent"></i>
+                            <p id="exif-camera" class="text-[9px] font-bold truncate opacity-60">--</p>
+                        </div>
+                        <div class="space-y-1">
+                            <i class="fas fa-dot-circle text-[10px] text-accent"></i>
+                            <p id="exif-aperture" class="text-[9px] font-bold opacity-60">--</p>
+                        </div>
+                        <div class="space-y-1">
+                            <i class="fas fa-bolt text-[10px] text-accent"></i>
+                            <p id="exif-shutter" class="text-[9px] font-bold opacity-60">--</p>
+                        </div>
+                        <div class="space-y-1">
+                            <i class="fas fa-adjust text-[10px] text-accent"></i>
+                            <p id="exif-iso" class="text-[9px] font-bold opacity-60">--</p>
+                        </div>
                     </div>
-                    
-                    <div class="flex items-center gap-4">
-                        <div class="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold">
-                            <i class="far fa-clock text-xs"></i>
-                        </div>
-                        <div>
-                            <p class="text-[9px] uppercase tracking-widest text-gray-400">Captured On</p>
-                            <p id="meta-date" class="text-sm font-medium dark:text-gray-200">--/--/----</p>
-                        </div>
-                   </div>
 
-                   <div id="meta-exif" class="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 hidden">
-                        <p class="text-[9px] uppercase tracking-widest text-gray-400 mb-2">Technical Specs</p>
-                        <div class="grid grid-cols-4 gap-2 text-center">
-                            <div>
-                                <i class="fas fa-camera text-gray-400 text-xs mb-1"></i>
-                                <p id="exif-camera" class="text-[10px] font-bold truncate">--</p>
-                            </div>
-                            <div>
-                                <i class="fas fa-bullseye text-gray-400 text-xs mb-1"></i>
-                                <p id="exif-aperture" class="text-[10px] font-bold">--</p>
-                            </div>
-                            <div>
-                                <i class="fas fa-bolt text-gray-400 text-xs mb-1"></i>
-                                <p id="exif-shutter" class="text-[10px] font-bold">--</p>
-                            </div>
-                            <div>
-                                <i class="fas fa-adjust text-gray-400 text-xs mb-1"></i>
-                                <p id="exif-iso" class="text-[10px] font-bold">--</p>
-                            </div>
-                        </div>
-                   </div>
-
+                    <div class="flex justify-between items-center pt-4">
+                        <h4 class="font-serif italic text-xl" data-i18n="comments_title">Comments</h4>
+                        <button id="btn-like" onclick="toggleLike()" class="flex items-center gap-2 group">
+                            <i id="icon-heart" class="far fa-heart text-sm group-hover:scale-110 transition-transform"></i>
+                            <span id="like-count" class="text-[10px] font-bold">0</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#111]">
-                    <h3 class="font-serif italic text-lg text-gray-600 dark:text-gray-300">Bình luận</h3>
-                    <button id="btn-like" onclick="toggleLike()" class="group flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors">
-                        <i id="icon-heart" class="far fa-heart text-xl group-hover:scale-110 transition-transform"></i>
-                        <span id="like-count" class="font-sans text-xs font-bold">0</span>
-                    </button>
+                <!-- Comments List -->
+                <div id="comments-list" class="flex-1 overflow-y-auto p-8 space-y-6">
+                    <p class="text-center text-zinc-500 italic text-[10px]" data-i18n="loading_comments">Loading discussion...</p>
                 </div>
 
-                <div id="comments-list" class="flex-1 overflow-y-auto p-6 space-y-4">
-                    <p class="text-center text-gray-400 text-xs italic mt-10">Đang tải bình luận...</p>
-                </div>
-
-                <div class="p-4 border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black/20">
-                    <div class="flex gap-2">
-                        <input type="text" id="comment-input" placeholder="Viết cảm nghĩ..." 
-                               class="w-full bg-transparent border-b border-gray-300 dark:border-gray-600 py-2 px-1 text-sm focus:outline-none focus:border-gold transition-colors dark:text-white"
+                <!-- Comment Input -->
+                <div class="p-6 bg-zinc-50 dark:bg-zinc-800/50">
+                    <div class="flex gap-4">
+                        <input type="text" id="comment-input" placeholder="Share your thoughts..." 
+                               class="flex-1 bg-transparent border-b border-zinc-300 dark:border-zinc-700 py-2 text-[11px] focus:outline-none focus:border-accent transition-colors"
                                onkeypress="if(event.key === 'Enter') postComment()">
-                        <button onclick="postComment()" class="text-gold hover:text-white hover:bg-gold rounded-full w-8 h-8 flex items-center justify-center transition-all">
-                            <i class="fas fa-paper-plane text-xs"></i>
+                        <button onclick="postComment()" class="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center hover:bg-accent transition-colors">
+                            <i class="fas fa-paper-plane text-[10px]"></i>
                         </button>
                     </div>
                 </div>
@@ -170,33 +193,237 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="config.js"></script>
-    <script src="app.js"></script>
-    
+
     <script>
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            htmlElement.classList.add('dark');
-        } else {
-            htmlElement.classList.remove('dark');
+        // --- 1. LANGUAGE DATA ---
+        const translations = {
+            vi: {
+                back_to_gallery: "Quay lại thư viện",
+                meta_location: "Địa điểm",
+                meta_date: "Thời gian",
+                comments_title: "Bình luận",
+                loading_comments: "Đang tải thảo luận...",
+                no_comments: "Hãy là người đầu tiên để lại cảm nghĩ.",
+                placeholder_comment: "Chia sẻ cảm nghĩ của bạn...",
+                guest_name: "Khách tham quan"
+            },
+            en: {
+                back_to_gallery: "Back to Gallery",
+                meta_location: "Location",
+                meta_date: "Captured On",
+                comments_title: "Comments",
+                loading_comments: "Loading discussion...",
+                no_comments: "Be the first to share your thoughts.",
+                placeholder_comment: "Share your thoughts...",
+                guest_name: "Visitor"
+            }
+        };
+
+        function setLanguage(lang) {
+            localStorage.setItem('lang', lang);
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.innerHTML = t[key];
+            });
+            const input = document.getElementById('comment-input');
+            if(input) input.placeholder = t.placeholder_comment;
+
+            const btnVi = document.getElementById('btn-vi');
+            const btnEn = document.getElementById('btn-en');
+            if (lang === 'vi') { btnVi.style.opacity = '1'; btnEn.style.opacity = '0.4'; } 
+            else { btnEn.style.opacity = '1'; btnVi.style.opacity = '0.4'; }
         }
-        themeToggleBtn.addEventListener('click', function() {
-            if (htmlElement.classList.contains('dark')) {
-                htmlElement.classList.remove('dark'); localStorage.setItem('color-theme', 'light');
+
+        // --- 2. FIREBASE LOGIC ---
+        if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
+        const db = firebase.firestore();
+
+        let currentPhotoId = null;
+        let unsubscribeComments = null;
+        let unsubscribeLikes = null;
+
+        async function loadAlbumDataAndPhotos() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const albumId = urlParams.get('id');
+            if (!albumId) return;
+
+            try {
+                // Load Album Header
+                const albumDoc = await db.collection('albums').doc(albumId).get();
+                if (albumDoc.exists) {
+                    const data = albumDoc.data();
+                    document.getElementById('album-title').innerText = data.title;
+                    document.getElementById('album-desc').innerText = data.description || "";
+                    document.getElementById('album-location').innerText = data.location || "Vietnam";
+                    document.getElementById('album-date').innerText = data.dateTaken ? new Date(data.dateTaken).toLocaleDateString('en-GB') : "Archive";
+                }
+
+                // Load Photos
+                const photoContainer = document.getElementById('photo-container');
+                const snapshot = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
+                
+                if (snapshot.empty) {
+                    photoContainer.innerHTML = '<p class="col-span-full text-center text-zinc-500 italic py-20">This archive is currently empty.</p>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const thumb = data.url.replace('/upload/', '/upload/w_800,q_auto,f_auto/');
+                    const exif = data.exif ? encodeURIComponent(JSON.stringify(data.exif)) : '';
+                    
+                    html += `
+                        <div class="photo-item break-inside-avoid mb-4 group cursor-zoom-in relative overflow-hidden rounded-sm animate-fade-in" 
+                             onclick="openLightbox('${data.url}', '${doc.id}', '${exif}')">
+                            <img src="${thumb}" class="w-full h-auto block" loading="lazy">
+                            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>`;
+                });
+                photoContainer.innerHTML = html;
+
+            } catch (e) { console.error(e); }
+        }
+
+        // --- 3. LIGHTBOX SYSTEM ---
+        window.openLightbox = function(url, photoId, exifString) {
+            currentPhotoId = photoId;
+            const modal = document.getElementById('lightboxModal');
+            document.getElementById('lightbox-img').src = url;
+
+            // EXIF logic
+            if (exifString) {
+                try {
+                    const exif = JSON.parse(decodeURIComponent(exifString));
+                    document.getElementById('exif-camera').innerText = exif.camera || '--';
+                    document.getElementById('exif-aperture').innerText = exif.aperture || '--';
+                    document.getElementById('exif-shutter').innerText = exif.shutter || '--';
+                    document.getElementById('exif-iso').innerText = exif.iso || '--';
+                } catch(e) { /* silent */ }
+            }
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Realtime Likes
+            if(unsubscribeLikes) unsubscribeLikes();
+            unsubscribeLikes = db.collection('photos').doc(photoId).onSnapshot(doc => {
+                if(doc.exists) document.getElementById('like-count').innerText = doc.data().likes || 0;
+            });
+            checkLikeStatus(photoId);
+
+            // Realtime Comments
+            loadComments(photoId);
+        };
+
+        window.closeLightbox = function() {
+            document.getElementById('lightboxModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            if(unsubscribeComments) unsubscribeComments();
+            if(unsubscribeLikes) unsubscribeLikes();
+        };
+
+        function loadComments(photoId) {
+            const list = document.getElementById('comments-list');
+            const lang = localStorage.getItem('lang') || 'vi';
+            if(unsubscribeComments) unsubscribeComments();
+
+            unsubscribeComments = db.collection('photos').doc(photoId).collection('comments')
+                .orderBy('createdAt', 'desc').onSnapshot(snap => {
+                    if (snap.empty) {
+                        list.innerHTML = `<p class="text-center text-zinc-500 italic text-[10px] mt-10">${translations[lang].no_comments}</p>`;
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(doc => {
+                        const c = doc.data();
+                        const time = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                        html += `
+                            <div class="space-y-1 animate-fade-in">
+                                <div class="flex justify-between items-baseline">
+                                    <p class="text-[9px] font-bold uppercase tracking-widest text-accent">${c.name || 'Visitor'}</p>
+                                    <p class="text-[8px] opacity-40">${time}</p>
+                                </div>
+                                <p class="text-[11px] leading-relaxed opacity-80">${c.content}</p>
+                            </div>`;
+                    });
+                    list.innerHTML = html;
+                });
+        }
+
+        window.postComment = async function() {
+            const input = document.getElementById('comment-input');
+            const content = input.value.trim();
+            if(!content || !currentPhotoId) return;
+
+            const lang = localStorage.getItem('lang') || 'vi';
+            const name = translations[lang].guest_name;
+
+            try {
+                await db.collection('photos').doc(currentPhotoId).collection('comments').add({
+                    name: name,
+                    content: content,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                input.value = '';
+            } catch(e) { console.error(e); }
+        };
+
+        function checkLikeStatus(id) {
+            const liked = JSON.parse(localStorage.getItem('liked_photos') || '[]');
+            const icon = document.getElementById('icon-heart');
+            if (liked.includes(id)) {
+                icon.classList.replace('far', 'fas'); icon.classList.add('text-red-500');
             } else {
-                htmlElement.classList.add('dark'); localStorage.setItem('color-theme', 'dark');
+                icon.classList.replace('fas', 'far'); icon.classList.remove('text-red-500');
+            }
+        }
+
+        window.toggleLike = async function() {
+            if(!currentPhotoId) return;
+            const liked = JSON.parse(localStorage.getItem('liked_photos') || '[]');
+            const isLiked = liked.includes(currentPhotoId);
+            const ref = db.collection('photos').doc(currentPhotoId);
+
+            if (!isLiked) {
+                liked.push(currentPhotoId);
+                await ref.update({ likes: firebase.firestore.FieldValue.increment(1) });
+            } else {
+                const index = liked.indexOf(currentPhotoId);
+                liked.splice(index, 1);
+                await ref.update({ likes: firebase.firestore.FieldValue.increment(-1) });
+            }
+            localStorage.setItem('liked_photos', JSON.stringify(liked));
+            checkLikeStatus(currentPhotoId);
+        };
+
+        // --- 4. INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(localStorage.getItem('lang') || 'vi');
+            loadAlbumDataAndPhotos();
+            
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
             }
         });
-        
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('nav-container');
-            if(nav) {
-                if (window.scrollY > 50) { nav.classList.remove('top-6'); nav.classList.add('top-2', 'scale-95'); } 
-                else { nav.classList.add('top-6'); nav.classList.remove('top-2', 'scale-95'); }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark'); localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark'); localStorage.setItem('color-theme', 'dark');
             }
+        });
+
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) navbar.classList.add('glass-nav', 'py-4');
+            else navbar.classList.remove('glass-nav', 'py-4');
         });
     </script>
 </body>
