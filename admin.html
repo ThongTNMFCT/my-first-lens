@@ -58,7 +58,7 @@
         input[type=range]::-webkit-slider-runnable-track { background: #e5e7eb; height: 4px; border-radius: 2px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #c5a059; margin-top: -6px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
         
-        #preview-grid img { object-fit: cover; width: 100%; height: 100%; }
+        #preview-grid img { object-fit: cover; width: 100%; height: 100%; display: block; }
     </style>
 </head>
 <body class="bg-[#fafafa] font-sans text-zinc-900 antialiased">
@@ -146,7 +146,7 @@
 
     <!-- Upload Overlay -->
     <div id="uploadModal" class="hidden fixed inset-0 bg-white/98 backdrop-blur-xl z-[150] flex items-center justify-center p-6 overflow-y-auto">
-        <div class="w-full max-w-5xl space-y-8 py-10">
+        <div class="w-full max-w-6xl space-y-8 py-10">
             <div class="text-center space-y-2">
                 <h3 class="font-serif text-4xl italic">Archive Assets</h3>
                 <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Select high-quality photographs</p>
@@ -218,7 +218,7 @@
                     <!-- Dropzone -->
                     <div class="relative group">
                         <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelection()">
-                        <div class="border border-dashed border-zinc-200 rounded-sm p-10 text-center group-hover:border-accent transition-colors bg-white">
+                        <div class="border border-dashed border-zinc-200 rounded-sm p-10 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
                             <div id="upload-placeholder" class="space-y-3">
                                 <i class="fas fa-camera text-xl text-zinc-300"></i>
                                 <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400">Thả ảnh vào đây hoặc nhấn để chọn</p>
@@ -230,9 +230,9 @@
                     <div id="preview-container" class="hidden space-y-4">
                         <div class="flex justify-between items-end border-b border-zinc-100 pb-2">
                             <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Xem trước kết quả (<span id="preview-count">0</span> ảnh)</p>
-                            <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600">Xóa tất cả</button>
+                            <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Xóa tất cả</button>
                         </div>
-                        <div id="preview-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 h-[400px] overflow-y-auto pr-2">
+                        <div id="preview-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-6 max-h-[500px] overflow-y-auto pr-2 py-2">
                             <!-- Previews will appear here -->
                         </div>
                     </div>
@@ -248,7 +248,7 @@
         </div>
     </div>
 
-    <!-- Hidden Canvas for Watermarking -->
+    <!-- Hidden Canvas (For actual final processing if needed, but we use local canvases) -->
     <canvas id="wm-canvas" class="hidden"></canvas>
 
     <!-- Firebase -->
@@ -259,7 +259,8 @@
     <script>
         let currentAlbumId = null;
         let logoImageObj = null;
-        let selectedFiles = []; // Lưu trữ mảng file gốc
+        let selectedFiles = []; 
+        let currentRenderId = 0; // Để tránh xung đột khi render liên tục
 
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
@@ -335,8 +336,11 @@
         async function renderPreviews() {
             const grid = document.getElementById('preview-grid');
             const countDisplay = document.getElementById('preview-count');
-            grid.innerHTML = '';
             
+            // Tăng renderId để các luồng render cũ tự dừng lại
+            const renderId = ++currentRenderId;
+            
+            grid.innerHTML = '';
             if (selectedFiles.length === 0) return;
             countDisplay.innerText = selectedFiles.length;
 
@@ -346,43 +350,58 @@
             const logoScale = document.getElementById('logoSize').value / 100;
 
             for (let file of selectedFiles) {
+                // Nếu renderId đã thay đổi, dừng luồng render này lại
+                if (renderId !== currentRenderId) return;
+
                 const itemWrap = document.createElement('div');
-                itemWrap.className = "aspect-square bg-zinc-100 rounded-sm overflow-hidden relative border border-zinc-100 animate-fade-in";
+                itemWrap.className = "aspect-square bg-zinc-100 rounded-sm overflow-hidden relative border border-zinc-100 shadow-sm transition-transform hover:scale-[1.02]";
                 
                 const loader = document.createElement('div');
-                loader.className = "absolute inset-0 flex items-center justify-center bg-white/50";
+                loader.className = "absolute inset-0 flex items-center justify-center bg-white/50 z-10";
                 loader.innerHTML = '<span class="custom-loader !border-zinc-300"></span>';
                 itemWrap.appendChild(loader);
                 grid.appendChild(itemWrap);
 
-                // Process Watermark
-                let previewBlob = file;
-                if (useWm) {
-                    if (wmType === 'image' && !logoImageObj) {
-                        // Skip if logo image not uploaded yet
-                    } else {
-                        previewBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
+                try {
+                    // Xử lý Watermark bằng canvas cục bộ để tránh xung đột
+                    let previewBlob = file;
+                    if (useWm) {
+                        if (wmType === 'image' && !logoImageObj) {
+                            // Bỏ qua nếu chưa chọn logo ảnh
+                        } else {
+                            previewBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
+                        }
                     }
-                }
 
-                const url = URL.createObjectURL(previewBlob);
-                const img = document.createElement('img');
-                img.src = url;
-                img.onload = () => {
-                    loader.remove();
-                    URL.revokeObjectURL(url); // Clean memory
-                };
-                itemWrap.appendChild(img);
+                    // Nếu renderId đã thay đổi sau khi await, xóa phần tử này
+                    if (renderId !== currentRenderId) {
+                        itemWrap.remove();
+                        continue;
+                    }
+
+                    const url = URL.createObjectURL(previewBlob);
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.className = "w-full h-full object-cover";
+                    img.onload = () => {
+                        loader.remove();
+                        // Chúng ta không revokeObjectURL ngay lập tức để browser có thể render lại khi scroll
+                    };
+                    itemWrap.appendChild(img);
+                } catch (err) {
+                    console.error("Preview error:", err);
+                    loader.innerHTML = '<i class="fas fa-exclamation-triangle text-red-400"></i>';
+                }
             }
         }
 
         // --- ALBUMS LOGIC ---
         async function loadAdminAlbums() {
             const container = document.getElementById('admin-album-list');
-            container.innerHTML = '<div class="text-zinc-400 text-[10px] animate-pulse text-center">Đang tải kho lưu trữ...</div>';
+            container.innerHTML = '<div class="text-zinc-400 text-[10px] animate-pulse text-center py-10">Đang tải kho lưu trữ...</div>';
             try {
                 const snap = await db.collection('albums').orderBy('createdAt', 'desc').get();
-                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400 text-center">Chưa có album nào.</p>'; return; }
+                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400 text-center py-10">Chưa có album nào.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
@@ -448,15 +467,15 @@
         }
         async function loadPhotosInGrid(albumId) {
             const grid = document.getElementById('admin-photo-grid');
-            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center">Đang tải tài nguyên...</p>';
+            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center py-10">Đang tải tài nguyên...</p>';
             try {
                 const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
-                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 text-center">Album trống.</p>'; return; }
+                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 text-center py-10">Album trống.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
-                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Chưa đặt tên'}</p></div></div>`;
+                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Chưa đặt tên'}</p></div></div>`;
                 });
                 grid.innerHTML = html;
             } catch (e) { console.error(e); }
@@ -474,14 +493,15 @@
             if (caption !== undefined) { await db.collection('photos').doc(id).update({ caption }); loadPhotosInGrid(currentAlbumId); }
         }
 
-        // --- CORE WATERMARK PROCESSING ---
+        // --- CORE WATERMARK PROCESSING (REFACTORED FOR NO CONFLICTS) ---
         function applyWatermark(file, type, color, logoImage, logoScale) {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
-                        const canvas = document.getElementById('wm-canvas');
+                        // Tạo canvas nội bộ để tránh xung đột
+                        const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
                         canvas.width = img.width;
                         canvas.height = img.height;
@@ -490,8 +510,7 @@
                         const padding = canvas.width * 0.04;
 
                         if (type === 'text') {
-                            // Scale the text relative to the custom scale
-                            const baseSize = canvas.width * logoScale * 0.3; // 30% of scale is name size
+                            const baseSize = canvas.width * logoScale * 0.3; 
                             ctx.textAlign = 'right';
                             ctx.textBaseline = 'bottom';
                             ctx.fillStyle = color;
@@ -503,11 +522,11 @@
 
                             // Line 1: I'm Thong Tran
                             ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
-                            ctx.fillText("I'm Thong Tran", canvas.width - padding, canvas.height - padding - (baseSize * 0.9));
+                            ctx.fillText("I'm Thong Tran", canvas.width - padding, canvas.height - padding - (baseSize * 1.1));
                             
                             // Line 2: My First Lens
                             ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
-                            ctx.font = `700 ${baseSize * 0.4}px 'Inter'`;
+                            ctx.font = `700 ${baseSize * 0.45}px 'Inter'`;
                             ctx.fillText("MY FIRST LENS", canvas.width - padding, canvas.height - padding);
                         } 
                         else if (type === 'image' && logoImage) {
@@ -519,10 +538,15 @@
                             ctx.globalAlpha = 1.0;
                         }
 
-                        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.90);
+                        canvas.toBlob((blob) => {
+                            if (blob) resolve(blob);
+                            else reject(new Error("Canvas to Blob failed"));
+                        }, 'image/jpeg', 0.90);
                     };
+                    img.onerror = reject;
                     img.src = e.target.result;
                 };
+                reader.onerror = reject;
                 reader.readAsDataURL(file);
             });
         }
@@ -567,20 +591,33 @@
             for(let file of selectedFiles) {
                 const exif = await getExif(file);
                 let finalBlob = file;
-                if(useWm) {
-                    finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
-                }
-
-                const fd = new FormData(); 
-                fd.append('file', finalBlob); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
                 try {
+                    if(useWm) {
+                        finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
+                    }
+
+                    const fd = new FormData(); 
+                    fd.append('file', finalBlob); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
+                    
                     const res = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.cloudinary.cloudName}/image/upload`, { method: 'POST', body: fd });
                     const data = await res.json();
                     if(data.secure_url) {
-                        await db.collection('photos').add({ albumId: currentAlbumId, url: data.secure_url, likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp(), exif, caption: '' });
-                        await db.collection('albums').doc(currentAlbumId).update({ coverUrl: data.secure_url, photoCount: firebase.firestore.FieldValue.increment(1) });
+                        await db.collection('photos').add({ 
+                            albumId: currentAlbumId, 
+                            url: data.secure_url, 
+                            likes: 0, 
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(), 
+                            exif, 
+                            caption: '' 
+                        });
+                        await db.collection('albums').doc(currentAlbumId).update({ 
+                            coverUrl: data.secure_url, 
+                            photoCount: firebase.firestore.FieldValue.increment(1) 
+                        });
                     }
-                } catch(e) { console.error(e); }
+                } catch(e) { 
+                    console.error("Upload failed for a file:", e);
+                }
             }
             btn.disabled = false; btn.innerHTML = 'Bắt đầu Upload';
             closeUploadModal(); loadAdminAlbums();
