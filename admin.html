@@ -54,6 +54,10 @@
 
         .color-radio:checked + label { border-color: #c5a059; background-color: rgba(197, 160, 89, 0.1); color: #c5a059; }
         .type-radio:checked + label { background-color: #000; color: #fff; border-color: #000; }
+
+        /* Custom Range Slider Styling */
+        input[type=range]::-webkit-slider-runnable-track { background: #e5e7eb; height: 4px; border-radius: 2px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #c5a059; margin-top: -6px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
     </style>
 </head>
 <body class="bg-[#fafafa] font-sans text-zinc-900 antialiased">
@@ -157,7 +161,7 @@
                     </label>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
                     <!-- Type Selection -->
                     <div class="space-y-3">
                         <label class="text-[9px] uppercase font-bold text-zinc-400">Loại Watermark</label>
@@ -185,14 +189,24 @@
                         </div>
                     </div>
 
-                    <!-- Logo Upload (Visible when Image mode) -->
-                    <div id="image-settings" class="hidden space-y-3 animate-fade-in">
-                        <label class="text-[9px] uppercase font-bold text-zinc-400">Tải lên Logo (.png)</label>
-                        <div class="relative">
-                            <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
-                            <div id="logo-preview-btn" class="border border-zinc-200 py-2 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-2">
-                                <i class="fas fa-image"></i> <span>Chọn Logo</span>
+                    <!-- Logo Upload & Size (Visible when Image mode) -->
+                    <div id="image-settings" class="hidden space-y-6 animate-fade-in">
+                        <div class="space-y-3">
+                            <label class="text-[9px] uppercase font-bold text-zinc-400">Tải lên Logo (.png)</label>
+                            <div class="relative">
+                                <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
+                                <div id="logo-preview-btn" class="border border-zinc-200 py-2 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-2">
+                                    <i class="fas fa-image"></i> <span>Chọn Logo</span>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <label class="text-[9px] uppercase font-bold text-zinc-400">Kích thước Logo</label>
+                                <span id="logo-size-val" class="text-[10px] font-bold text-accent">15%</span>
+                            </div>
+                            <input type="range" id="logoSize" min="5" max="40" value="15" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="document.getElementById('logo-size-val').innerText = this.value + '%'">
                         </div>
                     </div>
                 </div>
@@ -232,7 +246,7 @@
     
     <script>
         let currentAlbumId = null;
-        let logoImageObj = null; // Lưu logo hình ảnh đã tải lên
+        let logoImageObj = null;
 
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
@@ -291,10 +305,10 @@
         // --- ALBUMS LOGIC ---
         async function loadAdminAlbums() {
             const container = document.getElementById('admin-album-list');
-            container.innerHTML = '<div class="text-zinc-400 text-[10px] animate-pulse">Loading archive...</div>';
+            container.innerHTML = '<div class="text-zinc-400 text-[10px] animate-pulse text-center">Loading archive...</div>';
             try {
                 const snap = await db.collection('albums').orderBy('createdAt', 'desc').get();
-                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400">No albums created yet.</p>'; return; }
+                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400 text-center">No albums created yet.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
@@ -360,10 +374,10 @@
         }
         async function loadPhotosInGrid(albumId) {
             const grid = document.getElementById('admin-photo-grid');
-            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse">Loading assets...</p>';
+            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse text-center">Loading assets...</p>';
             try {
                 const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
-                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400">Album is empty.</p>'; return; }
+                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 text-center">Album is empty.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
@@ -387,7 +401,7 @@
         }
 
         // --- CORE WATERMARK PROCESSING ---
-        function applyWatermark(file, type, color, logoImage) {
+        function applyWatermark(file, type, color, logoImage, logoScale) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -422,8 +436,8 @@
                             ctx.fillText("MY FIRST LENS", canvas.width - padding, canvas.height - padding);
                         } 
                         else if (type === 'image' && logoImage) {
-                            // Scale logo (e.g. 15% of width)
-                            const logoW = canvas.width * 0.15;
+                            // Use the custom logo scale (default 15%)
+                            const logoW = canvas.width * logoScale;
                             const logoH = (logoImage.height / logoImage.width) * logoW;
                             
                             ctx.globalAlpha = 0.9;
@@ -477,6 +491,7 @@
             const useWm = document.getElementById('useWatermark').checked;
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
             const wmColor = document.querySelector('input[name="wmColor"]:checked').value;
+            const logoScale = document.getElementById('logoSize').value / 100;
 
             if (useWm && wmType === 'image' && !logoImageObj) {
                 Swal.fire('Lỗi', 'Vui lòng tải lên file Logo trước!', 'error'); return;
@@ -489,7 +504,7 @@
                 const exif = await getExif(file);
                 let finalBlob = file;
                 if(useWm) {
-                    finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj);
+                    finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
                 }
 
                 const fd = new FormData(); 
