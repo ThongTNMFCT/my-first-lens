@@ -48,6 +48,7 @@
 
         .color-radio:checked + label { border-color: #c5a059; background-color: rgba(197, 160, 89, 0.1); color: #c5a059; }
         .type-radio:checked + label { background-color: #000; color: #fff; border-color: #000; }
+        .pos-radio:checked + label { border-color: #000; background-color: #000; color: #fff; }
 
         input[type=range]::-webkit-slider-runnable-track { background: #e5e7eb; height: 4px; border-radius: 2px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #c5a059; margin-top: -6px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
@@ -84,7 +85,7 @@
     <div id="dashboard" class="hidden min-h-screen flex flex-col md:flex-row">
         <aside class="w-full md:w-72 bg-white border-r border-zinc-100 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0 z-20">
             <div class="p-8 border-b border-zinc-50 flex justify-between items-center md:block space-y-2">
-                <span class="font-serif font-bold text-2xl italic tracking-tighter">Portal<span class="text-accent">.</span></span>
+                <span class="font-serif font-bold text-2xl italic tracking-tighter" onclick="location.reload()" class="cursor-pointer">Portal<span class="text-accent">.</span></span>
                 <p class="text-[8px] uppercase tracking-widest text-zinc-400 font-bold hidden md:block">Management System</p>
                 <button onclick="logout()" class="md:hidden text-zinc-400"><i class="fas fa-power-off"></i></button>
             </div>
@@ -140,6 +141,7 @@
                     </div>
 
                     <div class="space-y-6">
+                        <!-- Type Selection -->
                         <div class="space-y-3">
                             <label class="text-[9px] uppercase font-bold text-zinc-400">Loại Watermark</label>
                             <div class="flex border border-zinc-200 rounded-sm overflow-hidden bg-white">
@@ -150,18 +152,30 @@
                             </div>
                         </div>
 
-                        <div id="text-settings-box" class="space-y-3">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400">Màu sắc Chữ</label>
-                            <div class="flex gap-2">
-                                <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-white" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trắng</label>
-                                <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-black" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Đen</label>
-                                <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-accent" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Vàng</label>
+                        <!-- Text Customization -->
+                        <div id="text-custom-box" class="space-y-4">
+                            <div class="space-y-2">
+                                <label class="text-[9px] uppercase font-bold text-zinc-400">Tên (Dòng 1)</label>
+                                <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-3 py-2 text-xs focus:outline-none focus:border-accent" oninput="renderPreviews()">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[9px] uppercase font-bold text-zinc-400">Subtitle (Dòng 2)</label>
+                                <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-3 py-2 text-xs focus:outline-none focus:border-accent" oninput="renderPreviews()">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[9px] uppercase font-bold text-zinc-400">Màu sắc</label>
+                                <div class="flex gap-2">
+                                    <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
+                                    <label for="color-white" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trắng</label>
+                                    <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
+                                    <label for="color-black" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Đen</label>
+                                    <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
+                                    <label for="color-accent" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Vàng</label>
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Logo Upload -->
                         <div id="image-settings-box" class="hidden space-y-3">
                             <label class="text-[9px] uppercase font-bold text-zinc-400">Tải lên Logo (.png)</label>
                             <div class="relative">
@@ -172,6 +186,25 @@
                             </div>
                         </div>
 
+                        <!-- Position Selection -->
+                        <div class="space-y-3">
+                            <label class="text-[9px] uppercase font-bold text-zinc-400">Vị trí stamp</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
+                                <label for="pos-tl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trên - Trái</label>
+                                
+                                <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
+                                <label for="pos-tr" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Trên - Phải</label>
+                                
+                                <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
+                                <label for="pos-bl" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Dưới - Trái</label>
+                                
+                                <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
+                                <label for="pos-br" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Dưới - Phải</label>
+                            </div>
+                        </div>
+
+                        <!-- Shared Size Slider -->
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
                                 <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Kích thước</label>
@@ -200,7 +233,7 @@
                             <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 transition-colors">Xóa tất cả</button>
                         </div>
                         <div id="preview-grid" class="preview-columns max-h-[600px] overflow-y-auto pr-4 py-2">
-                            <!-- Previews will appear here -->
+                            <!-- Previews appear here -->
                         </div>
                     </div>
                 </div>
@@ -252,7 +285,7 @@
         // --- UI TOGGLES ---
         function toggleWMSettings() {
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
-            document.getElementById('text-settings-box').classList.toggle('hidden', wmType !== 'text');
+            document.getElementById('text-custom-box').classList.toggle('hidden', wmType !== 'text');
             document.getElementById('image-settings-box').classList.toggle('hidden', wmType !== 'image');
             renderPreviews();
         }
@@ -302,7 +335,10 @@
             const useWm = document.getElementById('useWatermark').checked;
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
             const wmColor = document.querySelector('input[name="wmColor"]:checked').value;
+            const wmPos = document.querySelector('input[name="wmPos"]:checked').value;
             const logoScale = document.getElementById('logoSize').value / 100;
+            const textName = document.getElementById('wmTextName').value || "";
+            const textSub = document.getElementById('wmTextSub').value || "";
 
             for (let file of selectedFiles) {
                 if (renderId !== currentRenderId) return;
@@ -320,7 +356,7 @@
                     if (useWm) {
                         if (wmType === 'image' && !logoImageObj) { /* Skip */ } 
                         else {
-                            previewBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
+                            previewBlob = await applyWatermark(file, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub);
                         }
                     }
                     if (renderId !== currentRenderId) { itemWrap.remove(); continue; }
@@ -338,7 +374,7 @@
         }
 
         // --- CORE WATERMARK PROCESSING ---
-        function applyWatermark(file, type, color, logoImage, logoScale) {
+        function applyWatermark(file, type, color, pos, logoImage, logoScale, textName, textSub) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -355,28 +391,51 @@
                         if (type === 'text') {
                             const baseSize = canvas.width * logoScale * 0.3; 
                             
-                            // 1. Đo kích thước text để vẽ khung nền
+                            // 1. Measure text for glass background
                             ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
-                            const line1Width = ctx.measureText("I'm Thong Tran").width;
+                            const line1Width = ctx.measureText(textName).width;
                             ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
-                            const line2Width = ctx.measureText("MY FIRST LENS").width;
+                            const line2Width = ctx.measureText(textSub).width;
                             
                             const maxLineWidth = Math.max(line1Width, line2Width);
                             const bgPaddingX = baseSize * 0.8;
                             const bgPaddingY = baseSize * 0.6;
                             const bgWidth = maxLineWidth + (bgPaddingX * 2);
                             const bgHeight = (baseSize * 2.2) + (bgPaddingY * 2);
-                            
-                            const bgX = canvas.width - bgWidth - padding + bgPaddingX;
-                            const bgY = canvas.height - bgHeight - padding + bgPaddingY;
 
-                            // 2. Vẽ Rounded Glass Background
+                            // Calculate position origin
+                            let stampX, stampY, rectX, rectY, align;
+                            
+                            if (pos === 'br') {
+                                align = 'right';
+                                stampX = canvas.width - padding;
+                                stampY = canvas.height - padding;
+                                rectX = canvas.width - bgWidth - (padding / 2);
+                                rectY = canvas.height - bgHeight - (padding / 2);
+                            } else if (pos === 'bl') {
+                                align = 'left';
+                                stampX = padding;
+                                stampY = canvas.height - padding;
+                                rectX = padding / 2;
+                                rectY = canvas.height - bgHeight - (padding / 2);
+                            } else if (pos === 'tr') {
+                                align = 'right';
+                                stampX = canvas.width - padding;
+                                stampY = padding + bgHeight - (bgPaddingY * 1.5);
+                                rectX = canvas.width - bgWidth - (padding / 2);
+                                rectY = padding / 2;
+                            } else { // tl
+                                align = 'left';
+                                stampX = padding;
+                                stampY = padding + bgHeight - (bgPaddingY * 1.5);
+                                rectX = padding / 2;
+                                rectY = padding / 2;
+                            }
+
+                            // 2. Draw Rounded Glass Background
                             ctx.save();
                             ctx.beginPath();
                             const radius = baseSize * 0.5;
-                            const rectX = canvas.width - bgWidth - (padding / 2);
-                            const rectY = canvas.height - bgHeight - (padding / 2);
-                            
                             ctx.moveTo(rectX + radius, rectY);
                             ctx.arcTo(rectX + bgWidth, rectY, rectX + bgWidth, rectY + bgHeight, radius);
                             ctx.arcTo(rectX + bgWidth, rectY + bgHeight, rectX, rectY + bgHeight, radius);
@@ -384,32 +443,46 @@
                             ctx.arcTo(rectX, rectY, rectX + bgWidth, rectY, radius);
                             ctx.closePath();
                             
-                            // Hiệu ứng Glass mờ
                             const isDarkText = color.toLowerCase() === '#000000';
                             ctx.fillStyle = isDarkText ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.35)';
                             ctx.fill();
-                            // Stroke nhẹ cho cảm giác kính
                             ctx.strokeStyle = isDarkText ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)';
                             ctx.lineWidth = 1;
                             ctx.stroke();
                             ctx.restore();
 
-                            // 3. Vẽ Text
-                            ctx.textAlign = 'right';
+                            // 3. Draw Text
+                            ctx.textAlign = align;
                             ctx.textBaseline = 'bottom';
                             ctx.fillStyle = color;
                             
                             ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
-                            ctx.fillText("I'm Thong Tran", canvas.width - padding, canvas.height - padding - (baseSize * 0.95));
+                            ctx.fillText(textName, stampX, stampY - (baseSize * 0.95));
                             
                             ctx.font = `700 ${baseSize * 0.42}px 'Inter'`;
-                            ctx.fillText("MY FIRST LENS", canvas.width - padding, canvas.height - padding);
+                            ctx.fillText(textSub, stampX, stampY);
                         } 
                         else if (type === 'image' && logoImage) {
                             const logoW = canvas.width * logoScale;
                             const logoH = (logoImage.height / logoImage.width) * logoW;
+                            
+                            let logoX, logoY;
+                            if (pos === 'br') {
+                                logoX = canvas.width - logoW - padding;
+                                logoY = canvas.height - logoH - padding;
+                            } else if (pos === 'bl') {
+                                logoX = padding;
+                                logoY = canvas.height - logoH - padding;
+                            } else if (pos === 'tr') {
+                                logoX = canvas.width - logoW - padding;
+                                logoY = padding;
+                            } else {
+                                logoX = padding;
+                                logoY = padding;
+                            }
+                            
                             ctx.globalAlpha = 0.95;
-                            ctx.drawImage(logoImage, canvas.width - logoW - padding, canvas.height - logoH - padding, logoW, logoH);
+                            ctx.drawImage(logoImage, logoX, logoY, logoW, logoH);
                             ctx.globalAlpha = 1.0;
                         }
 
@@ -449,10 +522,10 @@
                             </div>
                         </div>
                         <div class="flex gap-2 w-full md:w-auto justify-end">
-                            <button onclick="openUpload('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button>
-                            <button onclick="editAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
-                            <button onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-images text-[10px]"></i></button>
-                            <button onclick="deleteAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
+                            <button onclick="openUpload('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all" title="Upload"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button>
+                            <button onclick="editAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all" title="Sửa"><i class="fas fa-pen text-[10px]"></i></button>
+                            <button onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all" title="Quản lý ảnh"><i class="fas fa-images text-[10px]"></i></button>
+                            <button onclick="deleteAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all" title="Xóa"><i class="fas fa-trash text-[10px]"></i></button>
                         </div>
                     </div>`;
                 });
@@ -465,7 +538,7 @@
                 title: 'Album mới',
                 html: `<div class="text-left space-y-4 p-2"><input id="swal-title" class="swal2-input !m-0 w-full" placeholder="Tiêu đề"><textarea id="swal-desc" class="swal2-textarea !m-0 w-full" placeholder="Mô tả"></textarea><div class="grid grid-cols-2 gap-2"><input id="swal-loc" class="swal2-input !m-0 w-full" placeholder="Địa điểm"><input type="date" id="swal-date" class="swal2-input !m-0 w-full"></div></div>`,
                 focusConfirm: false, showCancelButton: true, confirmButtonText: 'Tạo',
-                preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-loc').value, dateTaken: document.getElementById('swal-date').value })
+                preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-location').value, dateTaken: document.getElementById('swal-date').value })
             });
             if (form && form.title) {
                 await db.collection('albums').add({ ...form, createdAt: firebase.firestore.FieldValue.serverTimestamp(), coverUrl: '', photoCount: 0 });
@@ -504,7 +577,7 @@
                 snap.forEach(doc => {
                     const d = doc.data();
                     const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
-                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Untitled'}</p></div></div>`;
+                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in shadow-sm"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Untitled'}</p></div></div>`;
                 });
                 grid.innerHTML = html;
             } catch (e) { console.error(e); }
@@ -544,7 +617,11 @@
             const useWm = document.getElementById('useWatermark').checked;
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
             const wmColor = document.querySelector('input[name="wmColor"]:checked').value;
+            const wmPos = document.querySelector('input[name="wmPos"]:checked').value;
             const logoScale = document.getElementById('logoSize').value / 100;
+            const textName = document.getElementById('wmTextName').value;
+            const textSub = document.getElementById('wmTextSub').value;
+
             if (useWm && wmType === 'image' && !logoImageObj) { Swal.fire('Lỗi', 'Vui lòng chọn logo trước!', 'error'); return; }
 
             const btn = document.getElementById('btn-upload-submit');
@@ -554,7 +631,7 @@
                 const exif = await getExif(file);
                 let finalBlob = file;
                 try {
-                    if(useWm) finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj, logoScale);
+                    if(useWm) finalBlob = await applyWatermark(file, wmType, wmColor, wmPos, logoImageObj, logoScale, textName, textSub);
                     const fd = new FormData(); fd.append('file', finalBlob); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
                     const res = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.cloudinary.cloudName}/image/upload`, { method: 'POST', body: fd });
                     const data = await res.json();
