@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Utilities -->
@@ -51,6 +51,9 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #eee; }
+
+        .color-radio:checked + label { border-color: #c5a059; background-color: rgba(197, 160, 89, 0.1); color: #c5a059; }
+        .type-radio:checked + label { background-color: #000; color: #fff; border-color: #000; }
     </style>
 </head>
 <body class="bg-[#fafafa] font-sans text-zinc-900 antialiased">
@@ -113,20 +116,14 @@
 
         <!-- Content Area -->
         <main class="flex-1 p-8 md:p-16 overflow-auto">
-            
-            <!-- Albums View -->
             <div id="view-albums" class="animate-fade-in">
-                <div class="mb-12">
+                <div class="mb-12 text-center md:text-left">
                     <h2 class="font-serif text-4xl italic mb-2">My Collections</h2>
                     <p class="text-[10px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Manage your photography archives</p>
                 </div>
-                
-                <div id="admin-album-list" class="grid grid-cols-1 gap-6 max-w-5xl">
-                    <!-- Album Items -->
-                </div>
+                <div id="admin-album-list" class="grid grid-cols-1 gap-6 max-w-5xl mx-auto md:mx-0"></div>
             </div>
 
-            <!-- Photos Manager View -->
             <div id="view-photos" class="hidden animate-fade-in">
                 <div class="flex items-center gap-6 mb-12 border-b border-zinc-100 pb-8">
                     <button onclick="switchView('albums')" class="w-12 h-12 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all group">
@@ -137,45 +134,96 @@
                         <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold mt-1">Image Asset Management</p>
                     </div>
                 </div>
-
-                <div id="admin-photo-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    <!-- Photo Grid Items -->
-                </div>
+                <div id="admin-photo-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
             </div>
-
         </main>
     </div>
 
     <!-- Upload Overlay -->
-    <div id="uploadModal" class="hidden fixed inset-0 bg-white/95 backdrop-blur-xl z-[150] flex items-center justify-center p-6">
-        <div class="w-full max-w-xl space-y-12">
-            <div class="text-center space-y-4">
+    <div id="uploadModal" class="hidden fixed inset-0 bg-white/95 backdrop-blur-xl z-[150] flex items-center justify-center p-6 overflow-y-auto">
+        <div class="w-full max-w-2xl space-y-8 py-10">
+            <div class="text-center space-y-2">
                 <h3 class="font-serif text-4xl italic">Archive Assets</h3>
-                <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Select high-quality photographs for upload</p>
+                <p class="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Select high-quality photographs</p>
             </div>
 
-            <div class="relative group">
-                <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="updateFileCount()">
-                <div class="border border-dashed border-zinc-200 rounded-sm p-16 text-center group-hover:border-accent transition-colors">
-                    <div id="upload-placeholder" class="space-y-4">
-                        <i class="fas fa-cloud-upload-alt text-2xl text-zinc-200"></i>
-                        <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400">Click or Drag images here</p>
+            <!-- Watermark Controls -->
+            <div class="bg-zinc-50 border border-zinc-100 p-8 space-y-6 rounded-sm shadow-sm">
+                <div class="flex items-center justify-between border-b border-zinc-200 pb-4">
+                    <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-500">Cấu hình Watermark</p>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="useWatermark" checked class="w-4 h-4 accent-zinc-900">
+                        <span class="text-[10px] font-bold uppercase tracking-widest">Kích hoạt</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <!-- Type Selection -->
+                    <div class="space-y-3">
+                        <label class="text-[9px] uppercase font-bold text-zinc-400">Loại Watermark</label>
+                        <div class="flex border border-zinc-200 rounded-sm overflow-hidden">
+                            <input type="radio" name="wmType" id="type-text" value="text" checked class="hidden type-radio">
+                            <label for="type-text" class="flex-1 py-3 text-center text-[10px] font-bold uppercase cursor-pointer transition-all border-r border-zinc-200">Chữ ký</label>
+                            
+                            <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio">
+                            <label for="type-image" class="flex-1 py-3 text-center text-[10px] font-bold uppercase cursor-pointer transition-all">Logo Ảnh</label>
+                        </div>
                     </div>
-                    <div id="file-count-display" class="hidden animate-fade-in space-y-2">
-                        <p class="text-4xl font-serif italic text-accent" id="count-num">0</p>
-                        <p class="text-[9px] uppercase tracking-widest font-bold text-zinc-400">Items Staged</p>
+
+                    <!-- Text Color Selection (Visible when Text mode) -->
+                    <div id="text-settings" class="space-y-3 animate-fade-in">
+                        <label class="text-[9px] uppercase font-bold text-zinc-400">Màu sắc Chữ</label>
+                        <div class="flex gap-2">
+                            <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio">
+                            <label for="color-white" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all">Trắng</label>
+                            
+                            <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio">
+                            <label for="color-black" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all">Đen</label>
+                            
+                            <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio">
+                            <label for="color-accent" class="flex-1 py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all">Vàng</label>
+                        </div>
+                    </div>
+
+                    <!-- Logo Upload (Visible when Image mode) -->
+                    <div id="image-settings" class="hidden space-y-3 animate-fade-in">
+                        <label class="text-[9px] uppercase font-bold text-zinc-400">Tải lên Logo (.png)</label>
+                        <div class="relative">
+                            <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
+                            <div id="logo-preview-btn" class="border border-zinc-200 py-2 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-image"></i> <span>Chọn Logo</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-center gap-8">
-                <button onclick="closeUploadModal()" class="text-[10px] uppercase font-bold tracking-widest text-zinc-400 hover:text-zinc-900 transition-colors">Cancel</button>
-                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-10 py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-accent transition-all shadow-xl">
-                    Push to Cloud
+            <!-- Photos Input -->
+            <div class="relative group">
+                <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="updateFileCount()">
+                <div class="border border-dashed border-zinc-200 rounded-sm p-16 text-center group-hover:border-accent transition-colors">
+                    <div id="upload-placeholder" class="space-y-4">
+                        <i class="fas fa-camera text-2xl text-zinc-200"></i>
+                        <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400">Thả ảnh vào đây hoặc nhấn để chọn</p>
+                    </div>
+                    <div id="file-count-display" class="hidden animate-fade-in space-y-2">
+                        <p class="text-5xl font-serif italic text-accent" id="count-num">0</p>
+                        <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Ảnh đã được chọn</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-12 pt-4">
+                <button onclick="closeUploadModal()" class="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-colors">Hủy bỏ</button>
+                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all shadow-2xl">
+                    Bắt đầu Upload
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- Hidden Canvas for Watermarking -->
+    <canvas id="wm-canvas" class="hidden"></canvas>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -184,17 +232,16 @@
     
     <script>
         let currentAlbumId = null;
+        let logoImageObj = null; // Lưu logo hình ảnh đã tải lên
+
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
 
         // --- AUTH ---
         function checkLogin() {
             if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin') {
-                localStorage.setItem('admin_auth_thongtran', 'true'); 
-                showDashboard();
-            } else { 
-                Swal.fire({ icon: 'error', title: 'Unauthorized', text: 'Invalid administrative credentials.', confirmButtonColor: '#000' }); 
-            }
+                localStorage.setItem('admin_auth_thongtran', 'true'); showDashboard();
+            } else { Swal.fire({ icon: 'error', title: 'Unauthorized', text: 'Sai thông tin đăng nhập.', confirmButtonColor: '#000' }); }
         }
         function showDashboard() {
             document.getElementById('login-screen').classList.add('hidden');
@@ -211,37 +258,64 @@
             else { vP.classList.add('hidden'); vA.classList.remove('hidden'); loadAdminAlbums(); }
         }
 
-        // --- ALBUMS ---
+        // --- WATERMARK UI TOGGLE ---
+        document.querySelectorAll('input[name="wmType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const textSettings = document.getElementById('text-settings');
+                const imageSettings = document.getElementById('image-settings');
+                if (e.target.value === 'text') {
+                    textSettings.classList.remove('hidden');
+                    imageSettings.classList.add('hidden');
+                } else {
+                    textSettings.classList.add('hidden');
+                    imageSettings.classList.remove('hidden');
+                }
+            });
+        });
+
+        function previewLogo() {
+            const file = document.getElementById('logoInput').files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    logoImageObj = img;
+                    document.getElementById('logo-preview-btn').innerHTML = `<i class="fas fa-check text-green-500"></i> <span>Logo Ready</span>`;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- ALBUMS LOGIC ---
         async function loadAdminAlbums() {
             const container = document.getElementById('admin-album-list');
-            container.innerHTML = '<div class="animate-pulse flex space-x-4"><div class="flex-1 space-y-4 py-1"><div class="h-4 bg-zinc-100 w-3/4"></div><div class="h-4 bg-zinc-100"></div></div></div>';
-            
+            container.innerHTML = '<div class="text-zinc-400 text-[10px] animate-pulse">Loading archive...</div>';
             try {
                 const snap = await db.collection('albums').orderBy('createdAt', 'desc').get();
-                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400">No archives created yet.</p>'; return; }
-                
+                if(snap.empty) { container.innerHTML = '<p class="text-[11px] text-zinc-400">No albums created yet.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const cover = d.coverUrl ? d.coverUrl.replace('/upload/', '/upload/w_200,h_200,c_fill/') : 'https://placehold.co/200x200?text=Empty';
-
                     html += `
-                    <div class="bg-white p-6 border border-zinc-100 rounded-sm flex flex-col md:flex-row justify-between items-center hover:shadow-xl transition-all gap-6 animate-fade-in">
+                    <div class="bg-white p-6 border border-zinc-100 flex flex-col md:flex-row justify-between items-center hover:shadow-lg transition-all gap-6 animate-fade-in">
                         <div class="flex items-center gap-8 w-full cursor-pointer group" onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')">
                             <img src="${cover}" class="w-20 h-20 object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                            <div class="min-w-0">
+                            <div>
                                 <h3 class="font-serif text-2xl italic group-hover:text-accent transition-colors">${d.title}</h3>
-                                <div class="flex gap-4 mt-2">
+                                <div class="flex gap-4 mt-1">
                                     <span class="text-[8px] font-bold uppercase tracking-widest text-zinc-400"><i class="fas fa-map-marker-alt mr-1"></i> ${d.location || '--'}</span>
                                     <span class="text-[8px] font-bold uppercase tracking-widest text-zinc-400"><i class="fas fa-images mr-1"></i> ${d.photoCount || 0} ITEMS</span>
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="flex gap-2 w-full md:w-auto justify-end">
-                            <button onclick="openUpload('${doc.id}')" class="w-10 h-10 border border-zinc-100 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button>
-                            <button onclick="editAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
-                            <button onclick="deleteAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
+                            <button onclick="openUpload('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-cloud-upload-alt text-[10px]"></i></button>
+                            <button onclick="editAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
+                            <button onclick="openPhotoManager('${doc.id}', '${d.title.replace(/'/g, "\\'")}')" class="w-10 h-10 border border-zinc-100 hover:bg-zinc-900 hover:text-white transition-all"><i class="fas fa-images text-[10px]"></i></button>
+                            <button onclick="deleteAlbum('${doc.id}')" class="w-10 h-10 border border-zinc-100 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
                         </div>
                     </div>`;
                 });
@@ -251,32 +325,13 @@
 
         async function createNewAlbum() {
             const { value: form } = await Swal.fire({
-                title: 'New Archive',
-                html: `
-                    <div class="text-left space-y-4 p-4">
-                        <div class="space-y-1"><label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Title</label><input id="swal-title" class="swal2-input !m-0 w-full" placeholder="e.g. Summer in Da Lat"></div>
-                        <div class="space-y-1"><label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Description</label><textarea id="swal-desc" class="swal2-textarea !m-0 w-full" rows="2"></textarea></div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1"><label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Location</label><input id="swal-loc" class="swal2-input !m-0 w-full"></div>
-                            <div class="space-y-1"><label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Date</label><input type="date" id="swal-date" class="swal2-input !m-0 w-full"></div>
-                        </div>
-                    </div>`,
-                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Initialize', width: '500px',
-                preConfirm: () => ({
-                    title: document.getElementById('swal-title').value,
-                    description: document.getElementById('swal-desc').value,
-                    location: document.getElementById('swal-loc').value,
-                    dateTaken: document.getElementById('swal-date').value
-                })
+                title: 'New Album',
+                html: `<div class="text-left space-y-4 p-2"><input id="swal-title" class="swal2-input !m-0 w-full" placeholder="Album Title"><textarea id="swal-desc" class="swal2-textarea !m-0 w-full" placeholder="Description"></textarea><div class="grid grid-cols-2 gap-2"><input id="swal-loc" class="swal2-input !m-0 w-full" placeholder="Location"><input type="date" id="swal-date" class="swal2-input !m-0 w-full"></div></div>`,
+                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Create',
+                preConfirm: () => ({ title: document.getElementById('swal-title').value, description: document.getElementById('swal-desc').value, location: document.getElementById('swal-loc').value, dateTaken: document.getElementById('swal-date').value })
             });
-
             if (form && form.title) {
-                await db.collection('albums').add({
-                    ...form,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    coverUrl: '',
-                    photoCount: 0
-                });
+                await db.collection('albums').add({ ...form, createdAt: firebase.firestore.FieldValue.serverTimestamp(), coverUrl: '', photoCount: 0 });
                 loadAdminAlbums();
             }
         }
@@ -285,92 +340,108 @@
             const doc = await db.collection('albums').doc(id).get();
             const d = doc.data();
             const { value: form } = await Swal.fire({
-                title: 'Modify Archive',
-                html: `<div class="text-left space-y-4 p-4">
-                    <input id="swal-e-title" class="swal2-input !m-0 w-full" value="${d.title}">
-                    <textarea id="swal-e-desc" class="swal2-textarea !m-0 w-full">${d.description || ''}</textarea>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input id="swal-e-loc" class="swal2-input !m-0 w-full" value="${d.location || ''}">
-                        <input type="date" id="swal-e-date" class="swal2-input !m-0 w-full" value="${d.dateTaken || ''}">
-                    </div>
-                </div>`,
-                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Update', width: '500px',
-                preConfirm: () => ({
-                    title: document.getElementById('swal-e-title').value,
-                    description: document.getElementById('swal-e-desc').value,
-                    location: document.getElementById('swal-e-loc').value,
-                    dateTaken: document.getElementById('swal-e-date').value
-                })
+                title: 'Edit Album',
+                html: `<div class="text-left space-y-4 p-2"><input id="swal-e-title" class="swal2-input !m-0 w-full" value="${d.title}"><textarea id="swal-e-desc" class="swal2-textarea !m-0 w-full">${d.description||''}</textarea><div class="grid grid-cols-2 gap-2"><input id="swal-e-loc" class="swal2-input !m-0 w-full" value="${d.location||''}"><input type="date" id="swal-e-date" class="swal2-input !m-0 w-full" value="${d.dateTaken||''}"></div></div>`,
+                focusConfirm: false, showCancelButton: true,
+                preConfirm: () => ({ title: document.getElementById('swal-e-title').value, description: document.getElementById('swal-e-desc').value, location: document.getElementById('swal-e-loc').value, dateTaken: document.getElementById('swal-e-date').value })
             });
             if (form) { await db.collection('albums').doc(id).update(form); loadAdminAlbums(); }
         }
 
         async function deleteAlbum(id) {
-            const res = await Swal.fire({ title: 'Purge Archive?', text: "Permanent destruction. Are you certain?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Delete' });
+            const res = await Swal.fire({ title: 'Delete Album?', text: "Hành động này không thể hoàn tác!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
             if (res.isConfirmed) { await db.collection('albums').doc(id).delete(); loadAdminAlbums(); }
         }
 
-        // --- PHOTOS ---
+        // --- PHOTOS LOGIC ---
         async function openPhotoManager(id, title) {
-            currentAlbumId = id;
-            document.getElementById('current-album-title').innerText = title;
-            switchView('photos');
-            loadPhotosInGrid(id);
+            currentAlbumId = id; document.getElementById('current-album-title').innerText = title;
+            switchView('photos'); loadPhotosInGrid(id);
         }
-
         async function loadPhotosInGrid(albumId) {
             const grid = document.getElementById('admin-photo-grid');
-            grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400 animate-pulse">Retrieving assets...</p>';
+            grid.innerHTML = '<p class="col-span-full text-[11px] animate-pulse">Loading assets...</p>';
             try {
                 const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
-                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400">Archive is currently empty.</p>'; return; }
-
+                if(snap.empty) { grid.innerHTML = '<p class="col-span-full text-[11px] text-zinc-400">Album is empty.</p>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const thumb = d.url.replace('/upload/', '/upload/w_300,h_300,c_fill/'); 
-                    const exif = d.exif || {};
-
-                    html += `
-                    <div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative">
-                        <div class="aspect-square bg-zinc-50 relative overflow-hidden">
-                            <img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                            <div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                                <button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button>
-                                <button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="p-4 space-y-1">
-                            <p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Untitled'}</p>
-                            <p class="text-[8px] text-zinc-400 font-bold uppercase truncate">${exif.camera || 'EXIF N/A'}</p>
-                        </div>
-                    </div>`;
+                    html += `<div class="bg-white border border-zinc-100 rounded-sm overflow-hidden group relative animate-fade-in"><div class="aspect-square relative overflow-hidden"><img src="${thumb}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"><div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"><button onclick='editPhoto("${doc.id}", "${(d.caption||'').replace(/"/g, '&quot;')}")' class="text-white hover:text-accent"><i class="fas fa-pen"></i></button><button onclick="deletePhoto('${doc.id}')" class="text-white hover:text-red-500"><i class="fas fa-trash"></i></button></div></div><div class="p-3"><p class="text-[9px] font-bold truncate uppercase tracking-widest">${d.caption || 'Untitled'}</p></div></div>`;
                 });
                 grid.innerHTML = html;
             } catch (e) { console.error(e); }
         }
-
         async function deletePhoto(id) {
-            const res = await Swal.fire({ title: 'Remove Asset?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#000' });
+            const res = await Swal.fire({ title: 'Delete photo?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#000' });
             if (res.isConfirmed) {
                 await db.collection('photos').doc(id).delete();
                 await db.collection('albums').doc(currentAlbumId).update({ photoCount: firebase.firestore.FieldValue.increment(-1) });
                 loadPhotosInGrid(currentAlbumId);
             }
         }
-
         async function editPhoto(id, cap) {
-            const { value: caption } = await Swal.fire({ title: 'Modify Caption', input: 'text', inputValue: cap, showCancelButton: true });
-            if (caption !== undefined) {
-                await db.collection('photos').doc(id).update({ caption });
-                loadPhotosInGrid(currentAlbumId);
-            }
+            const { value: caption } = await Swal.fire({ title: 'Edit caption', input: 'text', inputValue: cap, showCancelButton: true });
+            if (caption !== undefined) { await db.collection('photos').doc(id).update({ caption }); loadPhotosInGrid(currentAlbumId); }
         }
 
-        // --- UPLOAD ---
+        // --- CORE WATERMARK PROCESSING ---
+        function applyWatermark(file, type, color, logoImage) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.getElementById('wm-canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+
+                        const padding = canvas.width * 0.04;
+
+                        if (type === 'text') {
+                            const baseSize = canvas.width * 0.025;
+                            ctx.textAlign = 'right';
+                            ctx.textBaseline = 'bottom';
+                            ctx.fillStyle = color;
+                            
+                            // Shadow for clarity
+                            ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                            ctx.shadowBlur = baseSize * 0.2;
+                            ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
+
+                            // Line 1: I'm Thong Tran
+                            ctx.font = `italic bold ${baseSize}px 'Playfair Display'`;
+                            ctx.fillText("I'm Thong Tran", canvas.width - padding, canvas.height - padding - (baseSize * 1.1));
+                            
+                            // Line 2: My First Lens
+                            ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+                            ctx.font = `700 ${baseSize * 0.45}px 'Inter'`;
+                            ctx.fillText("MY FIRST LENS", canvas.width - padding, canvas.height - padding);
+                        } 
+                        else if (type === 'image' && logoImage) {
+                            // Scale logo (e.g. 15% of width)
+                            const logoW = canvas.width * 0.15;
+                            const logoH = (logoImage.height / logoImage.width) * logoW;
+                            
+                            ctx.globalAlpha = 0.9;
+                            ctx.drawImage(logoImage, canvas.width - logoW - padding, canvas.height - logoH - padding, logoW, logoH);
+                            ctx.globalAlpha = 1.0;
+                        }
+
+                        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.92);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // --- UPLOAD LOGIC ---
         function openUpload(id) {
-            currentAlbumId = id;
-            document.getElementById('fileInput').value = ''; 
+            currentAlbumId = id; document.getElementById('fileInput').value = ''; 
             document.getElementById('file-count-display').classList.add('hidden');
             document.getElementById('upload-placeholder').classList.remove('hidden');
             document.getElementById('uploadModal').classList.remove('hidden');
@@ -402,34 +473,40 @@
         async function startUpload() {
             const files = document.getElementById('fileInput').files;
             if(!files.length) return;
+            
+            const useWm = document.getElementById('useWatermark').checked;
+            const wmType = document.querySelector('input[name="wmType"]:checked').value;
+            const wmColor = document.querySelector('input[name="wmColor"]:checked').value;
+
+            if (useWm && wmType === 'image' && !logoImageObj) {
+                Swal.fire('Lỗi', 'Vui lòng tải lên file Logo trước!', 'error'); return;
+            }
+
             const btn = document.getElementById('btn-upload-submit');
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<span class="custom-loader"></span>';
+            btn.disabled = true; btn.innerHTML = '<span class="custom-loader"></span> Processing...';
 
             for(let file of files) {
                 const exif = await getExif(file);
-                const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
+                let finalBlob = file;
+                if(useWm) {
+                    finalBlob = await applyWatermark(file, wmType, wmColor, logoImageObj);
+                }
+
+                const fd = new FormData(); 
+                fd.append('file', finalBlob); fd.append('upload_preset', CONFIG.cloudinary.uploadPreset);
                 try {
                     const res = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.cloudinary.cloudName}/image/upload`, { method: 'POST', body: fd });
                     const data = await res.json();
                     if(data.secure_url) {
-                        await db.collection('photos').add({
-                            albumId: currentAlbumId,
-                            url: data.secure_url,
-                            likes: 0,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            exif,
-                            caption: '' 
-                        });
+                        await db.collection('photos').add({ albumId: currentAlbumId, url: data.secure_url, likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp(), exif, caption: '' });
                         await db.collection('albums').doc(currentAlbumId).update({ coverUrl: data.secure_url, photoCount: firebase.firestore.FieldValue.increment(1) });
                     }
                 } catch(e) { console.error(e); }
             }
-            btn.disabled = false; btn.innerHTML = originalText;
+            btn.disabled = false; btn.innerHTML = 'Bắt đầu Upload';
             closeUploadModal(); loadAdminAlbums();
             if(!document.getElementById('view-photos').classList.contains('hidden')) loadPhotosInGrid(currentAlbumId);
-            Swal.fire({ icon: 'success', title: 'Transmission Complete', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Upload thành công', timer: 1500, showConfirmButton: false });
         }
     </script>
 </body>
