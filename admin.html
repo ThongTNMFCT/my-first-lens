@@ -153,136 +153,144 @@
         </main>
     </div>
 
-    <!-- Enhanced Upload Overlay -->
-    <div id="uploadModal" class="hidden fixed inset-0 bg-white/95 backdrop-blur-2xl z-[150] flex items-center justify-center p-6 overflow-y-auto">
-        <div class="w-full max-w-7xl space-y-10 py-10">
-            <div class="text-center space-y-3">
-                <h3 class="font-serif text-5xl italic">Archive Assets</h3>
-                <p class="text-[10px] uppercase tracking-[0.5em] text-zinc-300 font-bold italic">Synchronizing Vision with Cloud</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+    <!-- Enhanced Upload Overlay (Đã sửa lỗi hiển thị) -->
+    <div id="uploadModal" class="hidden fixed inset-0 z-[150] overflow-y-auto bg-white/95 backdrop-blur-2xl">
+        <div class="flex min-h-full items-center justify-center p-6">
+            <div class="w-full max-w-7xl space-y-10 py-10 relative">
                 
-                <!-- Right: Settings Panel -->
-                <div class="lg:col-span-4 bg-zinc-50 border border-zinc-100 p-8 space-y-8 rounded-sm sticky top-0 shadow-sm glass-sidebar">
-                    <div class="flex items-center justify-between border-b border-zinc-200 pb-4">
-                        <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Identity Stamp</p>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="useWatermark" checked class="w-4 h-4 accent-zinc-900" onchange="renderPreviews()">
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-zinc-900">Active</span>
-                        </label>
-                    </div>
-
-                    <div class="space-y-6">
-                        <!-- QR Integration -->
-                        <div class="flex items-center justify-between bg-white p-4 border border-zinc-200 rounded-sm shadow-sm">
-                            <div class="space-y-1">
-                                <span class="text-[10px] font-bold uppercase tracking-widest block">Embedded QR</span>
-                                <span class="text-[8px] text-zinc-400">Linked to digital archive</span>
-                            </div>
-                            <input type="checkbox" id="useQR" class="w-5 h-5 accent-zinc-900" onchange="renderPreviews()">
-                        </div>
-
-                        <!-- Type -->
-                        <div class="space-y-3">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Visual Style</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="radio" name="wmType" id="type-custom" value="custom" checked class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-custom" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Custom Text</label>
-                                <input type="radio" name="wmType" id="type-fixed-a" value="fixed_a" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-fixed-a" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style A</label>
-                                <input type="radio" name="wmType" id="type-fixed-b" value="fixed_b" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-fixed-b" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B</label>
-                                <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio" onchange="toggleWMSettings()">
-                                <label for="type-image" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Image Logo</label>
-                            </div>
-                        </div>
-
-                        <!-- Configs -->
-                        <div id="text-config-panel" class="space-y-5">
-                            <div id="custom-text-inputs" class="space-y-3">
-                                <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs focus:outline-none focus:border-accent font-medium" oninput="renderPreviews()">
-                                <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs focus:outline-none focus:border-accent font-medium" oninput="renderPreviews()">
-                            </div>
-                            <div class="grid grid-cols-3 gap-2">
-                                <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-white" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">White</label>
-                                <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-black" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Black</label>
-                                <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
-                                <label for="color-accent" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Gold</label>
-                            </div>
-                        </div>
-
-                        <div id="image-settings-box" class="hidden">
-                            <div class="relative group">
-                                <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
-                                <div id="logo-preview-btn" class="bg-white border border-zinc-200 py-3 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-3">
-                                    <i class="fas fa-image text-zinc-300"></i> <span>Import Branding Asset</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Precise Positioning Pad -->
-                        <div class="space-y-3">
-                            <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Precision Placement</label>
-                            <div class="flex gap-4">
-                                <div class="grid grid-cols-2 gap-1.5 w-1/2">
-                                    <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-tl" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Top-L</label>
-                                    <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-tr" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Top-R</label>
-                                    <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-bl" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Bot-L</label>
-                                    <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
-                                    <label for="pos-br" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Bot-R</label>
-                                </div>
-                                <div class="grid grid-cols-3 gap-1.5 w-1/2 h-fit">
-                                    <div></div><button onclick="moveStamp(0, -2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-up text-[9px]"></i></button><div></div>
-                                    <button onclick="moveStamp(-2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-left text-[9px]"></i></button>
-                                    <button onclick="resetStamp()" class="w-full bg-zinc-900 text-white aspect-square flex items-center justify-center text-[10px] font-bold">R</button>
-                                    <button onclick="moveStamp(2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-right text-[9px]"></i></button>
-                                    <div></div><button onclick="moveStamp(0, 2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-down text-[9px]"></i></button><div></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Scale Slider -->
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Global Scale</label>
-                                <span id="logo-size-val" class="text-[11px] font-bold text-accent">12%</span>
-                            </div>
-                            <input type="range" id="logoSize" min="3" max="45" value="12" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Left: Previews -->
-                <div class="lg:col-span-8 space-y-10">
-                    <div class="relative group">
-                        <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelection()">
-                        <div class="border border-dashed border-zinc-200 rounded-sm p-14 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-zinc-100 mb-4 block"></i>
-                            <p class="text-[11px] uppercase tracking-[0.3em] font-bold text-zinc-400">Import Visual Masterpieces</p>
-                        </div>
-                    </div>
-
-                    <div id="preview-container" class="hidden space-y-6">
-                        <div class="flex justify-between items-end border-b border-zinc-100 pb-4">
-                            <p class="text-[11px] uppercase tracking-widest font-bold text-zinc-900">Live Stage (<span id="preview-count">0</span> Assets)</p>
-                            <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 tracking-widest">Clear Cache</button>
-                        </div>
-                        <div id="preview-grid" class="preview-columns max-h-[700px] overflow-y-auto pr-4 py-2"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-center gap-16 pt-12">
-                <button onclick="closeUploadModal()" class="text-[11px] uppercase font-bold tracking-[0.3em] text-zinc-300 hover:text-zinc-900 transition-colors">Abort</button>
-                <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-16 py-6 text-[11px] font-bold uppercase tracking-[0.5em] hover:bg-accent transition-all shadow-2xl">
-                    Push to Production
+                <!-- Nút đóng nhanh -->
+                <button onclick="closeUploadModal()" class="absolute top-0 right-0 z-50 w-10 h-10 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times text-zinc-500"></i>
                 </button>
+
+                <div class="text-center space-y-3">
+                    <h3 class="font-serif text-5xl italic">Archive Assets</h3>
+                    <p class="text-[10px] uppercase tracking-[0.5em] text-zinc-300 font-bold italic">Synchronizing Vision with Cloud</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                    
+                    <!-- Right: Settings Panel -->
+                    <div class="lg:col-span-4 bg-zinc-50 border border-zinc-100 p-8 space-y-8 rounded-sm sticky top-6 shadow-sm glass-sidebar">
+                        <div class="flex items-center justify-between border-b border-zinc-200 pb-4">
+                            <p class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Identity Stamp</p>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="useWatermark" checked class="w-4 h-4 accent-zinc-900" onchange="renderPreviews()">
+                                <span class="text-[11px] font-bold uppercase tracking-widest text-zinc-900">Active</span>
+                            </label>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- QR Integration -->
+                            <div class="flex items-center justify-between bg-white p-4 border border-zinc-200 rounded-sm shadow-sm">
+                                <div class="space-y-1">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest block">Embedded QR</span>
+                                    <span class="text-[8px] text-zinc-400">Linked to digital archive</span>
+                                </div>
+                                <input type="checkbox" id="useQR" class="w-5 h-5 accent-zinc-900" onchange="renderPreviews()">
+                            </div>
+
+                            <!-- Type -->
+                            <div class="space-y-3">
+                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Visual Style</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="radio" name="wmType" id="type-custom" value="custom" checked class="hidden type-radio" onchange="toggleWMSettings()">
+                                    <label for="type-custom" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Custom Text</label>
+                                    <input type="radio" name="wmType" id="type-fixed-a" value="fixed_a" class="hidden type-radio" onchange="toggleWMSettings()">
+                                    <label for="type-fixed-a" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style A</label>
+                                    <input type="radio" name="wmType" id="type-fixed-b" value="fixed_b" class="hidden type-radio" onchange="toggleWMSettings()">
+                                    <label for="type-fixed-b" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Style B</label>
+                                    <input type="radio" name="wmType" id="type-image" value="image" class="hidden type-radio" onchange="toggleWMSettings()">
+                                    <label for="type-image" class="py-3 text-center text-[9px] font-bold uppercase cursor-pointer border border-zinc-200 transition-all bg-white rounded-sm">Image Logo</label>
+                                </div>
+                            </div>
+
+                            <!-- Configs -->
+                            <div id="text-config-panel" class="space-y-5">
+                                <div id="custom-text-inputs" class="space-y-3">
+                                    <input type="text" id="wmTextName" value="I'm Thong Tran" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs focus:outline-none focus:border-accent font-medium" oninput="renderPreviews()">
+                                    <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs focus:outline-none focus:border-accent font-medium" oninput="renderPreviews()">
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
+                                    <label for="color-white" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">White</label>
+                                    <input type="radio" name="wmColor" id="color-black" value="#000000" class="hidden color-radio" onchange="renderPreviews()">
+                                    <label for="color-black" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Black</label>
+                                    <input type="radio" name="wmColor" id="color-accent" value="#c5a059" class="hidden color-radio" onchange="renderPreviews()">
+                                    <label for="color-accent" class="py-2 border border-zinc-200 text-center text-[9px] font-bold uppercase cursor-pointer transition-all bg-white">Gold</label>
+                                </div>
+                            </div>
+
+                            <div id="image-settings-box" class="hidden">
+                                <div class="relative group">
+                                    <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewLogo()">
+                                    <div id="logo-preview-btn" class="bg-white border border-zinc-200 py-3 px-4 text-center text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-3">
+                                        <i class="fas fa-image text-zinc-300"></i> <span>Import Branding Asset</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Precise Positioning Pad -->
+                            <div class="space-y-3">
+                                <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Precision Placement</label>
+                                <div class="flex gap-4">
+                                    <div class="grid grid-cols-2 gap-1.5 w-1/2">
+                                        <input type="radio" name="wmPos" id="pos-tl" value="tl" class="hidden pos-radio" onchange="renderPreviews()">
+                                        <label for="pos-tl" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Top-L</label>
+                                        <input type="radio" name="wmPos" id="pos-tr" value="tr" class="hidden pos-radio" onchange="renderPreviews()">
+                                        <label for="pos-tr" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Top-R</label>
+                                        <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
+                                        <label for="pos-bl" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Bot-L</label>
+                                        <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
+                                        <label for="pos-br" class="py-2 border border-zinc-100 text-center text-[8px] font-bold uppercase cursor-pointer transition-all bg-white">Bot-R</label>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-1.5 w-1/2 h-fit">
+                                        <div></div><button onclick="moveStamp(0, -2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-up text-[9px]"></i></button><div></div>
+                                        <button onclick="moveStamp(-2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-left text-[9px]"></i></button>
+                                        <button onclick="resetStamp()" class="w-full bg-zinc-900 text-white aspect-square flex items-center justify-center text-[10px] font-bold">R</button>
+                                        <button onclick="moveStamp(2, 0)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-right text-[9px]"></i></button>
+                                        <div></div><button onclick="moveStamp(0, 2)" class="w-full bg-white border border-zinc-200 aspect-square flex items-center justify-center hover:bg-zinc-100 transition-colors"><i class="fas fa-chevron-down text-[9px]"></i></button><div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scale Slider -->
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Global Scale</label>
+                                    <span id="logo-size-val" class="text-[11px] font-bold text-accent">12%</span>
+                                </div>
+                                <input type="range" id="logoSize" min="3" max="45" value="12" class="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-accent" oninput="updateSizeDisplay(this.value)" onchange="renderPreviews()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Left: Previews -->
+                    <div class="lg:col-span-8 space-y-10">
+                        <div class="relative group">
+                            <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelection()">
+                            <div class="border border-dashed border-zinc-200 rounded-sm p-14 text-center group-hover:border-accent transition-colors bg-white shadow-sm">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-zinc-100 mb-4 block"></i>
+                                <p class="text-[11px] uppercase tracking-[0.3em] font-bold text-zinc-400">Import Visual Masterpieces</p>
+                            </div>
+                        </div>
+
+                        <div id="preview-container" class="hidden space-y-6">
+                            <div class="flex justify-between items-end border-b border-zinc-100 pb-4">
+                                <p class="text-[11px] uppercase tracking-widest font-bold text-zinc-900">Live Stage (<span id="preview-count">0</span> Assets)</p>
+                                <button onclick="clearSelection()" class="text-[9px] uppercase font-bold text-red-400 hover:text-red-600 tracking-widest">Clear Cache</button>
+                            </div>
+                            <div id="preview-grid" class="preview-columns max-h-[700px] overflow-y-auto pr-4 py-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-16 pt-12">
+                    <button onclick="closeUploadModal()" class="text-[11px] uppercase font-bold tracking-[0.3em] text-zinc-300 hover:text-zinc-900 transition-colors">Abort</button>
+                    <button onclick="startUpload()" id="btn-upload-submit" class="bg-zinc-900 text-white px-16 py-6 text-[11px] font-bold uppercase tracking-[0.5em] hover:bg-accent transition-all shadow-2xl">
+                        Push to Production
+                    </button>
+                </div>
             </div>
         </div>
     </div>
