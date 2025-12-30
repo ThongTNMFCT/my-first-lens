@@ -1,271 +1,268 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark scroll-smooth">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Detail | Thong Tran Photography</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Photo Detail | Thong Tran</title>
     
-    <!-- Fonts: Cormorant Garamond & Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <!-- RESOURCES -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap&subset=vietnamese" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Config -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        display: ['Cormorant Garamond', 'serif'],
                     },
                     colors: {
-                        darkBg: '#050505',
-                        lightBg: '#f8f8f8',
-                        accent: '#d4af37',
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.8s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        }
+                        black: '#050505',
+                        gold: '#C5A059',
+                        offWhite: '#F3F3F3',
+                        overlay: 'rgba(0,0,0,0.6)'
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Glass Sidebar Style */
-        .glass-sidebar {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        .dark .glass-sidebar {
-            background: rgba(10, 10, 10, 0.7);
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        body { background-color: #050505; color: #F3F3F3; overflow: hidden; height: 100vh; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
         
-        .glass-nav-btn {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* Mobile Scroll Fix */
+        @media (max-width: 1024px) {
+            body { overflow: auto; height: auto; }
         }
-
-        #comments-list::-webkit-scrollbar { width: 3px; }
-        #comments-list::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-        
-        .album-link:hover .album-underline { width: 100%; }
     </style>
 </head>
-<body class="bg-lightBg dark:bg-darkBg text-zinc-900 dark:text-zinc-200 antialiased overflow-hidden transition-colors duration-700 h-screen flex flex-col">
+<body class="antialiased selection:bg-gold selection:text-black flex flex-col lg:flex-row h-screen">
 
-    <!-- Simple Floating Nav -->
-    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-6 flex justify-between items-center pointer-events-none">
-        <a href="index.html" class="font-serif text-3xl font-medium tracking-tight hover:text-accent transition-colors pointer-events-auto drop-shadow-md">
-            Thong Tran<span class="text-accent">.</span>
-        </a>
-        <div class="flex gap-4 pointer-events-auto">
-            <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-full glass-nav-btn hover:bg-white/20 transition-all">
-                <i class="fas fa-moon dark:hidden text-xs"></i> 
-                <i class="fas fa-sun hidden dark:block text-xs text-accent"></i>
-            </button>
-            <a id="back-link" href="collection.html" class="w-10 h-10 flex items-center justify-center rounded-full glass-nav-btn hover:bg-white/20 transition-all" title="Back to Collection">
-                <i class="fas fa-th-large text-xs"></i>
+    <!-- 1. IMAGE SECTION (Left/Top) -->
+    <div class="relative w-full lg:w-[70%] h-[50vh] lg:h-full bg-black flex items-center justify-center p-4 lg:p-12 overflow-hidden group">
+        
+        <!-- Back Navigation -->
+        <div class="absolute top-6 left-6 lg:top-8 lg:left-8 z-20">
+            <a id="back-link" href="collection.html" class="flex items-center gap-3 text-white/50 hover:text-white transition-colors bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 hover:border-gold/50">
+                <i class="fas fa-arrow-left text-xs"></i>
+                <span class="text-[9px] font-bold uppercase tracking-[0.2em]">Album</span>
             </a>
         </div>
-    </nav>
 
-    <!-- Main Layout -->
-    <main class="flex-1 flex flex-col lg:flex-row h-full pt-0 relative">
+        <!-- Main Image -->
+        <img id="main-photo" class="max-w-full max-h-full object-contain shadow-2xl opacity-0 scale-95 transition-all duration-1000" src="" alt="Loading...">
         
-        <!-- Photo Container (Cinema View) -->
-        <div class="w-full lg:w-3/4 h-[60vh] lg:h-full flex items-center justify-center bg-zinc-100 dark:bg-black relative p-4 lg:p-12 overflow-hidden group">
-            <div id="loader" class="absolute inset-0 flex items-center justify-center z-10 bg-inherit">
-                <div class="w-8 h-8 border-2 border-accent border-b-transparent rounded-full animate-spin"></div>
-            </div>
-            
-            <!-- Main Image -->
-            <img id="photo-img" src="" class="max-w-full max-h-full object-contain shadow-2xl opacity-0 transition-all duration-1000 transform scale-95 group-hover:scale-100">
-            
-            <!-- Vignette Overlay -->
-            <div class="absolute inset-0 pointer-events-none bg-radial-gradient from-transparent to-black/10 dark:to-black/30"></div>
+        <!-- Loading Indicator -->
+        <div id="img-loader" class="absolute inset-0 flex items-center justify-center bg-black z-10">
+            <div class="w-10 h-10 border-2 border-white/10 border-t-gold rounded-full animate-spin"></div>
         </div>
 
-        <!-- Details Sidebar (Editorial Info) -->
-        <div class="w-full lg:w-1/4 h-[40vh] lg:h-full flex flex-col glass-sidebar z-20">
-            
-            <!-- Header Info -->
-            <div class="p-8 border-b border-zinc-200 dark:border-white/5 space-y-6 flex-shrink-0">
-                
-                <!-- Album Context -->
-                <div class="space-y-2">
-                    <p class="text-[9px] uppercase tracking-[0.3em] text-accent font-bold">Featured in</p>
-                    <a id="album-link" href="#" class="album-link inline-block group">
-                        <h2 id="album-name" class="font-serif italic text-3xl leading-none group-hover:text-accent transition-colors">Loading...</h2>
-                        <div class="album-underline w-0 h-[1px] bg-accent transition-all duration-500 mt-1"></div>
-                    </a>
-                </div>
+        <!-- Background Blur Effect -->
+        <div id="bg-blur" class="absolute inset-0 -z-10 opacity-20 blur-3xl scale-110 bg-cover bg-center transition-opacity duration-1000"></div>
+    </div>
 
-                <!-- Technical Specs (Minimal Grid) -->
-                <div id="exif-grid" class="grid grid-cols-4 gap-2 pt-4 border-t border-zinc-200 dark:border-white/5 opacity-60 hover:opacity-100 transition-opacity">
-                    <div class="text-center space-y-1">
-                        <i class="fas fa-camera text-[10px]"></i>
-                        <p id="exif-camera" class="text-[9px] font-bold truncate">--</p>
-                    </div>
-                    <div class="text-center space-y-1">
-                        <i class="fas fa-dot-circle text-[10px]"></i>
-                        <p id="exif-aperture" class="text-[9px] font-bold">--</p>
-                    </div>
-                    <div class="text-center space-y-1">
-                        <i class="fas fa-bolt text-[10px]"></i>
-                        <p id="exif-shutter" class="text-[9px] font-bold">--</p>
-                    </div>
-                    <div class="text-center space-y-1">
-                        <i class="fas fa-adjust text-[10px]"></i>
-                        <p id="exif-iso" class="text-[9px] font-bold">--</p>
-                    </div>
-                </div>
-
-                <!-- Action Bar -->
-                <div class="flex justify-between items-center pt-2">
-                    <h4 class="font-serif italic text-lg text-zinc-500">Dialogue</h4>
-                    <button id="btn-like" onclick="toggleLike()" class="flex items-center gap-2 group transition-colors hover:text-red-500">
-                        <i id="icon-heart" class="far fa-heart text-lg group-hover:scale-110 transition-transform"></i>
-                        <span id="like-count" class="text-[10px] font-bold font-sans">0</span>
-                    </button>
-                </div>
+    <!-- 2. INFO SIDEBAR (Right/Bottom) -->
+    <div class="w-full lg:w-[30%] h-full bg-[#0a0a0a] border-l border-white/5 flex flex-col relative z-20 shadow-2xl">
+        
+        <!-- Header Info -->
+        <div class="p-8 border-b border-white/5 bg-white/[0.02]">
+            <div class="flex justify-between items-start mb-4">
+                <h1 class="font-serif italic font-bold text-2xl text-white tracking-wide">Thong Tran<span class="text-gold">.</span></h1>
+                <a href="index.html" class="text-white/20 hover:text-gold transition-colors"><i class="fas fa-home"></i></a>
             </div>
-
-            <!-- Comments Scroll Area -->
-            <div id="comments-list" class="flex-1 overflow-y-auto p-8 space-y-5">
-                <p class="text-center text-zinc-400 text-xs italic mt-4 font-serif">Awaiting thoughts...</p>
-            </div>
-
-            <!-- Input Area -->
-            <div class="p-6 border-t border-zinc-200 dark:border-white/5 bg-zinc-50/50 dark:bg-black/20 flex-shrink-0">
-                <div class="relative">
-                    <input type="text" id="comment-input" placeholder="Leave a note..." 
-                           class="w-full bg-transparent border-b border-zinc-300 dark:border-zinc-700 py-3 pr-10 text-xs font-medium focus:outline-none focus:border-accent transition-colors"
-                           onkeypress="if(event.key === 'Enter') postComment()">
-                    <button onclick="postComment()" class="absolute right-0 bottom-3 text-zinc-400 hover:text-accent transition-colors">
-                        <i class="fas fa-paper-plane text-xs"></i>
-                    </button>
-                </div>
+            <div class="space-y-1">
+                <h2 id="photo-caption" class="font-display text-3xl text-white/90 leading-tight">Untitled</h2>
+                <p id="photo-date" class="text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">---</p>
             </div>
         </div>
-    </main>
 
-    <!-- Firebase SDKs -->
+        <!-- EXIF Grid -->
+        <div class="p-6 grid grid-cols-2 gap-y-4 gap-x-2 border-b border-white/5 bg-black/20">
+            <div class="space-y-1">
+                <span class="block text-[8px] uppercase tracking-widest text-gold font-bold">Camera</span>
+                <span id="exif-camera" class="block text-xs text-white/70 font-sans">Unknown</span>
+            </div>
+            <div class="space-y-1">
+                <span class="block text-[8px] uppercase tracking-widest text-gold font-bold">Settings</span>
+                <span id="exif-settings" class="block text-xs text-white/70 font-sans">--</span>
+            </div>
+        </div>
+
+        <!-- Interactions -->
+        <div class="px-6 py-4 flex items-center justify-between border-b border-white/5">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleLike()" class="group flex items-center gap-2 text-white/50 hover:text-red-500 transition-colors">
+                    <i id="icon-heart" class="far fa-heart text-lg group-hover:scale-110 transition-transform"></i>
+                    <span id="like-count" class="text-xs font-bold font-sans">0</span>
+                </button>
+                <button onclick="sharePhoto()" class="group flex items-center gap-2 text-white/50 hover:text-gold transition-colors">
+                    <i class="fas fa-share-alt text-sm"></i>
+                    <span class="text-[9px] uppercase tracking-widest font-bold hidden sm:inline">Share</span>
+                </button>
+            </div>
+            <span class="text-[9px] uppercase tracking-widest text-white/20 font-bold">Feedback</span>
+        </div>
+
+        <!-- Comments Area -->
+        <div id="comments-list" class="flex-1 overflow-y-auto p-6 space-y-5 bg-black/40">
+            <div class="text-center py-10">
+                <i class="fas fa-circle-notch fa-spin text-gold/50 mb-2"></i>
+                <p class="text-[10px] text-white/30 uppercase tracking-widest">Loading thoughts...</p>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-5 border-t border-white/5 bg-[#0f0f0f]">
+            <div class="relative flex items-center">
+                <input type="text" id="comment-input" placeholder="Viết bình luận..." 
+                       class="w-full bg-[#1a1a1a] text-white text-xs px-4 py-3 pr-10 rounded-sm border border-white/5 focus:border-gold/50 focus:outline-none transition-all font-sans placeholder-white/20"
+                       onkeypress="if(event.key === 'Enter') postComment()">
+                <button onclick="postComment()" class="absolute right-3 text-white/30 hover:text-gold transition-colors">
+                    <i class="fas fa-paper-plane text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="config.js"></script>
 
     <script>
+        // --- 1. SETUP ---
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
         
-        let currentId = null;
-        let unsubscribeComments = null;
+        let currentPhotoId = null;
+        let currentAlbumId = null;
 
-        // --- THEME LOGIC ---
-        const themeBtn = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
-        }
-        themeBtn.addEventListener('click', () => {
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark'); localStorage.setItem('color-theme', 'light');
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            
+            if (id) {
+                currentPhotoId = id;
+                loadPhotoDetails(id);
+                loadRealtimeComments(id);
+                setupRealtimeLikes(id);
             } else {
-                html.classList.add('dark'); localStorage.setItem('color-theme', 'dark');
+                alert("Không tìm thấy ảnh!");
+                window.location.href = 'collection.html';
             }
         });
 
-        // --- LOAD DATA ---
-        async function loadPhoto() {
-            const urlParams = new URLSearchParams(window.location.search);
-            currentId = urlParams.get('id');
-            if (!currentId) { window.location.href = 'collection.html'; return; }
-
+        // --- 2. LOAD DATA ---
+        async function loadPhotoDetails(id) {
             try {
-                // 1. Fetch Photo Doc
-                const photoDoc = await db.collection('photos').doc(currentId).get();
-                if (!photoDoc.exists) { 
-                    document.getElementById('album-name').innerText = "Asset Not Found";
-                    return; 
+                const doc = await db.collection('photos').doc(id).get();
+                if (!doc.exists) {
+                    alert("Ảnh không tồn tại hoặc đã bị xóa.");
+                    window.location.href = 'collection.html';
+                    return;
                 }
+
+                const data = doc.data();
+                currentAlbumId = data.albumId;
+
+                // Update Image
+                const img = document.getElementById('main-photo');
+                const highResUrl = data.url.replace('/upload/', '/upload/q_auto:best/'); // Best quality
                 
-                const photoData = photoDoc.data();
-                const img = document.getElementById('photo-img');
-                img.src = photoData.url;
+                img.src = highResUrl;
+                
+                // Background blur effect
+                document.getElementById('bg-blur').style.backgroundImage = `url('${data.url.replace('/upload/', '/upload/w_200,e_blur:1000/')}')`;
+
                 img.onload = () => {
-                    document.getElementById('loader').classList.add('hidden');
-                    img.classList.replace('opacity-0', 'opacity-100');
-                    img.classList.replace('scale-95', 'scale-100');
+                    document.getElementById('img-loader').style.display = 'none';
+                    img.classList.remove('opacity-0', 'scale-95');
+                    
+                    // Simple animation
+                    gsap.fromTo("#photo-caption", {y: 20, opacity: 0}, {y: 0, opacity: 1, duration: 0.8, delay: 0.2});
                 };
 
-                // 2. Fetch Album Info
-                if(photoData.albumId) {
-                    const albumDoc = await db.collection('albums').doc(photoData.albumId).get();
-                    if(albumDoc.exists) {
-                        const albumData = albumDoc.data();
-                        document.getElementById('album-name').innerText = albumData.title;
-                        document.getElementById('album-link').href = `view-collection.html?id=${photoData.albumId}`;
-                        document.getElementById('back-link').href = `view-collection.html?id=${photoData.albumId}`;
-                        document.title = `${albumData.title} | Detail`;
-                    } else {
-                        document.getElementById('album-name').innerText = "Unknown Collection";
-                    }
-                } else {
-                    document.getElementById('album-name').innerText = "Single Asset";
+                // Update Info
+                document.getElementById('photo-caption').innerText = data.caption || "Untitled Moment";
+                
+                // EXIF
+                if (data.exif) {
+                    const exif = data.exif;
+                    document.getElementById('exif-camera').innerText = exif.camera || "Unknown Camera";
+                    document.getElementById('exif-settings').innerText = 
+                        `${exif.aperture || ''}  ${exif.shutter ? '• ' + exif.shutter : ''}  ${exif.iso ? '• ISO ' + exif.iso : ''}`;
                 }
 
-                // 3. Fill EXIF
-                if (photoData.exif) {
-                    document.getElementById('exif-camera').innerText = photoData.exif.camera || '--';
-                    document.getElementById('exif-aperture').innerText = photoData.exif.aperture || '--';
-                    document.getElementById('exif-shutter').innerText = photoData.exif.shutter || '--';
-                    document.getElementById('exif-iso').innerText = photoData.exif.iso || '--';
+                // Date
+                const date = data.takenDate ? new Date(data.takenDate) : (data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date());
+                document.getElementById('photo-date').innerText = date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                // Link Back to Album
+                if(currentAlbumId) {
+                    document.getElementById('back-link').href = `view-collection.html?id=${currentAlbumId}`;
                 }
 
-                // 4. Real-time Listeners
-                db.collection('photos').doc(currentId).onSnapshot(s => {
-                    if(s.exists) document.getElementById('like-count').innerText = s.data().likes || 0;
-                });
-                checkLikeStatus(currentId);
-                loadComments(currentId);
-
-            } catch (e) { console.error("Error loading photo details:", e); }
+            } catch (e) { console.error("Lỗi tải ảnh:", e); }
         }
 
-        // --- COMMENTS SYSTEM ---
-        function loadComments(id) {
-            if(unsubscribeComments) unsubscribeComments();
-            unsubscribeComments = db.collection('photos').doc(id).collection('comments').orderBy('createdAt', 'desc')
+        // --- 3. INTERACTIONS ---
+        function setupRealtimeLikes(id) {
+            db.collection('photos').doc(id).onSnapshot(doc => {
+                if(doc.exists) {
+                    const d = doc.data();
+                    document.getElementById('like-count').innerText = d.likes || 0;
+                }
+            });
+            checkLikeStatus();
+        }
+
+        function loadRealtimeComments(id) {
+            const list = document.getElementById('comments-list');
+            
+            db.collection('photos').doc(id).collection('comments')
+                .orderBy('createdAt', 'desc')
                 .onSnapshot(snap => {
-                    const list = document.getElementById('comments-list');
                     if (snap.empty) {
-                        list.innerHTML = '<p class="text-center text-zinc-400 text-[10px] italic mt-10 font-serif">Be the first to share a thought.</p>';
+                        list.innerHTML = `
+                            <div class="flex flex-col items-center justify-center h-full opacity-30 mt-10">
+                                <i class="far fa-comment-dots text-2xl mb-2"></i>
+                                <p class="text-[9px] uppercase tracking-widest">Chưa có bình luận</p>
+                            </div>`;
                         return;
                     }
+
                     let html = '';
-                    snap.forEach(d => {
-                        const c = d.data();
-                        const time = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                    snap.forEach(doc => {
+                        const c = doc.data();
+                        const time = c.createdAt ? timeAgo(c.createdAt.seconds * 1000) : 'Vừa xong';
+                        const avatarColor = stringToColor(c.name || 'A');
+                        
                         html += `
-                            <div class="animate-fade-in group">
-                                <div class="flex justify-between items-baseline mb-1">
-                                    <p class="text-[9px] font-bold uppercase tracking-widest text-accent">${c.name || 'Visitor'}</p>
-                                    <p class="text-[8px] opacity-30 font-mono">${time}</p>
+                        <div class="group animate-[fadeIn_0.5s_ease-out]">
+                            <div class="flex items-baseline justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full" style="background-color: ${avatarColor}"></div>
+                                    <span class="text-[10px] font-bold text-gold uppercase tracking-widest">${c.name || 'Ẩn danh'}</span>
                                 </div>
-                                <p class="text-[11px] leading-relaxed opacity-80 text-justify border-l-2 border-transparent group-hover:border-accent pl-2 transition-all duration-300">${c.content}</p>
-                            </div>`;
+                                <span class="text-[8px] text-white/20">${time}</span>
+                            </div>
+                            <div class="pl-4 border-l border-white/5 ml-1">
+                                <p class="text-xs text-white/70 font-light leading-relaxed">${c.content}</p>
+                            </div>
+                        </div>`;
                     });
                     list.innerHTML = html;
                 });
@@ -274,42 +271,92 @@
         window.postComment = async function() {
             const input = document.getElementById('comment-input');
             const content = input.value.trim();
-            if(!content || !currentId) return;
+            if (!content || !currentPhotoId) return;
+
+            // Simple Guest Name Logic (Local Storage)
+            let guestName = localStorage.getItem('guest_name');
+            if(!guestName) {
+                const names = ['Người yêu ảnh', 'Khách ghé thăm', 'Bạn của Thông', 'Người lạ'];
+                guestName = names[Math.floor(Math.random() * names.length)];
+                localStorage.setItem('guest_name', guestName);
+            }
+
             try {
-                await db.collection('photos').doc(currentId).collection('comments').add({
-                    name: 'Visitor', content: content, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                await db.collection('photos').doc(currentPhotoId).collection('comments').add({
+                    content: content,
+                    name: guestName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 input.value = '';
-            } catch(e) { console.error("Error posting comment:", e); }
+            } catch (e) { alert("Lỗi kết nối!"); }
         };
 
-        // --- LIKES SYSTEM ---
-        function checkLikeStatus(id) {
+        // --- 4. UTILS ---
+        function checkLikeStatus() {
             const liked = JSON.parse(localStorage.getItem('liked_photos') || '[]');
             const icon = document.getElementById('icon-heart');
-            if (liked.includes(id)) {
-                icon.classList.replace('far', 'fas'); icon.classList.add('text-red-500');
+            if (liked.includes(currentPhotoId)) {
+                icon.classList.remove('far'); icon.classList.add('fas', 'text-red-500');
             } else {
-                icon.classList.replace('fas', 'far'); icon.classList.remove('text-red-500');
+                icon.classList.add('far'); icon.classList.remove('fas', 'text-red-500');
             }
         }
 
         window.toggleLike = async function() {
-            if(!currentId) return;
+            if (!currentPhotoId) return;
             const liked = JSON.parse(localStorage.getItem('liked_photos') || '[]');
-            const isLiked = liked.includes(currentId);
-            const ref = db.collection('photos').doc(currentId);
+            const isLiked = liked.includes(currentPhotoId);
+            const ref = db.collection('photos').doc(currentPhotoId);
+
             if (!isLiked) {
-                liked.push(currentId); await ref.update({ likes: firebase.firestore.FieldValue.increment(1) });
+                liked.push(currentPhotoId);
+                await ref.update({ likes: firebase.firestore.FieldValue.increment(1) });
+                
+                // Heart Animation
+                const icon = document.getElementById('icon-heart');
+                gsap.fromTo(icon, {scale: 1}, {scale: 1.5, duration: 0.1, yoyo: true, repeat: 1});
             } else {
-                const index = liked.indexOf(currentId); liked.splice(index, 1);
+                const index = liked.indexOf(currentPhotoId);
+                liked.splice(index, 1);
                 await ref.update({ likes: firebase.firestore.FieldValue.increment(-1) });
             }
             localStorage.setItem('liked_photos', JSON.stringify(liked));
-            checkLikeStatus(currentId);
+            checkLikeStatus();
         };
 
-        document.addEventListener('DOMContentLoaded', loadPhoto);
+        window.sharePhoto = function() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.querySelector('button[onclick="sharePhoto()"] span');
+                const originalText = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = originalText, 2000);
+            });
+        }
+
+        // Helper: Time Ago
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " năm trước";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " tháng trước";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " ngày trước";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " giờ trước";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " phút trước";
+            return "Vừa xong";
+        }
+
+        // Helper: Color from string
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+            return '#' + '00000'.substring(0, 6 - c.length) + c;
+        }
     </script>
 </body>
 </html>
