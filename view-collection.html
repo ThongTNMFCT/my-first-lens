@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bộ Sưu Tập | Thong Tran</title>
+    <title>Chi Tiết Album | Thong Tran</title>
     
-    <!-- 1. RESOURCES (Đồng bộ với Index) -->
-    <!-- Tailwind CSS -->
+    <!-- RESOURCES -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- GSAP for Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
@@ -19,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap&subset=vietnamese" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Config Tailwind -->
+    <!-- Config -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -40,216 +37,398 @@
             }
         }
     </script>
-    
-    <!-- Custom CSS -->
     <style>
-        body { 
-            background-color: #050505; 
-            color: #F3F3F3; 
-            overflow-x: hidden;
-        }
-        
+        body { background-color: #050505; color: #F3F3F3; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
+        
+        /* Hide scrollbar for lightbox sidebar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .blend-mode { mix-blend-mode: difference; }
     </style>
 </head>
 <body class="antialiased selection:bg-gold selection:text-black">
 
-    <!-- 2. NAVIGATION (Đồng bộ Index) -->
+    <!-- NAVIGATION -->
     <nav class="fixed top-0 w-full z-50 px-6 md:px-12 py-6 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent transition-all duration-500" id="navbar">
+        <!-- Back Button -->
+        <a href="collection.html" class="group flex items-center gap-3 text-white/60 hover:text-gold transition-colors z-50">
+            <i class="fas fa-long-arrow-alt-left text-lg group-hover:-translate-x-1 transition-transform"></i>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] hidden md:inline">Quay lại</span>
+        </a>
+
         <!-- LOGO -->
-        <a href="index.html" class="group flex flex-col items-center justify-center">
-            <span class="font-serif text-3xl md:text-4xl italic font-bold text-white group-hover:text-gold transition-colors duration-500 tracking-tighter">
+        <a href="index.html" class="group flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2 z-50">
+            <span class="font-serif text-2xl md:text-3xl italic font-bold text-white group-hover:text-gold transition-colors duration-500 tracking-tighter">
                 Thong Tran<span class="text-gold">.</span>
-            </span>
-            <span class="text-[8px] md:text-[9px] uppercase tracking-[0.4em] text-white/60 font-sans mt-1 group-hover:tracking-[0.6em] transition-all duration-500">
-                Newbie Photographer
             </span>
         </a>
         
+        <!-- Menu Desktop -->
         <div class="hidden md:flex items-center gap-12 text-[10px] font-bold uppercase tracking-[0.25em] text-white">
-            <a href="index.html" class="hover:text-gold transition-colors relative group">
-                Trang Chủ
-                <span class="absolute -bottom-2 left-0 w-0 h-[1px] bg-gold transition-all duration-300 group-hover:w-full"></span>
-            </a>
-            <a href="about-me.html" class="hover:text-gold transition-colors relative group">
-                Góc Nhìn
-                <span class="absolute -bottom-2 left-0 w-0 h-[1px] bg-gold transition-all duration-300 group-hover:w-full"></span>
-            </a>
-            <a href="admin.html" class="opacity-30 hover:opacity-100 transition-opacity">
-                Quản Trị
-            </a>
+            <a href="index.html" class="hover:text-gold transition-colors">Trang Chủ</a>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <button class="md:hidden text-white text-xl" onclick="alert('Menu mobile coming soon')">
-            <i class="fas fa-bars"></i>
+         <!-- Mobile Menu Button -->
+        <button class="md:hidden text-white text-xl z-50 focus:outline-none" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars" id="menu-icon"></i>
         </button>
     </nav>
 
-    <!-- 3. HEADER -->
-    <header class="pt-48 pb-20 px-6 text-center relative z-10">
+    <!-- MOBILE MENU OVERLAY -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black z-40 flex flex-col justify-center items-center opacity-0 pointer-events-none transition-opacity duration-500">
+        <div class="space-y-8 text-center">
+            <div class="overflow-hidden">
+                <a href="index.html" class="mobile-link block font-display text-5xl text-white hover:text-gold transition-colors translate-y-10 opacity-0">Trang Chủ</a>
+            </div>
+            <div class="overflow-hidden">
+                <a href="collection.html" class="mobile-link block font-display text-5xl text-white hover:text-gold transition-colors translate-y-10 opacity-0">Bộ Sưu Tập</a>
+            </div>
+            <div class="overflow-hidden">
+                <a href="about-me.html" class="mobile-link block font-display text-5xl text-white hover:text-gold transition-colors translate-y-10 opacity-0">Góc Nhìn</a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 text-center space-y-4">
+            <p class="text-[9px] uppercase tracking-[0.4em] text-white/30">Kết nối với mình</p>
+            <div class="flex gap-6 justify-center">
+                <a href="#" class="text-white hover:text-gold"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="#" class="text-white hover:text-gold"><i class="fab fa-facebook-f text-xl"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="pt-40 pb-16 px-6 text-center relative z-10 max-w-5xl mx-auto">
         <div class="reveal-container mb-6 overflow-hidden">
-            <p class="hero-reveal text-gold text-[10px] md:text-xs uppercase tracking-[0.4em] font-medium translate-y-full font-display">
-                Kho Lưu Trữ
+            <p id="album-category" class="hero-reveal text-gold text-[10px] md:text-xs uppercase tracking-[0.4em] font-medium translate-y-full font-display">
+                Bộ Sưu Tập
             </p>
         </div>
         <div class="reveal-container overflow-hidden">
-            <h1 class="hero-reveal font-display text-5xl md:text-7xl lg:text-8xl text-white translate-y-full uppercase leading-none">
-                Thư Viện Ảnh
+            <h1 id="album-title" class="hero-reveal font-display text-5xl md:text-7xl lg:text-8xl text-white translate-y-full uppercase leading-none">
+                Đang tải...
             </h1>
         </div>
-        <div class="mt-12 w-16 h-[1px] bg-white/20 mx-auto"></div>
-    </header>
-
-    <!-- 4. ALBUM LIST -->
-    <main class="max-w-screen-2xl mx-auto px-6 md:px-12 pb-40 relative z-10">
-        <div id="loading-state" class="text-center py-20">
-            <i class="fas fa-circle-notch fa-spin text-gold text-2xl"></i>
+        <div class="mt-8 opacity-0 animate-fade-in" style="animation-delay: 0.5s">
+            <p id="album-desc" class="text-white/60 font-light text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                <!-- Description -->
+            </p>
         </div>
         
-        <div id="album-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
-            <!-- Content loaded via JS -->
+        <!-- Metadata -->
+        <div class="mt-12 flex justify-center gap-12 opacity-0 animate-fade-in" style="animation-delay: 0.8s">
+            <div class="text-center">
+                <span class="block text-[9px] uppercase tracking-[0.3em] text-white/40 mb-2">Địa điểm</span>
+                <span id="album-location" class="font-serif italic text-xl text-white">---</span>
+            </div>
+            <div class="w-[1px] h-full bg-white/10"></div>
+            <div class="text-center">
+                <span class="block text-[9px] uppercase tracking-[0.3em] text-white/40 mb-2">Thời gian</span>
+                <span id="album-date" class="font-serif italic text-xl text-white">---</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- PHOTO GRID -->
+    <main class="max-w-[1800px] mx-auto px-4 md:px-8 pb-40 relative z-10">
+        <div id="photo-container" class="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
+            <!-- Photos injected here -->
         </div>
     </main>
 
-    <!-- 5. FOOTER (Đồng bộ Index) -->
-    <footer class="bg-black pt-20 pb-10 px-6 border-t border-white/10">
-        <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-            <div class="text-center md:text-left">
-                <h4 class="font-serif text-4xl italic font-bold text-white mb-2 tracking-tighter">Thong Tran<span class="text-gold">.</span></h4>
-                <p class="text-[10px] uppercase tracking-[0.2em] text-white/40">Người kể chuyện bằng hình ảnh tại Việt Nam</p>
-            </div>
-            
-            <div class="flex gap-8">
-                <a href="#" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:border-gold hover:text-gold hover:bg-gold/10 transition-all">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:border-gold hover:text-gold hover:bg-gold/10 transition-all">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:border-gold hover:text-gold hover:bg-gold/10 transition-all">
-                    <i class="fas fa-envelope"></i>
-                </a>
-            </div>
-        </div>
-        <div class="text-center mt-16 text-[9px] uppercase tracking-widest text-white/20">
-            &copy; 2026 My First Lens. Mọi quyền được bảo lưu.
-        </div>
-    </footer>
+    <!-- LIGHTBOX -->
+    <div id="lightboxModal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex">
+        <!-- Close Button -->
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 z-[110] text-white/50 hover:text-gold transition-colors text-2xl">
+            <i class="fas fa-times"></i>
+        </button>
 
-    <!-- 6. SCRIPTS -->
+        <!-- Image Area -->
+        <div class="flex-1 h-full flex items-center justify-center p-4 lg:p-12 relative" onclick="if(event.target === this) closeLightbox()">
+            <img id="lightbox-img" class="max-w-full max-h-full object-contain shadow-2xl transition-transform duration-300">
+        </div>
+
+        <!-- Sidebar Info (Desktop) -->
+        <div class="hidden lg:flex w-[400px] bg-[#0a0a0a] border-l border-white/5 flex-col h-full shrink-0">
+            <!-- EXIF Data -->
+            <div class="p-8 border-b border-white/5">
+                <h3 class="font-display text-2xl text-white mb-6">Thông số ảnh</h3>
+                <div class="grid grid-cols-2 gap-6 text-white/60">
+                    <div>
+                        <p class="text-[9px] uppercase tracking-widest mb-1 text-gold">Camera</p>
+                        <p id="exif-camera" class="text-xs font-bold">Unknown</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] uppercase tracking-widest mb-1 text-gold">Lens</p>
+                        <p id="exif-lens" class="text-xs font-bold">--</p>
+                    </div>
+                    <div class="col-span-2 flex justify-between">
+                        <div>
+                            <p class="text-[9px] uppercase tracking-widest mb-1 text-gold">Aperture</p>
+                            <p id="exif-aperture" class="text-xs font-bold">--</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] uppercase tracking-widest mb-1 text-gold">Shutter</p>
+                            <p id="exif-shutter" class="text-xs font-bold">--</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] uppercase tracking-widest mb-1 text-gold">ISO</p>
+                            <p id="exif-iso" class="text-xs font-bold">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactions -->
+            <div class="p-6 flex items-center justify-between border-b border-white/5 bg-white/5">
+                <span class="text-xs font-bold uppercase tracking-widest text-white">Tương tác</span>
+                <button onclick="toggleLike()" class="group flex items-center gap-2 text-white/60 hover:text-red-500 transition-colors">
+                    <i id="icon-heart" class="far fa-heart text-lg group-hover:scale-110 transition-transform"></i>
+                    <span id="like-count" class="text-xs font-bold">0</span>
+                </button>
+            </div>
+
+            <!-- Comments -->
+            <div id="comments-list" class="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+                <!-- Comments injected here -->
+            </div>
+
+            <!-- Comment Input -->
+            <div class="p-6 border-t border-white/5 bg-black">
+                <div class="relative">
+                    <input type="text" id="comment-input" placeholder="Viết bình luận..." 
+                           class="w-full bg-[#111] text-white text-xs p-4 pr-10 rounded-none border border-white/10 focus:border-gold focus:outline-none transition-colors"
+                           onkeypress="if(event.key === 'Enter') postComment()">
+                    <button onclick="postComment()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-gold transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="config.js"></script>
-
+    
     <script>
         // Init GSAP
         window.addEventListener('load', () => {
-            const tl = gsap.timeline();
-            tl.to(".hero-reveal", {
-                y: 0,
-                duration: 1.2,
-                stagger: 0.1,
-                ease: "power3.out"
-            });
+            gsap.to(".hero-reveal", { y: 0, duration: 1.2, stagger: 0.1, ease: "power3.out" });
+            gsap.to(".animate-fade-in", { opacity: 1, duration: 1, delay: 0.5 });
         });
 
         // Firebase Logic
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
+        let currentPhotoId = null;
+        let unsubscribeComments = null;
+        let unsubscribeLikes = null;
 
-        async function loadAlbums() {
-            const container = document.getElementById('album-list-container');
-            const loading = document.getElementById('loading-state');
-            
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if(id) loadAlbumDataAndPhotos(id);
+        });
+
+        async function loadAlbumDataAndPhotos(albumId) {
+            const container = document.getElementById('photo-container');
             try {
-                const snapshot = await db.collection('albums').orderBy('createdAt', 'desc').get();
-                loading.style.display = 'none';
+                // Album Data
+                const albumDoc = await db.collection('albums').doc(albumId).get();
+                if(albumDoc.exists) {
+                    const d = albumDoc.data();
+                    document.getElementById('album-title').innerText = d.title;
+                    document.getElementById('album-desc').innerText = d.description || "Một bộ sưu tập được lưu giữ bởi Thong Tran.";
+                    document.getElementById('album-location').innerText = d.location || "Việt Nam";
+                    document.getElementById('album-date').innerText = d.dateTaken ? new Date(d.dateTaken).getFullYear() : "2026";
+                    document.title = `${d.title} | Thong Tran`;
+                }
 
-                if (snapshot.empty) { 
-                    container.innerHTML = `<div class="col-span-full text-center py-20"><p class="text-white/40 font-serif italic text-xl">Chưa có bộ sưu tập nào.</p></div>`; 
-                    return; 
+                // Photos
+                const snap = await db.collection('photos').where('albumId', '==', albumId).orderBy('createdAt', 'desc').get();
+                if(snap.empty) {
+                    container.innerHTML = '<p class="col-span-full text-center text-white/30 italic py-20">Album này chưa có ảnh nào.</p>';
+                    return;
                 }
 
                 let html = '';
-                // FIXED: Sử dụng biến đếm thủ công để tránh lỗi NaN
-                let loopIndex = 0; 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const cover = data.coverUrl 
-                        ? data.coverUrl.replace('/upload/', '/upload/w_1200,f_auto,q_auto/') 
-                        : 'https://via.placeholder.com/1000x560?text=No+Cover';
-                    
-                    const year = data.dateTaken ? new Date(data.dateTaken).getFullYear() : '2026';
-                    
-                    // Delay animation dựa trên thứ tự
-                    const delay = loopIndex * 0.1;
-
-                    // Tính số thứ tự 01, 02...
-                    const idxStr = (loopIndex + 1).toString().padStart(2, '0');
+                snap.forEach((doc, index) => {
+                    const d = doc.data();
+                    const url = d.url;
+                    // Cloudinary optimization
+                    const thumb = url.includes('cloudinary') ? url.replace('/upload/', '/upload/w_800,q_auto,f_auto/') : url;
+                    const exifRaw = d.exif ? encodeURIComponent(JSON.stringify(d.exif)) : '';
 
                     html += `
-                    <div class="group cursor-pointer album-item opacity-0 translate-y-10" style="transition-delay: ${delay}s">
-                        <a href="view-collection.html?id=${doc.id}" class="block space-y-6">
-                            <!-- Image Container -->
-                            <div class="relative overflow-hidden aspect-[4/3] bg-white/5 border border-white/10">
-                                <div class="absolute inset-0 bg-white/5 z-10 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-                                <img src="${cover}" class="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105 filter grayscale group-hover:grayscale-0" alt="${data.title}" loading="lazy">
-                                
-                                <!-- Floating Tag -->
-                                <div class="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-md px-4 py-2 border border-white/10">
-                                    <span class="text-[9px] uppercase tracking-widest text-gold font-bold">${year}</span>
-                                </div>
-                            </div>
-
-                            <!-- Info -->
-                            <div class="space-y-2 relative">
-                                <div class="flex justify-between items-end border-b border-white/10 pb-4 group-hover:border-gold/50 transition-colors duration-500">
-                                    <div>
-                                        <p class="text-[9px] uppercase tracking-[0.3em] text-white/40 mb-2">Album ${idxStr}</p>
-                                        <h3 class="font-display text-3xl md:text-4xl text-white group-hover:text-gold transition-colors duration-300">
-                                            ${data.title}
-                                        </h3>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="block text-[9px] uppercase tracking-widest text-white/60 mb-1">${data.photoCount || 0} Photos</span>
-                                        <i class="fas fa-arrow-right text-gold -translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
-                                    </div>
-                                </div>
-                                <p class="text-white/40 text-xs font-light line-clamp-2 leading-relaxed pt-2">
-                                    ${data.description || 'Chưa có mô tả.'}
-                                </p>
-                            </div>
-                        </a>
+                    <div class="mb-8 break-inside-avoid group relative cursor-zoom-in"
+                         onclick="openLightbox('${url}', '${doc.id}', '${exifRaw}')">
+                        <div class="overflow-hidden bg-white/5 border border-white/5">
+                            <img src="${thumb}" class="w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:opacity-80" loading="lazy">
+                        </div>
+                        <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 text-white drop-shadow-md">
+                             <i class="fas fa-expand text-xs"></i>
+                        </div>
                     </div>`;
-                    
-                    loopIndex++; // Tăng biến đếm
                 });
-                
                 container.innerHTML = html;
-
-                // Trigger Reveal Animation
-                gsap.to(".album-item", {
-                    opacity: 1,
-                    y: 0,
-                    duration: 1,
-                    stagger: 0.1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: "#album-list-container",
-                        start: "top 85%"
-                    }
-                });
-
-            } catch (e) { console.error("Lỗi tải album:", e); }
+            } catch(e) { console.error(e); }
         }
 
-        loadAlbums();
+        // Lightbox Functions
+        window.openLightbox = function(url, id, exifStr) {
+            currentPhotoId = id;
+            const modal = document.getElementById('lightboxModal');
+            document.getElementById('lightbox-img').src = url;
+            
+            // EXIF
+            if(exifStr) {
+                try {
+                    const e = JSON.parse(decodeURIComponent(exifStr));
+                    document.getElementById('exif-camera').innerText = e.camera || 'Unknown';
+                    document.getElementById('exif-aperture').innerText = e.aperture || '--';
+                    document.getElementById('exif-shutter').innerText = e.shutter || '--';
+                    document.getElementById('exif-iso').innerText = e.iso || '--';
+                } catch(e) {}
+            } else {
+                 ['camera','aperture','shutter','iso'].forEach(k => document.getElementById(`exif-${k}`).innerText = '--');
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = 'hidden';
+
+            // Load Comments & Likes
+            loadComments(id);
+            checkLikeStatus(id);
+        }
+
+        window.closeLightbox = function() {
+            const modal = document.getElementById('lightboxModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = 'auto';
+            if(unsubscribeComments) unsubscribeComments();
+            if(unsubscribeLikes) unsubscribeLikes();
+        }
+
+        function loadComments(id) {
+            const list = document.getElementById('comments-list');
+            list.innerHTML = '<p class="text-white/30 text-[10px] text-center">Đang tải...</p>';
+            
+            unsubscribeComments = db.collection('photos').doc(id).collection('comments').orderBy('createdAt', 'desc')
+                .onSnapshot(snap => {
+                    if(snap.empty) {
+                        list.innerHTML = '<p class="text-white/30 text-[10px] text-center italic">Chưa có bình luận nào.</p>';
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(doc => {
+                        const c = doc.data();
+                        html += `
+                        <div class="border-b border-white/5 pb-3 last:border-0">
+                            <div class="flex justify-between items-baseline mb-1">
+                                <span class="text-[10px] font-bold text-gold uppercase tracking-widest">${c.name || 'Khách'}</span>
+                                <span class="text-[8px] text-white/30">${c.createdAt ? new Date(c.createdAt.seconds*1000).toLocaleTimeString() : ''}</span>
+                            </div>
+                            <p class="text-xs text-white/80 font-light leading-relaxed">${c.content}</p>
+                        </div>`;
+                    });
+                    list.innerHTML = html;
+                });
+            
+            // Likes
+            if(unsubscribeLikes) unsubscribeLikes();
+            unsubscribeLikes = db.collection('photos').doc(id).onSnapshot(doc => {
+                if(doc.exists) document.getElementById('like-count').innerText = doc.data().likes || 0;
+            });
+        }
+
+        window.postComment = async function() {
+            const inp = document.getElementById('comment-input');
+            const val = inp.value.trim();
+            if(!val || !currentPhotoId) return;
+            
+            try {
+                await db.collection('photos').doc(currentPhotoId).collection('comments').add({
+                    content: val,
+                    name: 'Khách thăm', 
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                inp.value = '';
+            } catch(e) { alert('Lỗi: ' + e.message); }
+        }
+
+        function checkLikeStatus(id) {
+             const liked = JSON.parse(localStorage.getItem('liked_photos') || '[]');
+             const icon = document.getElementById('icon-heart');
+             if(liked.includes(id)) {
+                 icon.classList.remove('far'); icon.classList.add('fas', 'text-red-500');
+             } else {
+                 icon.classList.add('far'); icon.classList.remove('fas', 'text-red-500');
+             }
+        }
+
+        window.toggleLike = async function() {
+            if(!currentPhotoId) return;
+            const liked = JSON.parse(localStorage.getItem('liked_photos') || '[]');
+            const isLiked = liked.includes(currentPhotoId);
+            const ref = db.collection('photos').doc(currentPhotoId);
+            
+            if(!isLiked) {
+                liked.push(currentPhotoId);
+                await ref.update({ likes: firebase.firestore.FieldValue.increment(1) });
+            } else {
+                const idx = liked.indexOf(currentPhotoId);
+                if(idx > -1) liked.splice(idx, 1);
+                await ref.update({ likes: firebase.firestore.FieldValue.increment(-1) });
+            }
+            localStorage.setItem('liked_photos', JSON.stringify(liked));
+            checkLikeStatus(currentPhotoId);
+        }
+
+        // --- MOBILE MENU LOGIC ---
+        let isMenuOpen = false;
+        function toggleMobileMenu() {
+            isMenuOpen = !isMenuOpen;
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            
+            if (isMenuOpen) {
+                // Open Menu
+                menu.classList.remove('pointer-events-none', 'opacity-0');
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+                document.body.style.overflow = 'hidden'; 
+                
+                // Animate links
+                gsap.to(".mobile-link", {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: "power3.out",
+                    delay: 0.2
+                });
+            } else {
+                // Close Menu
+                menu.classList.add('pointer-events-none', 'opacity-0');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+                document.body.style.overflow = 'auto'; 
+                
+                // Reset links position for next open
+                gsap.to(".mobile-link", {
+                    y: 40,
+                    opacity: 0,
+                    duration: 0.5
+                });
+            }
+        }
     </script>
 </body>
 </html>
