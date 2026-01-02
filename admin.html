@@ -42,7 +42,7 @@
         }
     </script>
     <style>
-        body { background-color: #fafafa; color: #18181b; } /* Nền sáng */
+        body { background-color: #fafafa; color: #18181b; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 3px; }
@@ -62,10 +62,14 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Custom Radio Styles */
+        /* Custom Radio/Button Styles */
         .color-radio:checked + label { border-color: #c5a059; background-color: rgba(197, 160, 89, 0.1); color: #c5a059; }
         .type-radio:checked + label { background-color: #18181b; color: #fff; border-color: #18181b; }
         .pos-radio:checked + label { border-color: #18181b; background-color: #18181b; color: #fff; }
+        
+        /* Format Toolbar Buttons */
+        .fmt-btn { @apply w-8 h-8 border border-zinc-200 text-zinc-500 flex items-center justify-center hover:bg-zinc-100 transition-all rounded-sm; }
+        .fmt-btn.active { @apply bg-zinc-800 text-white border-zinc-800; }
     </style>
 </head>
 <body class="antialiased">
@@ -74,7 +78,6 @@
     <div id="login-screen" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-white">
         <div class="w-full max-w-sm space-y-12 text-center">
             <div class="space-y-4">
-                <!-- LOGO UPDATE: Thêm tracking-wide và font-bold để chữ thoáng hơn -->
                 <h1 class="font-serif text-5xl italic font-bold tracking-wide text-zinc-900">Thong Tran<span class="text-accent">.</span></h1>
                 <p class="text-[9px] uppercase tracking-[0.4em] text-zinc-400 font-bold">Admin Portal</p>
             </div>
@@ -98,7 +101,6 @@
         <!-- Sidebar -->
         <aside class="w-full md:w-72 bg-white border-r border-zinc-200 flex-shrink-0 flex flex-col h-auto md:h-screen sticky top-0 z-50">
             <div class="p-8 border-b border-zinc-100 flex justify-between items-center md:block space-y-2">
-                <!-- LOGO SIDEBAR UPDATE: Đồng bộ style -->
                 <span class="font-serif font-bold text-2xl italic tracking-wide text-zinc-900">Thong Tran<span class="text-accent">.</span></span>
                 <p class="text-[8px] uppercase tracking-widest text-zinc-400 font-bold hidden md:block">Management System</p>
                 <button onclick="logout()" class="md:hidden text-zinc-400"><i class="fas fa-power-off"></i></button>
@@ -159,7 +161,7 @@
         </main>
     </div>
 
-    <!-- Upload Modal (Light Mode) -->
+    <!-- Upload Modal (With Advanced Text Tools) -->
     <div id="uploadModal" class="hidden fixed inset-0 z-[150] overflow-y-auto bg-white/95 backdrop-blur-xl">
         <div class="flex min-h-full justify-center p-6">
             <div class="w-full max-w-7xl space-y-10 py-10 relative my-auto">
@@ -185,22 +187,16 @@
                         </div>
 
                         <div class="space-y-6">
-                            <!-- QR Toggle -->
-                            <div class="flex items-center justify-between bg-zinc-50 p-4 border border-zinc-100 rounded-sm">
-                                <div class="space-y-1">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-800 block">Embedded QR</span>
-                                    <span class="text-[8px] text-zinc-400">Link to view-photo</span>
+                            <!-- QR & Background Toggle -->
+                            <div class="flex gap-4">
+                                <div class="flex-1 flex items-center justify-between bg-zinc-50 p-4 border border-zinc-100 rounded-sm">
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-800">QR Code</span>
+                                    <input type="checkbox" id="useQR" class="w-4 h-4 accent-accent" onchange="renderPreviews()">
                                 </div>
-                                <input type="checkbox" id="useQR" class="w-5 h-5 accent-accent" onchange="renderPreviews()">
-                            </div>
-
-                            <!-- Background Toggle (NEW) -->
-                            <div class="flex items-center justify-between bg-zinc-50 p-4 border border-zinc-100 rounded-sm">
-                                <div class="space-y-1">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-800 block">Stamp Background</span>
-                                    <span class="text-[8px] text-zinc-400">Glass effect container</span>
+                                <div class="flex-1 flex items-center justify-between bg-zinc-50 p-4 border border-zinc-100 rounded-sm">
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-800">Nền Mờ</span>
+                                    <input type="checkbox" id="useBackground" checked class="w-4 h-4 accent-accent" onchange="renderPreviews()">
                                 </div>
-                                <input type="checkbox" id="useBackground" checked class="w-5 h-5 accent-accent" onchange="renderPreviews()">
                             </div>
 
                             <!-- Style Radios -->
@@ -218,12 +214,27 @@
                                 </div>
                             </div>
 
-                            <!-- Text Inputs -->
+                            <!-- Text Inputs & Format Controls -->
                             <div id="text-config-panel" class="space-y-5">
                                 <div id="custom-text-inputs" class="space-y-3">
-                                    <input type="text" id="wmTextName" value="Thong Tran" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs text-zinc-900 focus:outline-none focus:border-accent font-medium shadow-sm">
-                                    <input type="text" id="wmTextSub" value="MY FIRST LENS" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs text-zinc-900 focus:outline-none focus:border-accent font-medium shadow-sm">
+                                    <!-- Toolbar -->
+                                    <div class="flex items-center justify-between pb-1 border-b border-zinc-100">
+                                        <div class="flex gap-1">
+                                            <button onclick="toggleFormat('bold')" id="btn-bold" class="fmt-btn font-bold">B</button>
+                                            <button onclick="toggleFormat('italic')" id="btn-italic" class="fmt-btn italic">I</button>
+                                        </div>
+                                        <div class="flex gap-1">
+                                            <button onclick="toggleAlign('left')" id="btn-align-left" class="fmt-btn active"><i class="fas fa-align-left text-xs"></i></button>
+                                            <button onclick="toggleAlign('center')" id="btn-align-center" class="fmt-btn"><i class="fas fa-align-center text-xs"></i></button>
+                                            <button onclick="toggleAlign('right')" id="btn-align-right" class="fmt-btn"><i class="fas fa-align-right text-xs"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <input type="text" id="wmTextName" value="Thong Tran" placeholder="Tiêu đề chính" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs text-zinc-900 focus:outline-none focus:border-accent font-medium shadow-sm">
+                                    <!-- Changed to Textarea for multiline -->
+                                    <textarea id="wmTextSub" rows="3" placeholder="Nội dung phụ (Enter để xuống dòng)" class="w-full bg-white border border-zinc-200 px-4 py-3 text-xs text-zinc-900 focus:outline-none focus:border-accent font-medium shadow-sm leading-relaxed" oninput="renderPreviews()">MY FIRST LENS</textarea>
                                 </div>
+                                
                                 <div class="grid grid-cols-3 gap-2">
                                     <input type="radio" name="wmColor" id="color-white" value="#FFFFFF" checked class="hidden color-radio" onchange="renderPreviews()">
                                     <label for="color-white" class="py-2 border border-zinc-200 text-zinc-500 text-center text-[9px] font-bold uppercase cursor-pointer transition-all rounded-sm bg-white">White</label>
@@ -320,9 +331,31 @@
         let currentRenderId = 0; 
         let stampOffsetX = 0; 
         let stampOffsetY = 0;
+        
+        // Settings State
+        let textSettings = {
+            bold: false,
+            italic: false,
+            align: 'left' // left, center, right
+        };
 
         if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
         const db = firebase.firestore();
+
+        // --- UI TOGGLES ---
+        function toggleFormat(type) {
+            textSettings[type] = !textSettings[type];
+            document.getElementById(`btn-${type}`).classList.toggle('active', textSettings[type]);
+            renderPreviews();
+        }
+        
+        function toggleAlign(align) {
+            textSettings.align = align;
+            ['left', 'center', 'right'].forEach(a => {
+                document.getElementById(`btn-align-${a}`).classList.toggle('active', a === align);
+            });
+            renderPreviews();
+        }
 
         // --- AUTH ---
         function checkLogin() {
@@ -388,13 +421,12 @@
 
             const useWm = document.getElementById('useWatermark').checked;
             const useQR = document.getElementById('useQR').checked;
-            const useBg = document.getElementById('useBackground').checked; // GET BG VALUE
+            const useBg = document.getElementById('useBackground').checked;
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
             const wmColor = document.querySelector('input[name="wmColor"]:checked').value;
             const wmPos = document.querySelector('input[name="wmPos"]:checked').value;
             const logoScale = document.getElementById('logoSize').value / 100;
             
-            // Text Inputs event listeners are inline in HTML
             let textName = document.getElementById('wmTextName').value;
             let textSub = document.getElementById('wmTextSub').value;
             if(wmType === 'fixed_b') { textName = "Thong Tran"; textSub = "My First Lens"; }
@@ -416,6 +448,7 @@
             }
         }
 
+        // --- ENHANCED WATERMARK LOGIC (Multi-line + Formatting) ---
         function applyWatermark(file, useWm, useQR, useBg, type, color, pos, logoImage, logoScale, textName, textSub, docId, offX, offY) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -430,54 +463,77 @@
                         const padding = canvas.width * 0.04;
                         if (useWm) {
                             if (type === 'image' && logoImage) {
+                                // Logic ảnh cũ
                                 const logoW = canvas.width * logoScale;
                                 const logoH = (logoImage.height / logoImage.width) * logoW;
                                 let lx, ly;
                                 if (pos === 'br') { lx = canvas.width - logoW - padding; ly = canvas.height - logoH - padding; }
                                 else if (pos === 'bl') { lx = padding; ly = canvas.height - logoH - padding; }
                                 lx += (canvas.width * (offX / 100)); ly += (canvas.height * (offY / 100));
+                                
+                                if(useBg) {
+                                    // Draw BG for Image
+                                    const pad = logoW * 0.1;
+                                    ctx.fillStyle = (color === '#000000') ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+                                    ctx.fillRect(lx-pad, ly-pad, logoW+pad*2, logoH+pad*2);
+                                }
                                 ctx.globalAlpha = 0.9; ctx.drawImage(logoImage, lx, ly, logoW, logoH); ctx.globalAlpha = 1.0;
                             } else {
-                                // Text Logic
+                                // TEXT LOGIC
                                 const baseSize = canvas.width * logoScale * 0.25;
                                 const isSignature = type === 'fixed_b';
                                 
-                                // Font setup
+                                // 1. Calculate Name Dimensions
                                 ctx.font = isSignature ? `400 ${baseSize}px 'Great Vibes'` : `bold ${baseSize*0.8}px 'Playfair Display'`;
-                                const line1W = ctx.measureText(textName).width;
-                                ctx.font = `500 ${baseSize * 0.35}px 'Inter'`;
-                                const line2W = ctx.measureText(textSub).width;
-                                const maxW = Math.max(line1W, line2W);
-                                const hBlock = baseSize * 1.2;
+                                const nameMetrics = ctx.measureText(textName);
+                                const nameH = baseSize;
+                                
+                                // 2. Calculate Multi-line Sub Dimensions
+                                // Style
+                                const subWeight = textSettings.bold ? 'bold' : '500';
+                                const subStyle = textSettings.italic ? 'italic' : 'normal';
+                                ctx.font = `${subStyle} ${subWeight} ${baseSize * 0.35}px 'Inter'`;
+                                
+                                const lines = textSub.split('\n');
+                                const lineHeight = baseSize * 0.5; // Tăng khoảng cách dòng
+                                let maxSubW = 0;
+                                lines.forEach(l => {
+                                    const w = ctx.measureText(l).width;
+                                    if(w > maxSubW) maxSubW = w;
+                                });
+                                const subBlockH = lines.length * lineHeight;
+
+                                const maxW = Math.max(nameMetrics.width, maxSubW);
+                                const totalTextH = nameH + subBlockH + (baseSize * 0.2); // +gap
 
                                 // QR
                                 let qrS = 0; let qrCan = null;
                                 if(useQR) {
-                                    qrS = baseSize * 1.5;
+                                    qrS = totalTextH * 0.8; // QR height relative to text block
                                     qrCan = document.createElement('canvas');
                                     await QRCode.toCanvas(qrCan, window.location.origin + '/view-photo.html?id=' + docId, { margin: 0, width: qrS, color: { dark: color, light: '#00000000' } });
                                 }
 
-                                const gap = baseSize * 0.3;
-                                const totalW = maxW + (useQR ? gap + qrS : 0);
+                                const gapQR = baseSize * 0.5;
+                                const totalW = maxW + (useQR ? gapQR + qrS : 0);
                                 
+                                // Box Position
                                 let rx, ry;
-                                if (pos === 'br') { rx = canvas.width - totalW - padding; ry = canvas.height - hBlock - padding; }
-                                else { rx = padding; ry = canvas.height - hBlock - padding; }
+                                if (pos === 'br') { rx = canvas.width - totalW - padding; ry = canvas.height - totalTextH - padding; }
+                                else { rx = padding; ry = canvas.height - totalTextH - padding; }
                                 rx += (canvas.width * (offX / 100)); ry += (canvas.height * (offY / 100));
 
-                                // Draw Background (Glass Effect) if useBg is true
+                                // Draw Background (Glass Effect)
                                 if (useBg) {
                                     const bgPadX = baseSize * 0.8;
                                     const bgPadY = baseSize * 0.6;
                                     const bgW = bgPadX + totalW + bgPadX;
-                                    const bgH = bgPadY + hBlock + bgPadY;
+                                    const bgH = bgPadY + totalTextH + bgPadY;
                                     const bgX = rx - bgPadX;
-                                    const bgY = ry - bgPadY * 0.5;
+                                    const bgY = ry - bgPadY * 0.5 - (baseSize*0.5); // Adjust Y center
 
                                     ctx.save();
                                     ctx.beginPath();
-                                    // Use rounded rect helper manually or built-in if supported, manual for older browsers safety
                                     const r = baseSize * 0.2;
                                     ctx.moveTo(bgX + r, bgY); ctx.arcTo(bgX + bgW, bgY, bgX + bgW, bgY + bgH, r);
                                     ctx.arcTo(bgX + bgW, bgY + bgH, bgX, bgY + bgH, r);
@@ -493,21 +549,35 @@
                                     ctx.restore();
                                 }
 
-                                // Draw Text
-                                ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+                                // Draw Content
+                                ctx.textAlign = textSettings.align; 
+                                ctx.textBaseline = 'top';
                                 ctx.fillStyle = color;
                                 
-                                // Name
-                                ctx.font = isSignature ? `400 ${baseSize}px 'Great Vibes'` : `bold ${baseSize*0.8}px 'Playfair Display'`;
-                                ctx.fillText(textName, rx, ry + baseSize * 0.7);
-                                
-                                // Sub
-                                ctx.font = `500 ${baseSize * 0.35}px 'Inter'`;
-                                ctx.fillText(textSub, rx + 2, ry + baseSize * 1.1);
+                                // Calculate X align anchor
+                                let anchorX = rx;
+                                if(textSettings.align === 'center') anchorX = rx + maxW/2;
+                                if(textSettings.align === 'right') anchorX = rx + maxW;
 
-                                // QR
+                                // 1. Name
+                                ctx.font = isSignature ? `400 ${baseSize}px 'Great Vibes'` : `bold ${baseSize*0.8}px 'Playfair Display'`;
+                                // Adjust Y to align baseline roughly
+                                ctx.fillText(textName, anchorX, ry - (baseSize*0.6));
+                                
+                                // 2. Sub (Multi-line)
+                                ctx.font = `${subStyle} ${subWeight} ${baseSize * 0.35}px 'Inter'`;
+                                let currentY = ry + (baseSize * 0.5); // Gap after name
+                                lines.forEach(line => {
+                                    ctx.fillText(line, anchorX, currentY);
+                                    currentY += lineHeight;
+                                });
+
+                                // 3. QR
                                 if(useQR && qrCan) {
-                                    ctx.drawImage(qrCan, rx + maxW + gap, ry, qrS, qrS);
+                                    // QR always to the right of text block for now
+                                    const qrX = rx + maxW + gapQR;
+                                    const qrY = ry - (baseSize*0.2);
+                                    ctx.drawImage(qrCan, qrX, qrY, qrS, qrS);
                                 }
                             }
                         }
@@ -536,10 +606,9 @@
             const snap = await db.collection('photos').where('albumId', '==', currentAlbumId).limit(1).get();
             if(snap.empty) first = true;
 
-            // Get params once
             const useWm = document.getElementById('useWatermark').checked;
             const useQR = document.getElementById('useQR').checked;
-            const useBg = document.getElementById('useBackground').checked; // PASS BG PARAM
+            const useBg = document.getElementById('useBackground').checked; 
             const wmType = document.querySelector('input[name="wmType"]:checked').value;
             const wmColor = document.querySelector('input[name="wmColor"]:checked').value;
             const wmPos = document.querySelector('input[name="wmPos"]:checked').value;
@@ -552,7 +621,6 @@
                 const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
                 const batchFiles = selectedFiles.slice(i, i + BATCH_SIZE);
                 
-                // FIXED: Use batchNumber
                 btn.innerHTML = `<span class="custom-loader !border-zinc-500"></span> Batch ${batchNumber}/${totalBatches}...`;
 
                 for (const file of batchFiles) {
@@ -578,7 +646,6 @@
                                 caption: ''
                             });
                             
-                            // Atomic Update
                             await db.collection('albums').doc(currentAlbumId).update({ photoCount: firebase.firestore.FieldValue.increment(1) });
                             
                             if(first) {
@@ -644,7 +711,6 @@
         }
         
         async function createNewAlbum() {
-            // Updated to ask for Title, Desc, Location, Date
             const { value: form } = await Swal.fire({
                 title: 'Tạo Album Mới',
                 html: `
