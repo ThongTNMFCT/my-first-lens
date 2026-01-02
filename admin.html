@@ -261,13 +261,18 @@
                             <div class="space-y-3">
                                 <label class="text-[9px] uppercase font-bold text-zinc-400 tracking-widest">Placement</label>
                                 <div class="flex gap-4">
-                                    <div class="grid grid-cols-2 gap-1.5 w-1/2">
+                                    <!-- Updated Grid for Center -->
+                                    <div class="grid grid-cols-3 gap-1.5 w-7/12">
                                         <input type="radio" name="wmPos" id="pos-bl" value="bl" class="hidden pos-radio" onchange="renderPreviews()">
                                         <label for="pos-bl" class="py-2 border border-zinc-200 text-zinc-500 text-center text-[8px] font-bold uppercase cursor-pointer bg-white">Bot-L</label>
+                                        
+                                        <input type="radio" name="wmPos" id="pos-center" value="center" class="hidden pos-radio" onchange="renderPreviews()">
+                                        <label for="pos-center" class="py-2 border border-zinc-200 text-zinc-500 text-center text-[8px] font-bold uppercase cursor-pointer bg-white">Center</label>
+
                                         <input type="radio" name="wmPos" id="pos-br" value="br" checked class="hidden pos-radio" onchange="renderPreviews()">
                                         <label for="pos-br" class="py-2 border border-zinc-200 text-zinc-500 text-center text-[8px] font-bold uppercase cursor-pointer bg-white">Bot-R</label>
                                     </div>
-                                    <div class="grid grid-cols-3 gap-1.5 w-1/2 h-fit">
+                                    <div class="grid grid-cols-3 gap-1.5 w-5/12 h-fit">
                                         <div></div><button onclick="moveStamp(0, -2)" class="bg-white border border-zinc-200 text-zinc-600 aspect-square hover:bg-zinc-100"><i class="fas fa-chevron-up text-[9px]"></i></button><div></div>
                                         <button onclick="moveStamp(-2, 0)" class="bg-white border border-zinc-200 text-zinc-600 aspect-square hover:bg-zinc-100"><i class="fas fa-chevron-left text-[9px]"></i></button>
                                         <button onclick="resetStamp()" class="bg-zinc-900 text-white aspect-square font-bold text-[10px] hover:bg-accent">R</button>
@@ -467,12 +472,14 @@
                                 const logoW = canvas.width * logoScale;
                                 const logoH = (logoImage.height / logoImage.width) * logoW;
                                 let lx, ly;
-                                if (pos === 'br') { lx = canvas.width - logoW - padding; ly = canvas.height - logoH - padding; }
+                                
+                                // Position Logic for Image
+                                if (pos === 'center') { lx = (canvas.width - logoW) / 2; ly = (canvas.height - logoH) / 2; }
+                                else if (pos === 'br') { lx = canvas.width - logoW - padding; ly = canvas.height - logoH - padding; }
                                 else if (pos === 'bl') { lx = padding; ly = canvas.height - logoH - padding; }
                                 lx += (canvas.width * (offX / 100)); ly += (canvas.height * (offY / 100));
                                 
                                 if(useBg) {
-                                    // Draw BG for Image
                                     const pad = logoW * 0.1;
                                     ctx.fillStyle = (color === '#000000') ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
                                     ctx.fillRect(lx-pad, ly-pad, logoW+pad*2, logoH+pad*2);
@@ -519,7 +526,8 @@
                                 
                                 // Box Position
                                 let rx, ry;
-                                if (pos === 'br') { rx = canvas.width - totalW - padding; ry = canvas.height - totalTextH - padding; }
+                                if (pos === 'center') { rx = (canvas.width - totalW) / 2; ry = (canvas.height - totalTextH) / 2; }
+                                else if (pos === 'br') { rx = canvas.width - totalW - padding; ry = canvas.height - totalTextH - padding; }
                                 else { rx = padding; ry = canvas.height - totalTextH - padding; }
                                 rx += (canvas.width * (offX / 100)); ry += (canvas.height * (offY / 100));
 
