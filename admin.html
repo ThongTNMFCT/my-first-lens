@@ -490,55 +490,65 @@
                                 const baseSize = canvas.width * logoScale * 0.25;
                                 const isSignature = type === 'fixed_b';
                                 
-                                // 1. Calculate Name Dimensions
-                                ctx.font = isSignature ? `400 ${baseSize}px 'Great Vibes'` : `bold ${baseSize*0.8}px 'Playfair Display'`;
+                                // Font definitions
+                                const nameFontSize = isSignature ? baseSize : baseSize * 0.8;
+                                const nameFont = isSignature ? `400 ${nameFontSize}px 'Great Vibes'` : `bold ${nameFontSize}px 'Playfair Display'`;
+                                
+                                const subFontSize = baseSize * 0.35;
+                                const subFontWeight = textSettings.bold ? 'bold' : '500';
+                                const subFontStyle = textSettings.italic ? 'italic' : 'normal';
+                                const subFont = `${subFontStyle} ${subFontWeight} ${subFontSize}px 'Inter'`;
+
+                                // 1. Measure Name
+                                ctx.font = nameFont;
                                 const nameMetrics = ctx.measureText(textName);
-                                const nameH = baseSize;
+                                const nameHeight = nameFontSize; 
                                 
-                                // 2. Calculate Multi-line Sub Dimensions
-                                // Style
-                                const subWeight = textSettings.bold ? 'bold' : '500';
-                                const subStyle = textSettings.italic ? 'italic' : 'normal';
-                                ctx.font = `${subStyle} ${subWeight} ${baseSize * 0.35}px 'Inter'`;
-                                
+                                // 2. Measure Sub
+                                ctx.font = subFont;
                                 const lines = textSub.split('\n');
-                                const lineHeight = baseSize * 0.5; // Tăng khoảng cách dòng
+                                const lineHeight = subFontSize * 1.4; // 1.4em line height
                                 let maxSubW = 0;
                                 lines.forEach(l => {
                                     const w = ctx.measureText(l).width;
                                     if(w > maxSubW) maxSubW = w;
                                 });
-                                const subBlockH = lines.length * lineHeight;
+                                const subHeight = lines.length * lineHeight;
 
-                                const maxW = Math.max(nameMetrics.width, maxSubW);
-                                const totalTextH = nameH + subBlockH + (baseSize * 0.2); // +gap
+                                // 3. Layout Dimensions
+                                const gapTitleSub = baseSize * 0.2; // Gap between title and sub
+                                const totalTextH = nameHeight + gapTitleSub + subHeight;
+                                const maxTextW = Math.max(nameMetrics.width, maxSubW);
 
-                                // QR
+                                // QR Logic
                                 let qrS = 0; let qrCan = null;
+                                const gapQR = baseSize * 0.5;
                                 if(useQR) {
-                                    qrS = totalTextH * 0.8; // QR height relative to text block
+                                    qrS = totalTextH; // Match text height
                                     qrCan = document.createElement('canvas');
                                     await QRCode.toCanvas(qrCan, window.location.origin + '/view-photo.html?id=' + docId, { margin: 0, width: qrS, color: { dark: color, light: '#00000000' } });
                                 }
 
-                                const gapQR = baseSize * 0.5;
-                                const totalW = maxW + (useQR ? gapQR + qrS : 0);
+                                const totalW = maxTextW + (useQR ? gapQR + qrS : 0);
+                                const totalH = Math.max(totalTextH, qrS);
                                 
-                                // Box Position
+                                // 4. Position on Canvas
                                 let rx, ry;
-                                if (pos === 'center') { rx = (canvas.width - totalW) / 2; ry = (canvas.height - totalTextH) / 2; }
-                                else if (pos === 'br') { rx = canvas.width - totalW - padding; ry = canvas.height - totalTextH - padding; }
-                                else { rx = padding; ry = canvas.height - totalTextH - padding; }
-                                rx += (canvas.width * (offX / 100)); ry += (canvas.height * (offY / 100));
+                                if (pos === 'center') { rx = (canvas.width - totalW) / 2; ry = (canvas.height - totalH) / 2; }
+                                else if (pos === 'br') { rx = canvas.width - totalW - padding; ry = canvas.height - totalH - padding; }
+                                else if (pos === 'bl') { rx = padding; ry = canvas.height - totalH - padding; }
+                                // Apply Offset
+                                rx += (canvas.width * (offX / 100)); 
+                                ry += (canvas.height * (offY / 100));
 
-                                // Draw Background (Glass Effect)
+                                // 5. Draw Background
                                 if (useBg) {
-                                    const bgPadX = baseSize * 0.8;
-                                    const bgPadY = baseSize * 0.6;
-                                    const bgW = bgPadX + totalW + bgPadX;
-                                    const bgH = bgPadY + totalTextH + bgPadY;
+                                    const bgPadX = baseSize * 0.5;
+                                    const bgPadY = baseSize * 0.5;
                                     const bgX = rx - bgPadX;
-                                    const bgY = ry - bgPadY * 0.5 - (baseSize*0.5); // Adjust Y center
+                                    const bgY = ry - bgPadY;
+                                    const bgW = totalW + (bgPadX * 2);
+                                    const bgH = totalH + (bgPadY * 2);
 
                                     ctx.save();
                                     ctx.beginPath();
@@ -557,35 +567,35 @@
                                     ctx.restore();
                                 }
 
-                                // Draw Content
-                                ctx.textAlign = textSettings.align; 
-                                ctx.textBaseline = 'top';
+                                // 6. Draw Text
                                 ctx.fillStyle = color;
+                                ctx.textBaseline = 'top';
                                 
-                                // Calculate X align anchor
-                                let anchorX = rx;
-                                if(textSettings.align === 'center') anchorX = rx + maxW/2;
-                                if(textSettings.align === 'right') anchorX = rx + maxW;
+                                // Calc Anchor X based on alignment relative to the Text Block width (maxTextW)
+                                let textAnchorX = rx; 
+                                if (textSettings.align === 'center') textAnchorX = rx + (maxTextW / 2);
+                                else if (textSettings.align === 'right') textAnchorX = rx + maxTextW;
 
-                                // 1. Name
-                                ctx.font = isSignature ? `400 ${baseSize}px 'Great Vibes'` : `bold ${baseSize*0.8}px 'Playfair Display'`;
-                                // Adjust Y to align baseline roughly
-                                ctx.fillText(textName, anchorX, ry - (baseSize*0.6));
+                                ctx.textAlign = textSettings.align;
                                 
-                                // 2. Sub (Multi-line)
-                                ctx.font = `${subStyle} ${subWeight} ${baseSize * 0.35}px 'Inter'`;
-                                let currentY = ry + (baseSize * 0.5); // Gap after name
-                                lines.forEach(line => {
-                                    ctx.fillText(line, anchorX, currentY);
-                                    currentY += lineHeight;
+                                // Draw Name
+                                ctx.font = nameFont;
+                                // Adjust Y slightly for fonts like Great Vibes which can have large descenders/ascenders
+                                // Ideally align top
+                                ctx.fillText(textName, textAnchorX, ry);
+                                
+                                // Draw Sub
+                                ctx.font = subFont;
+                                let currentSubY = ry + nameHeight + gapTitleSub;
+                                lines.forEach(l => {
+                                    ctx.fillText(l, textAnchorX, currentSubY);
+                                    currentSubY += lineHeight;
                                 });
 
-                                // 3. QR
-                                if(useQR && qrCan) {
-                                    // QR always to the right of text block for now
-                                    const qrX = rx + maxW + gapQR;
-                                    const qrY = ry - (baseSize*0.2);
-                                    ctx.drawImage(qrCan, qrX, qrY, qrS, qrS);
+                                // 7. Draw QR
+                                if (useQR && qrCan) {
+                                    // QR is always to the right of the text block currently
+                                    ctx.drawImage(qrCan, rx + maxTextW + gapQR, ry, qrS, qrS);
                                 }
                             }
                         }
